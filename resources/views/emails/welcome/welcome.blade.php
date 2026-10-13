@@ -1,0 +1,11 @@
+@extends('emails.layouts.app')
+
+@section('content')
+    <h4><strong>Hi {{ $name ?? null }}, </strong></h4>
+    <p><strong class="theme-text">Welcome to Open Se Same!</strong> First of all a <strong class="theme-text">HUGE</strong> thank you for registering with <strong class="theme-text">Open Se Same!</strong> We are beyond excited to welcome you into our family.</p>
+    <p>At Open Se Same, you’re not just signing up — you’re stepping into a world of exclusive products, handpicked just for you. </p>
+    <p>From unique designs to premium quality, everything you find here is meant to make you feel truly special.</p>
+    <p>We believe fashion is a way to express your inner muse, and with our carefully curated collections, you’ll always have something extraordinary to showcase.</p>
+    <p>Once again, thank you so, so much for trusting us. Stay tuned — something beautiful is always waiting for you at Open Se Same!</p>
+    <p>Best regards, <br> <strong class="theme-text">The Open Se Same Team</strong></p>
+@endsection

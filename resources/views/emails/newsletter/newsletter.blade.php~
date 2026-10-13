@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Open Se Same Newsletter</title>
+  <style type="text/css">
+    /* Reset */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f0f0f0; /* Lighter grey background */ }
+
+    /* Main Styles */
+    .email-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto; /* Add some margin top/bottom */
+      background-color: #ffffff;
+      border: 1px solid #dddddd; /* Subtle border */
+      border-radius: 4px; /* Slightly rounded corners */
+      overflow: hidden; /* Ensure border radius applies */
+    }
+
+    /* Header */
+    .header {
+      padding: 30px 20px; /* More padding */
+      text-align: center;
+      background-color: #ffffff; /* White header */
+      border-bottom: 1px solid #eeeeee; /* Subtle separator */
+    }
+    .header img {
+      max-width: 180px; /* Slightly larger logo */
+      height: auto;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px 30px; /* Generous padding */
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Modern, clean font stack */
+      font-size: 16px;
+      line-height: 1.7; /* Slightly more line spacing */
+      color: #555555; /* Softer text color */
+    }
+    .content h1 {
+      font-family: 'Georgia', Times, 'Times New Roman', serif; /* Elegant serif for headings */
+      font-size: 26px;
+      color: #333333; /* Darker heading color */
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+     .content p {
+        margin-bottom: 20px; /* Spacing between paragraphs */
+     }
+     .content a {
+        color: #a60004; /* Brand accent color */
+        text-decoration: underline;
+     }
+
+    /* Button */
+    .button-td,
+    .button-a {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      text-decoration: none !important; /* Remove underline */
+      border-radius: 5px;
+    }
+    .button-td {
+       border-radius: 5px;
+       background: #a60004; /* Brand button color */
+    }
+    .button-a {
+      background: #a60004;
+      border: 15px solid #a60004; /* Padding via border */
+      padding: 0 25px; /* Horizontal padding */
+      color: #ffffff !important; /* White text */
+      display: block; /* Make it block level */
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 30px 20px;
+      text-align: center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      color: #888888;
+      background-color: #f8f8f8; /* Very light grey footer */
+      border-top: 1px solid #eeeeee;
+    }
+    .footer a {
+      color: #555555; /* Darker grey links in footer */
+      text-decoration: underline;
+    }
+    .footer p {
+        margin: 5px 0;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 600px) {
+        .email-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+        .content {
+            padding: 30px 20px !important;
+        }
+        .header, .footer {
+            padding: 20px 15px !important;
+        }
+    }
+
+  </style>
+</head>
+<body style="margin: 0 !important; padding: 0 !important; background-color: #f0f0f0;">
+  <center>
+    <!-- Main Table -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0f0f0;">
+      <tr>
+        <td align="center" valign="top">
+          <!--[if (gte mso 9)|(IE)]>
+          <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+          <tr>
+          <td align="center" valign="top" width="600">
+          <![endif]-->
+          <table border="0" cellpadding="0" cellspacing="0" class="email-container" style="width: 100%; max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 4px; overflow: hidden;">
+            <!-- Header Section -->
+            <tr>
+              <td align="center" class="header" style="padding: 30px 20px; text-align: center; background-color: #ffffff; border-bottom: 1px solid #eeeeee;">
+                <!-- Replace with your logo -->
+                <img src="{{asset('images/logo-web.png')}}" alt="Open Se Same Logo" width="180" style="max-width: 180px; height: auto; -ms-interpolation-mode: bicubic; border: 0; line-height: 100%; outline: none; text-decoration: none;">
+              </td>
+            </tr>
+            <!-- Content Section -->
+            <tr>
+              <td align="left" class="content" style="padding: 40px 30px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.7; color: #555555;">
+                <h1 style="font-family: 'Georgia', Times, 'Times New Roman', serif; font-size: 26px; color: #333333; margin-top: 0; margin-bottom: 20px; font-weight: normal;">Style Notes & New Arrivals</h1>
+                <p style="margin-bottom: 20px;">Hello Fashion Lover,</p>
+                <p style="margin-bottom: 20px;">Discover the latest trends and timeless pieces curated just for you. Explore our new collection and find your next favorite outfit.</p>
+                <p style="margin-bottom: 20px;">[Optional: Add a featured product image here]</p>
+                <p style="margin-bottom: 20px;">From elegant evening wear to chic everyday essentials, Open Se Same has something for every occasion. Visit our store or browse online.</p>
+                <!-- Button -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: auto;">
+                    <tr>
+                        <td class="button-td" style="border-radius: 5px; background: #a60004; text-align: center;">
+                            <a href="#" target="_blank" class="button-a" style="background: #a60004; border: 15px solid #a60004; padding: 0 25px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.1; text-align: center; text-decoration: none !important; display: block; border-radius: 5px; font-weight: bold; color: #ffffff !important;">
+                                Shop New Arrivals &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+              </td>
+            </tr>
+            <!-- Footer Section -->
+            <tr>
+              <td align="center" class="footer" style="padding: 30px 20px; text-align: center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #888888; background-color: #f8f8f8; border-top: 1px solid #eeeeee;">
+                <p style="margin: 5px 0;">Open Se Same </p>
+                <p style="margin: 5px 0;">You're receiving this email because you opted in at our website.</p>
+                <p style="margin: 5px 0;"><a href="#" target="_blank" style="color: #555555; text-decoration: underline;">Unsubscribe</a> | <a href="#" target="_blank" style="color: #555555; text-decoration: underline;">Manage Preferences</a> | <a href="#" target="_blank" style="color: #555555; text-decoration: underline;">View in Browser</a></p>
+              </td>
+            </tr>
+          </table>
+          <!--[if (gte mso 9)|(IE)]>
+          </td>
+          </tr>
+          </table>
+          <![endif]-->
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>

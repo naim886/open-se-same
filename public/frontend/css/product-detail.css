@@ -1,0 +1,260 @@
+/* General Styling & Font */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa; /* Light background for contrast */
+    color: #333;
+}
+
+.product-detail-container {
+    background-color: #ffffff;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Ensures contained elements don't break layout */
+}
+
+/* Product Images */
+.main-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px; /* Slightly rounded corners for the main image */
+}
+
+.main-product-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease; /* Smooth zoom effect on hover (optional) */
+}
+
+/* Optional hover effect for main image
+.main-product-image:hover {
+    transform: scale(1.03);
+} */
+
+.thumbnail-container .img-thumbnail {
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: 3px;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+    max-width: 80px; /* Adjust thumbnail size */
+    height: auto;
+    border-radius: 5px;
+}
+
+.thumbnail-container .img-thumbnail:hover {
+    border-color: #adb5bd; /* Light grey border on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+.thumbnail-container .img-thumbnail.active {
+    border-color: #230102; /* Dark border for active thumbnail */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Product Details Section */
+.product-title {
+    font-weight: 600;
+    font-size: 2.2rem; /* Larger title */
+    line-height: 1.3;
+}
+
+.product-category {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-price {
+    font-weight: 700;
+    color: red; /* Brand's primary color */
+}
+
+.product-description {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #555;
+}
+
+/* Color Swatches */
+.color-swatch {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #eee;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0; /* Remove default button padding */
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.active {
+    border-color: #230102;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Size Options */
+.size-option {
+    min-width: 45px; /* Ensure consistent button width */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.size-option.active {
+    background-color: #230102;
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Quantity Selector */
+.quantity-selector .input-group {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    overflow: hidden; /* Clip button borders inside */
+}
+
+.quantity-selector .form-control {
+    border-left: none;
+    border-right: none;
+    box-shadow: none; /* Remove default focus shadow */
+}
+.quantity-selector .btn {
+    border-radius: 0; /* Square buttons */
+    border-color: #ced4da;
+    box-shadow: none;
+}
+.quantity-selector .btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Action Buttons */
+.btn-add-to-cart {
+    background-color: #230102;
+    border-color: #230102;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-add-to-cart:hover {
+    background-color: #1a0101; /* Slightly darker version of #230102 for hover */
+    transform: translateY(-1px);
+}
+
+.btn-wishlist {
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-wishlist:hover {
+    background-color: #f8f9fa;
+    color: red; /* Red heart on hover */
+    border-color: #ced4da;
+    transform: translateY(-1px);
+}
+
+/* Accordion Styling */
+.accordion-item {
+    border: none; /* Remove default borders */
+    border-bottom: 1px solid #eee; /* Subtle separator */
+}
+.accordion-item:first-of-type {
+    border-top: 1px solid #eee; /* Add top border for the first item */
+}
+.accordion-item:last-of-type {
+    border-bottom: none; /* Remove bottom border for the last item */
+}
+
+.accordion-button {
+    font-weight: 500;
+    color: #333;
+    background-color: #fff;
+    box-shadow: none; /* Remove focus shadow */
+    padding: 1rem 1.25rem;
+}
+
+.accordion-button:not(.collapsed) {
+    color: red; /* Accent color when open */
+    background-color: #f8f9fa; /* Slightly different background when open */
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.accordion-button::after {
+    /* Customize accordion icon if desired */
+    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e"); */
+}
+
+.accordion-body {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) { /* Medium devices (tablets, less than 992px) */
+    .product-detail-container {
+        padding: 2rem;
+    }
+    .product-title {
+        font-size: 1.8rem;
+    }
+    .main-product-image {
+        max-height: 600px; /* Limit image height on smaller screens */
+        object-fit: contain; /* Ensure image fits well */
+    }
+}
+
+@media (max-width: 767.98px) { /* Small devices (landscape phones, less than 768px) */
+    .product-detail-container {
+        padding: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .product-title {
+        font-size: 1.6rem;
+    }
+    .thumbnail-container {
+        justify-content: center; /* Center thumbnails */
+    }
+    .thumbnail-container .img-thumbnail {
+        max-width: 65px;
+    }
+    .d-grid { /* Stack buttons vertically */
+        gap: 0.5rem !important;
+    }
+}
+
+@media (max-width: 575.98px) { /* Extra small devices (portrait phones, less than 576px) */
+    .product-detail-container {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    .product-title {
+        font-size: 1.4rem;
+    }
+    .product-price {
+        font-size: 1.3rem;
+    }
+    .thumbnail-container .img-thumbnail {
+        max-width: 55px;
+    }
+    .size-option {
+        min-width: 40px;
+        font-size: 0.85rem;
+        padding: 0.3rem 0.5rem;
+    }
+    .btn-lg { /* Reduce button padding */
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    .accordion-button {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+    }
+    .accordion-body {
+        font-size: 0.9rem;
+    }
+}

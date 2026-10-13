@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Mail\NewsLetterMail;
+use App\Models\NewsLetter;
+use App\Http\Requests\StoreNewsLetterRequest;
+use App\Http\Requests\UpdateNewsLetterRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Throwable;
+
+class NewsLetterController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    final public function store(StoreNewsLetterRequest $request): RedirectResponse
+    {
+        try {
+            (new NewsLetter())->storeNewsLetter($request);
+            Session::flash('message', 'Subscribed successfully!');
+            Session::flash('class', 'success');
+            Mail::to($request->input('email'))->send(new NewsLetterMail());
+        } catch (Throwable $e) {
+            Session::flash('message', 'Something went wrong. ' . $e->getMessage());
+            Session::flash('class', 'danger');
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(NewsLetter $newsLetter)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(NewsLetter $newsLetter)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateNewsLetterRequest $request, NewsLetter $newsLetter)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(NewsLetter $newsLetter)
+    {
+        //
+    }
+}

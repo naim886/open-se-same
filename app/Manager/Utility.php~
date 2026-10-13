@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Manager;
+
+use App\Models\Category;
+use Illuminate\Support\Str;
+
+class Utility
+{
+    /**
+     * @param string|null $name
+     * @return string
+     */
+    final public static function generateName(string|null $name): string
+    {
+        if ($name) {
+            return Str::slug($name . '_' . time());
+        }
+        $name = Str::random(10);
+        return Str::slug($name . '_' . time());
+    }
+
+    public static function isPhone(string $phone):bool
+    {
+        if (preg_match("/^[0-9]{10}$/", $phone)) {
+            return true;
+        }
+        return false;
+    }
+
+}

@@ -1,0 +1,369 @@
+{
+	"info": {
+		"_postman_id": "open-se-same-mobile-api-v1",
+		"name": "Open Se Same — Mobile API",
+		"description": "Full REST API collection for the Open Se Same mobile app.\n\nBase URL: `{{base_url}}/api/v1`\n\nSet the **base_url** environment variable to your server URL, e.g. `http://localhost` or `https://yourdomain.com`.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Home",
+			"item": [
+				{
+					"name": "Get Home Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/home",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "home"]
+						},
+						"description": "Returns banners, categories, featured products, new arrivals, top-selling products, flash sale, and home page CMS content."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "All Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories"]
+						},
+						"description": "Returns all active categories with product counts, icons, and banners."
+					},
+					"response": []
+				},
+				{
+					"name": "Category Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/dresses?sort=newest&min_price=&max_price=&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "category", "dresses"],
+							"query": [
+								{ "key": "sort", "value": "newest", "description": "newest | price_asc | price_desc | popular | discount" },
+								{ "key": "min_price", "value": "", "description": "Minimum price filter", "disabled": true },
+								{ "key": "max_price", "value": "", "description": "Maximum price filter", "disabled": true },
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "Returns category info and paginated products for the given category slug.\n\nSort options: `newest`, `price_asc`, `price_desc`, `popular`, `discount`"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "All Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products?sort=newest&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products"],
+							"query": [
+								{ "key": "sort", "value": "newest", "description": "newest | price_asc | price_desc | popular | discount" },
+								{ "key": "category", "value": "", "description": "Filter by category ID", "disabled": true },
+								{ "key": "min_price", "value": "", "description": "Minimum price filter", "disabled": true },
+								{ "key": "max_price", "value": "", "description": "Maximum price filter", "disabled": true },
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "Returns all active products, paginated (20 per page). Supports filtering by category ID, price range, and sorting."
+					},
+					"response": []
+				},
+				{
+					"name": "Offer / Sale Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/offers?sort=discount&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products", "offers"],
+							"query": [
+								{ "key": "sort", "value": "discount", "description": "newest | price_asc | price_desc | popular | discount" },
+								{ "key": "category", "value": "", "description": "Filter by category ID", "disabled": true },
+								{ "key": "min_price", "value": "", "description": "Minimum price filter", "disabled": true },
+								{ "key": "max_price", "value": "", "description": "Maximum price filter", "disabled": true },
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "Returns discounted/sale products only (sale_price < price), sorted by biggest discount by default."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/search?q=kurti&sort=newest&page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "products", "search"],
+							"query": [
+								{ "key": "q", "value": "kurti", "description": "Search keyword" },
+								{ "key": "sort", "value": "newest", "description": "newest | price_asc | price_desc | popular | discount" },
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "Searches products by name, short description, or category name."
+					},
+					"response": []
+				},
+				{
+					"name": "Product Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/product/product-slug-here",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "product", "product-slug-here"]
+						},
+						"description": "Returns full product details including: gallery, specifications, Q&A, related products, delivery info, and return policy."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Delivery Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/delivery-options",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "delivery-options"]
+						},
+						"description": "Returns all delivery methods with their IDs and costs.\n\n| ID | Label | Cost |\n|----|-------|------|\n| 1 | Inside Dhaka | 70 |\n| 2 | Outside Dhaka | 120 |\n| 3 | Express | 150 |\n| 4 | Super Express | 0 |\n| 5 | Free Delivery | 0 |"
+					},
+					"response": []
+				},
+				{
+					"name": "Place Quick Order (Single Product)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": 1,\n    \"customer_name\": \"Fatema Begum\",\n    \"customer_phone\": \"01712345678\",\n    \"customer_address\": \"House 12, Road 3, Dhanmondi, Dhaka\",\n    \"customer_email\": \"fatema@example.com\",\n    \"quantity\": 2,\n    \"delivery_location\": 1,\n    \"note\": \"Please pack carefully\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/order/quick",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "order", "quick"]
+						},
+						"description": "Place an order for a single product directly (quick order).\n\n**delivery_location values:**\n- 1 = Inside Dhaka (৳70)\n- 2 = Outside Dhaka (৳120)\n- 3 = Express (৳150)\n- 4 = Super Express (Free)\n- 5 = Free Delivery\n\n**Required:** product_id, customer_name, customer_phone (11 digits), customer_address, quantity, delivery_location\n**Optional:** customer_email, note"
+					},
+					"response": []
+				},
+				{
+					"name": "Place Cart Order (Multiple Products)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customer_name\": \"Fatema Begum\",\n    \"customer_phone\": \"01712345678\",\n    \"customer_address\": \"House 12, Road 3, Dhanmondi, Dhaka\",\n    \"customer_email\": \"fatema@example.com\",\n    \"delivery_location\": 2,\n    \"note\": \"Ring the doorbell twice\",\n    \"items\": [\n        { \"product_id\": 1, \"quantity\": 1 },\n        { \"product_id\": 5, \"quantity\": 2 }\n    ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/order",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "order"]
+						},
+						"description": "Place an order with multiple products (cart checkout).\n\n**Required:** customer_name, customer_phone (11 digits), customer_address, delivery_location, items (array)\n**Optional:** customer_email, note\n\nEach item in `items` requires: `product_id` and `quantity`"
+					},
+					"response": []
+				},
+				{
+					"name": "Track Order",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/track-order?q=01712345678",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "track-order"],
+							"query": [
+								{ "key": "q", "value": "01712345678", "description": "Phone number OR order number (e.g. M-1234 or 1234)" }
+							]
+						},
+						"description": "Track orders by phone number or order number.\n\nSupports:\n- Phone number: `01712345678`\n- Order number with prefix: `M-1234`\n- Order number without prefix: `1234`\n- Bengali digits are automatically converted"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Blogs",
+			"item": [
+				{
+					"name": "All Blogs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/blogs?page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "blogs"],
+							"query": [
+								{ "key": "search", "value": "", "description": "Search by title, meta description, or author", "disabled": true },
+								{ "key": "page", "value": "1" }
+							]
+						},
+						"description": "Returns paginated blog posts (9 per page). Supports search by title, meta description, or author name."
+					},
+					"response": []
+				},
+				{
+					"name": "Blog Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/blog/blog-slug-here",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "blog", "blog-slug-here"]
+						},
+						"description": "Returns full blog post with content, FAQs, and 5 related blogs."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pages (CMS)",
+			"item": [
+				{
+					"name": "Page Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/page/about-us",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "page", "about-us"]
+						},
+						"description": "Returns a CMS page by its slug.\n\nCommon slugs: `about-us`, `privacy-policy`, `terms-conditions`, `refund-policy`"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Submit Contact Form",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Rahim Uddin\",\n    \"email\": \"rahim@example.com\",\n    \"phone\": \"01812345678\",\n    \"subject\": \"Order inquiry\",\n    \"message\": \"I would like to know the status of my recent order.\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/contact",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "contact"]
+						},
+						"description": "Submit a contact form message.\n\n**Required:** name, email, subject, message (min 10 chars)\n**Optional:** phone"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Newsletter",
+			"item": [
+				{
+					"name": "Subscribe to Newsletter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"subscriber@example.com\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/newsletter",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "newsletter"]
+						},
+						"description": "Subscribe an email address to the newsletter. Returns 422 if the email is already subscribed."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

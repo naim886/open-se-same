@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+    <url>
+    <loc>https://open-se-same.test</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/products</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/blogs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/track-order</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/category/preserved-rose</loc>
+    <lastmod>2026-03-02T00:56:29+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/category/baby-toys</loc>
+    <lastmod>2025-11-15T00:17:09+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://open-se-same.test/product/sexy-style-lingerie-two-piece-dress-set</loc>
+    <lastmod>2026-03-02T00:57:18+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/sexy-style-lingerie-two-piece-dress-set_image_69a48c0e0a0f85.11579723.webp</image:loc>
+    <image:caption>sexy-style-lingerie-two-piece-dress-set</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-pastel-yellow-preserved-rose</loc>
+    <lastmod>2026-03-02T01:22:02+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/SGVB5lJq8EFhW6H2JZ7YzWWF0MnhTctzS2ekZC7S.webp</image:loc>
+    <image:caption>real-pastel-yellow-preserved-rose</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-rainbow-preserved-rose</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/Ku4yNgq3paXQMAdQuoRah5A2FIilCqw6pTkL6mZi.webp</image:loc>
+    <image:caption>real-rainbow-preserved-rose</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-multi-blue-white-preserved-rose</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/6RXuPXTT0jXMWEnnPUVXgHiJhKhUxljzl3iqVohT.webp</image:loc>
+    <image:caption>real-multi-blue-white-preserved-rose</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-rose-pink-preserved-rose</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/Ak6YgPm7Vvllud8pZmXqxLq6B9wjfhY3aeojrMbt.webp</image:loc>
+    <image:caption>real-rose-pink-preserved-rose</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-lavender-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/A9Uz8LVvhskbycxVzDPmXrN6b18Y37oLkZWqtMyf.webp</image:loc>
+    <image:caption>real-lavender-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-yellow-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/uOwabPF1ijJPyA5yKlLbOU6Y1jComHVTp1pgyH87.webp</image:loc>
+    <image:caption>real-yellow-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-pink-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/b4TEdiUbzV32YtZE1DPDFTih2g625ZFxaddOfKpj.webp</image:loc>
+    <image:caption>real-pink-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-purple-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-03-02T01:22:01+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/xSarj9NC5llU3FeN5zaSxk6TJ2lB16qblEuL0knH.webp</image:loc>
+    <image:caption>real-purple-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-blue-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-01-31T00:03:02+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/stUxh5CBBjjPmpOLT0XzrpCqmL7vmOg8aW5xMuDu.webp</image:loc>
+    <image:caption>real-blue-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-white-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-02-27T23:03:14+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/w2YTC9ZaV3BIh9g2rWOGRvMCkCHRNBUBYWSfmRwA.webp</image:loc>
+    <image:caption>real-white-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/real-black-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-02-28T14:55:52+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/c8IoBwyXaOz57J2LFMUVCw84rYN66QKJnTwrDZ7W.webp</image:loc>
+    <image:caption>real-black-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/product/red-real-preserved-rose-best-preserved-rose-in-bangladesh</loc>
+    <lastmod>2026-01-31T00:14:10+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/products/primary/1KOQrKJ2fjj3HrFpsYgj3LHffQfs8PBZgekhX6jV.webp</image:loc>
+    <image:caption>red-real-preserved-rose-best-preserved-rose-in-bangladesh</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/blog/the-definitive-guide-to-hiring-an-expert-full-stack-developer-bangladesh-in-2026</loc>
+    <lastmod>2026-02-28T16:05:20+06:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+    <image:loc>https://open-se-same.test/storage/uploads/blogs/mPQvlm5QPLAXd3U33BMBKj9ZzugF94AMEoSVEUYi.jpg</image:loc>
+    <image:caption>The Definitive Guide to Hiring an Expert Full Stack Developer Bangladesh in 2026</image:caption>
+</image:image>
+        </url>
+    <url>
+    <loc>https://open-se-same.test/page/about-us</loc>
+    <lastmod>2026-02-28T15:38:26+06:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+            </url>
+</urlset>

@@ -1,0 +1,94 @@
+@extends('layouts.app')
+@section('content')
+    {{html()->form('POST', route('register'))->acceptsFiles()->open()}}
+    <div class="mb-2 position-relative">
+        {{html()->label('Name', 'name')}}
+        <x-required/>
+        {{html()->text('name')->placeholder('Enter your name')->class('form-control')}}
+        @error('name')
+        <p class="validation-message">{{$message}}</p>
+        @enderror
+    </div>
+    <div class="mb-2 position-relative">
+        {{html()->label('Phone', 'phone')}}
+        <x-required/>
+        {{html()->text('phone')->placeholder('Enter your phone')->class('form-control')}}
+        @error('phone')
+        <p class="validation-message">{{$message}}</p>
+        @enderror
+    </div>
+    <div class="mb-2 position-relative">
+        {{html()->label('Email', 'email')}}
+        <x-required/>
+        {{html()->text('email')->placeholder('Enter your email')->class('form-control')}}
+        @error('email')
+        <p class="validation-message">{{$message}}</p>
+        @enderror
+    </div>
+    <div class="mb-4 position-relative">
+        {{html()->label('Password', 'password')}}
+        <x-required/>
+        <div class="input-group">
+            {{html()->password('password')->placeholder('Enter your password')->class('form-control')}}
+            <div class="input-group-text" id="toggle-password">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+        </div>
+        @error('password')
+        <p class="validation-message">{{$message}}</p>
+        @enderror
+    </div>
+    <div class="row mb-2 align-items-center">
+        <div class="col-8">
+            {{html()->label('Profile Photo (300X300px) (Optional)', 'photo')}}
+            {{html()->file('photo')->class('form-control')}}
+        </div>
+        <div class="col-4">
+            <div class="profile-photo-display-area">
+                <img src="" alt="" style="display: none">
+            </div>
+        </div>
+        <div class="col-12">
+            @error('photo')
+            <p class="validation-message">{{$message}}</p>
+            @enderror
+        </div>
+    </div>
+    <div class="mb-2 text-center">
+        {{html()->checkbox('remember_me')->class('form-check-input')}}
+        {{html()->label('Remember me', 'remember_me')}}
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-grid">
+                <button type="submit" class="btn theme-button-outline"><i class="fa fa-plus"></i> Register</button>
+            </div>
+        </div>
+    </div>
+    {{html()->form()->close()}}
+    <div class="mt-2 text-center">
+        <p>Already have account? <a href="{{route('login')}}">Login</a></p>
+    </div>
+@endsection
+@push('scripts')
+    <script>
+        $('#photo').on('change', function () {
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                $('.profile-photo-display-area img').attr('src', e.target.result).css('display', 'block');
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        $('#toggle-password').on('click', function () {
+            let input = $('#password');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                $(this).children('i').removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                input.attr('type', 'password');
+                $(this).children('i').removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+    </script>
+@endpush

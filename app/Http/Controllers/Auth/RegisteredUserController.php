@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CustomerRegistrationRequest;
+use App\Mail\RegistrationWelcomeMail;
+use App\Models\User;
+use App\Rules\PhoneRule;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+
+class RegisteredUserController extends Controller
+{
+    /**
+     * Display the registration view.
+     */
+    final public function create(): View
+    {
+        $cms_content = [
+            'page_title' => 'Register',
+        ];
+        return view('auth.register', compact('cms_content'));
+    }
+
+    /**
+     * Handle an incoming registration request.
+     *
+     */
+    final public function store(CustomerRegistrationRequest $request): RedirectResponse
+    {
+        $user = (new User())->storeUser($request);
+        $user?->assignRole('Registered Customer');
+        // Activate immediately so customers can re-login without admin approval.
+        $user?->update(['status' => \App\Models\User::STATUS_ACTIVE]);
+        event(new Registered($user));
+        // Registration welcome email is disabled.
+        // if ($user->email) {
+        //     Mail::to($user->email)->send(new RegistrationWelcomeMail($user->name));
+        // }
+        Auth::login($user);
+        return redirect(route('customer.dashboard', absolute: false));
+    }
+}

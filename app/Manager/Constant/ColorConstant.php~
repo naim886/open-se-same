@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Manager\Constant;
+
+use App\Models\Expense;
+
+class ColorConstant
+{
+    public const EXPENSE_STATUS_COLOR = [
+        Expense::STATUS_APPROVED => '#32e600',
+        Expense::STATUS_PENDING => '#FFC107',
+        Expense::STATUS_REJECTED => '#FFC107',
+    ];
+}

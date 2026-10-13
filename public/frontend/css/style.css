@@ -1,0 +1,66 @@
+:root{
+    --primary-color: #027B50;
+    --secondary-color: #FFCF2F;
+    --color-white: #ffffff;
+    --headling-font:  "Kanit", sans-serif;
+    --body-font:"Josefin Sans", sans-serif;
+    --theme-bg: linear-gradient(to right, #015c3c, #027B50, #015c3c);
+}
+body{
+    font-family: "Josefin Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p,ul,li {
+    margin: 0;
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+
+.brand-navbar{
+    background: var(--theme-bg);
+}
+.nav-link {
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+}
+.nav-link:after{
+    content: '';
+    text-align: center;
+    display: block;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-white);
+    transition: all 0.3s ease-in-out;
+}
+.nav-link:hover {
+    opacity: 0.8!important;
+    color: var(--color-white);
+}
+.nav-link:hover:after{
+    content: '';
+    width: 100%;
+}
+.nav-link.active {
+    color: var(--color-white)!important;
+    font-weight: 700;
+}
+.nav-link.active:after{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-white);
+}
+.user-area{
+    margin-top: 7px;
+}
+.user-area i{
+    color: var(--color-white);
+    font-size: 20px;
+    margin-left: 10px;
+}
+

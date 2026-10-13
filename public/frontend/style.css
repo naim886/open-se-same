@@ -1,0 +1,136 @@
+body {
+    font-family: "Josefin Sans", sans-serif;
+    background: linear-gradient(135deg, #f8d5d4, #e8babc, #d8a0a3) fixed center;
+    color: #4a4a4a;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+h1, h2, h3, h4, h5, h6, p,ul,li {
+    margin: 0;
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.85); /* Make background slightly more transparent */
+    padding: 50px 60px; /* Increase padding */
+    border-radius: 10px; /* Slightly larger radius */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Enhance shadow */
+    max-width: 650px; /* Slightly wider */
+    border: 1px solid rgba(0, 0, 0, 0.05); /* Add a subtle border */
+    animation: fadeIn 1s ease-out; /* Apply fade-in animation */
+}
+
+.logo {
+    max-width: 300px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 20px;
+    /* Add space below the log
+   }
+
+   h1 {
+       font-family: 'Li Sabbir Ashalota 1 Unicode', serif; /* Apply custom font */
+    color: #230102; /* Brand color 1 */
+    font-size: 3em; /* Larger font size */
+    font-weight: 700;
+    margin-bottom: 15px; /* Adjust spacing */
+}
+
+h2 {
+    font-family: 'Li Sabbir Ashalota 1 Unicode', serif; /* Apply custom font */
+    color: #a62b26; /* Brand color 2 */
+    font-size: 1.8em; /* Adjust size */
+    font-weight: 400;
+    margin-bottom: 30px; /* Increase spacing */
+    letter-spacing: 1px; /* Add letter spacing */
+}
+
+p {
+    color: #4a4a4a; /* Match body text color */
+    font-size: 1.1em; /* Slightly larger text */
+    line-height: 1.7; /* Increase line height for readability */
+    font-weight: 300; /* Lighter weight */
+    margin-bottom: 30px; /* Add space below paragraph */
+}
+
+
+.signup-form input[type="email"] {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: calc(100% - 130px); /* Adjust width considering button */
+    margin-right: 10px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in element's total width */
+}
+
+.signup-form input[type="email"]:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #a62b26; /* Optional: Add a subtle border color change on focus */
+}
+
+.signup-form button[type="submit"] {
+    padding: 12px 20px;
+    background-color: #230102; /* Brand color 1 */
+    color: white;
+    border: 2px solid #a62b26; /* Add border using Brand color 2 */
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Li Sabbir Ashalota 1 Unicode', sans-serif;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.signup-form button[type="submit"]:hover {
+    background-color: #c0392b; /* Slightly brighter version of Brand color 2 on hover */
+    border-color: #c0392b; /* Match border color on hover */
+}
+
+/* Social Links Styles */
+.social-links {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee; /* Separator line */
+}
+
+.social-links p {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #555;
+}
+
+.social-links a {
+    color: #a62b26; /* Brand color 2 */
+    text-decoration: none; /* Ensure no underline on icons */
+    margin: 0 15px; /* Increase spacing between icons */
+    font-size: 1.5em; /* Make icons larger */
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #230102; /* Brand color 1 on hover */
+    transform: scale(1.1); /* Slightly enlarge icon on hover */
+}
+
+.swiper-wrapper{
+    height: 550px!important;
+}

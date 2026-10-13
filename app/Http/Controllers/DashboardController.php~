@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class DashboardController extends Controller
+{
+    final public function index()
+    {
+        dd('woks');
+//        return view('dashboard.index');
+    }
+}

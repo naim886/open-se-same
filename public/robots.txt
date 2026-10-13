@@ -1,0 +1,36 @@
+# Allow Google's crawlers full access (required by Google Merchant Center)
+# https://support.google.com/merchants/answer/12467444
+User-agent: Googlebot
+Disallow:
+
+User-agent: Googlebot-Image
+Disallow:
+
+# All other bots
+User-agent: *
+
+# Block admin / auth areas
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /password/
+Disallow: /vendor/
+
+# Block internal API routes
+Disallow: /api/
+
+# Allow product images
+Allow: /storage/uploads/products/
+
+# Block the rest of storage
+Disallow: /storage/
+
+# Allow static assets
+Allow: /images/
+Allow: /css/
+Allow: /js/
+Allow: /frontend/
+
+# Sitemap location
+Sitemap: https://opensesame.com/sitemap.xml
+

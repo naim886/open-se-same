@@ -1,0 +1,192 @@
+:root{
+    --brand-color: #960000;
+    --color-white: #ffffff;
+}
+body {
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Momo Trust Display", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+    padding: 0;
+}
+
+p, a, li, ul, ol {
+    font-family: "Momo Trust Sans", sans-serif;
+}
+
+.nav-bar{
+    background-image: linear-gradient(to right, rgba(150, 0, 0, 0.1), rgba(255, 255, 255, 1), rgba(150, 0, 0, 0.1));
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 8px 16px;
+}
+.nav-bar .logo{
+    max-width: 120px;
+}
+
+.nav-bar .right-area{
+    text-align: right;
+}
+
+.nav-bar .right-area a{
+    color: var(--brand-color);
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    font-size: 14px;
+    margin-left: 10px;
+}
+.nav-bar .right-area a:hover{
+    color: black;
+}
+.nav-bar .contact-text{
+    font-size: 14px;
+    text-align: right;
+    color: var(--brand-color);
+}
+
+.nav-bar .search-area{
+    width: 100%;
+    position: relative;
+    border: 1px solid var(--brand-color);
+    border-radius: 24px;
+}
+.nav-bar .search-area input{
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+.nav-bar .search-area button{
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--brand-color);
+    color: var(--color-white);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 50%;
+}
+.nav-bar .search-area button:hover{
+    background: #ff0000;
+    color: black;
+}
+
+.nav{
+    background-image: linear-gradient(to right, var(--brand-color), rgb(220, 0, 0), var(--brand-color));
+    padding:16px;
+    margin-top: 8px;
+    text-align: center;
+}
+.nav a{
+    color: var(--color-white);
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    padding: 0 10px;
+    font-weight: 600;
+}
+.nav a:hover{
+    color: silver;
+}
+.nav a.active{
+    color: silver;
+    font-weight: 700;
+}
+
+.category-card{
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+.category-card img{
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+.category-card:hover img{
+    transform: scale(1.1);
+}
+.category-card:hover h3{
+    color: var(--brand-color);
+    background: rgba(255, 255, 255, 0.5);
+    top: 45%;
+}
+
+
+/* Remove old instant border expansion (was ::before with border-width transition) */
+/* New sequential drawing from top-left around all sides */
+.category-card::before,
+.category-card::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+/* First half: top then left -> draws from top-left across top, then down left side */
+.category-card::before {
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-top: 3px solid var(--brand-color);
+    border-left: 3px solid var(--brand-color);
+    animation: none;
+    border-radius: 4px;
+}
+
+/* Second half: right then bottom -> starts after first finishes */
+.category-card::after {
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-right: 3px solid var(--brand-color);
+    border-bottom: 3px solid var(--brand-color);
+    animation: none;
+    border-radius: 4px;
+}
+
+/* Replace keyframes to simultaneous growth (remove intermediate 50%) */
+@keyframes drawTL {
+    0% { width: 0; height: 0; }
+    100% { width: 100%; height: 100%; }
+}
+
+@keyframes drawBR {
+    0% { width: 0; height: 0; }
+    100% { width: 100%; height: 100%; }
+}
+
+.category-card:hover::before {
+    animation: drawTL 0.5s ease forwards;
+}
+.category-card:hover::after {
+    animation: drawBR 0.5s ease forwards; /* starts after first finishes */
+}
+
+.category-card h3{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform:  translate( -50%, -50%);
+    width: 98%;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--color-white);
+    text-align: center;
+    z-index: 2;
+    transition: all 0.3s ease-in-out;
+}
