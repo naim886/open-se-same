@@ -564,7 +564,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         <div class="row g-4 footer-top">
             <!-- Brand & Contact -->
             <div class="col-lg-4 col-md-12">
-                <img src="{{ asset('images/logo-web.png') }}" alt="Open Se Same" class="footer-logo mb-3" width="175" height="78"
+                <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="footer-logo mb-3" width="175" height="71"
                      loading="lazy" onerror="this.style.display='none'">
                 <p class="footer-desc">Shop your favourite products at the best prices. Quality products & fast delivery is our promise.</p>
                 <ul class="footer-contact-block">
