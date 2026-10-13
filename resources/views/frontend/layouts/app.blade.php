@@ -85,6 +85,7 @@
             --primary-gradient: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
             --primary-gradient-rev: linear-gradient(135deg, #04A871 0%, #027B50 55%, #015C3C 100%);
             --hero-gradient: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%);
+            --secondary: #FFCF2F;
             --text-dark: #10211B;
             --text-body: #33413C;
             --text-muted: #767676;
@@ -117,6 +118,75 @@
 
         img {
             max-width: 100%
+        }
+
+        .top-notice-bar {
+            background: #015C3C;
+            color: rgba(255, 255, 255, .9);
+            padding: 7px 0;
+            font-size: 12.5px;
+            letter-spacing: .2px
+        }
+
+        .top-notice-bar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px
+        }
+
+        .top-bar-left, .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            white-space: nowrap
+        }
+
+        .top-notice-bar a {
+            color: rgba(255, 255, 255, .9)
+        }
+
+        .top-notice-bar a:hover {
+            color: #FFCF2F
+        }
+
+        .top-notice-bar i {
+            color: #FFCF2F;
+            margin-right: 3px
+        }
+
+        .top-bar-sep {
+            color: rgba(255, 255, 255, .3)
+        }
+
+        .top-bar-social {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .top-bar-social a {
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .12);
+            font-size: 11px
+        }
+
+        .top-bar-social a i {
+            margin-right: 0;
+            color: #fff
+        }
+
+        .top-bar-social a:hover {
+            background: #FFCF2F
+        }
+
+        .top-bar-social a:hover i {
+            color: #015C3C
         }
 
         .main-header {
@@ -350,6 +420,45 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 </head>
 <body>
 
+<!-- Top Notice Bar -->
+<div class="top-notice-bar d-none d-lg-block">
+    <div class="container">
+        <div class="top-bar-left">
+            <a href="tel:+8801886870406"><i class="fas fa-phone-alt" aria-hidden="true"></i> 01886870406</a>
+            <span class="top-bar-sep">|</span>
+            <span><i class="fas fa-truck" aria-hidden="true"></i> Islandwide Delivery Across Bangladesh</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="top-bar-social">
+                <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="https://wa.me/+8801886870406" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                <a href="https://m.me/opensesame1" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
+            </div>
+            <span class="top-bar-sep">|</span>
+            <a href="{{ route('shop.track-order') }}"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Track Order</a>
+            <span class="top-bar-sep">|</span>
+            @auth
+                @if(auth()->user()->hasRole('Registered Customer'))
+                    <a href="{{ route('customer.dashboard') }}">
+                        @if(auth()->user()->photo)
+                            <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . auth()->user()->photo) }}"
+                                 style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-2px;margin-right:4px;"
+                                 alt="">
+                        @else
+                            <i class="fas fa-user-circle" aria-hidden="true"></i>
+                        @endif
+                        {{ Str::words(auth()->user()->name, 1, '') }}
+                    </a>
+                @endif
+            @else
+                <a href="{{ route('login') }}"><i class="fas fa-user" aria-hidden="true"></i> Login</a>
+                <span class="top-bar-sep">/</span>
+                <a href="{{ route('register') }}">Register</a>
+            @endauth
+        </div>
+    </div>
+</div>
+
 <!-- Main Header -->
 <header class="main-header sticky-top">
     <div class="container">
@@ -382,25 +491,6 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                         <span class="cart-badge" id="cart-count">{{ count(session('cart', [])) }}</span>
                         <span class="d-none d-lg-inline ms-1">Cart</span>
                     </a>
-                    @auth
-                        @if(auth()->user()->hasRole('Registered Customer'))
-                        <a href="{{ route('customer.dashboard') }}" class="whatsapp-btn d-none d-lg-inline-flex" style="background:var(--primary);gap:6px;">
-                            @if(auth()->user()->photo)
-                                <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . auth()->user()->photo) }}"
-                                     style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.5);"
-                                     alt="">
-                            @else
-                                <i class="fas fa-user-circle"></i>
-                            @endif
-                            {{ Str::words(auth()->user()->name, 1, '') }}
-                        </a>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="whatsapp-btn d-none d-lg-inline-flex" style="background:var(--primary);">
-                            <i class="fas fa-user"></i> Login
-                        </a>
-                    @endauth
-
                 </div>
             </div>
         </div>
