@@ -120,8 +120,7 @@ echo Schema::breadcrumbList()->itemListElement([
                         <div style="font-weight:600; font-size:13px; color:var(--text-dark); margin-bottom:3px;">Delivery Info</div>
                         <p style="color:var(--text-muted); font-size:13px; margin:0; line-height:1.7;">
                             Inside Dhaka: <strong style="color:var(--text-dark);">৳70</strong><br>
-                            Outside Dhaka: <strong style="color:var(--text-dark);">৳120</strong><br>
-                            Express (Dhaka): <strong style="color:var(--text-dark);">৳150</strong>
+                            Outside Dhaka: <strong style="color:var(--text-dark);">৳120</strong>
                         </p>
                     </div>
                 </div>

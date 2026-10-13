@@ -65,15 +65,6 @@ echo Schema::product()
 
 <section class="checkout-section">
     <div class="container">
-        <!-- Free Delivery Promo Banner -->
-        <div class="mb-4 p-3 rounded-3 d-flex align-items-center gap-3"
-             style="background:linear-gradient(135deg,#015C3C,#027B50); color:#fff; border:2px solid rgba(255,255,255,0.2); box-shadow:0 4px 18px rgba(1,92,60,0.3);">
-            <span style="font-size:32px; flex-shrink:0;">🚚</span>
-            <div>
-                <div style="font-weight:800; font-size:15px; letter-spacing:0.3px;">ফ্রি ডেলিভারি অফার!</div>
-                <div style="font-size:13px; margin-top:3px; opacity:0.92;">৩টি প্রোডাক্ট অর্ডার করলে ডেলিভারি চার্জ সম্পূর্ণ <strong>ফ্রী</strong>!</div>
-            </div>
-        </div>
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="row g-4">
@@ -212,7 +203,7 @@ echo Schema::product()
                                         <label class="form-label">Quantity</label>
                                         <div class="qty-control">
                                             <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
-                                            <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $product->stock > 0 ? $product->stock : 99 }}" class="qty-input" onchange="checkFreeEligibility()">
+                                            <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $product->stock > 0 ? $product->stock : 99 }}" class="qty-input" onchange="recalcTotal()">
                                             <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
                                         </div>
                                     </div>
@@ -226,65 +217,27 @@ echo Schema::product()
                                     <div class="col-12">
                                         <label class="form-label fw-bold">Delivery Method <span class="text-danger">*</span></label>
                                         <div class="row g-2">
-                                            <div class="col-6 col-sm-4">
+                                            <div class="col-6">
                                                 <label class="delivery-option-card w-100 active" id="qo-inside">
                                                     <input type="radio" name="_qo_delivery" value="70" checked onchange="setQODelivery(70, 1)">
                                                     <div>
+                                                        <i class="fas fa-location-dot delivery-option-icon"></i>
                                                         <div style="font-weight:700; font-size:12px;">Inside Dhaka</div>
                                                         <div style="font-size:11px; color:var(--primary-dark);">৳70</div>
                                                     </div>
                                                 </label>
                                             </div>
-                                            <div class="col-6 col-sm-4">
+                                            <div class="col-6">
                                                 <label class="delivery-option-card w-100" id="qo-outside">
                                                     <input type="radio" name="_qo_delivery" value="120" onchange="setQODelivery(120, 2)">
                                                     <div>
+                                                        <i class="fas fa-truck-fast delivery-option-icon"></i>
                                                         <div style="font-weight:700; font-size:12px;">Outside Dhaka</div>
                                                         <div style="font-size:11px; color:var(--primary-dark);">৳120</div>
                                                     </div>
                                                 </label>
                                             </div>
-                                            <div class="col-6 col-sm-4">
-                                                <label class="delivery-option-card w-100" id="qo-express">
-                                                    <input type="radio" name="_qo_delivery" value="150" onchange="setQODelivery(150, 3)">
-                                                    <div>
-                                                        <div style="font-weight:700; font-size:11.5px; display:flex; align-items:center; gap:2px;">
-                                                            <i class="fas fa-bolt" style="color:var(--primary-dark);"></i> Express
-                                                        </div>
-                                                        <div style="font-size:10px; color:var(--text-muted);">ঢাকা / ১১টার আগে</div>
-                                                        <div style="font-size:11px; color:var(--primary-dark);">৳150</div>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                            <div class="col-6 col-sm-6">
-                                                <label class="delivery-option-card w-100" id="qo-super-express">
-                                                    <input type="radio" name="_qo_delivery" value="se" onchange="setQODelivery(0, 4)">
-                                                    <div>
-                                                        <div style="font-weight:700; font-size:11.5px; display:flex; align-items:center; gap:2px;">
-                                                            <i class="fas fa-rocket" style="color:var(--primary-dark);"></i> Super Express
-                                                            <span style="background:var(--primary-gradient); color:#fff; font-size:9px; padding:1px 4px; border-radius:6px;">URGENT</span>
-                                                        </div>
-                                                        <div style="font-size:10px; color:var(--text-muted);">ঢাকা / চার্জ কুরিয়ারকে</div>
-                                                        <div style="font-size:11px; color:var(--primary-dark);">কুরিয়ারকে</div>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                            <div class="col-6 col-sm-6">
-                                                <label class="delivery-option-card w-100" id="qo-free" style="opacity:0.55; cursor:not-allowed;">
-                                                    <input type="radio" name="_qo_delivery" value="free" id="qo-free-radio" disabled onchange="setQODelivery(0, 5)">
-                                                    <div>
-                                                        <div style="font-weight:700; font-size:11.5px; display:flex; align-items:center; gap:2px;">
-                                                            <i class="fas fa-gift" style="color:#28a745;"></i> Free Delivery
-                                                        </div>
-                                                        <div id="qo-free-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;">মোট ৩টি কোয়ান্টিটি হলে ফ্রী।</div>
-                                                        <div style="font-size:11px; font-weight:700; color:#28a745;">ফ্রি!</div>
-                                                    </div>
-                                                </label>
-                                            </div>
                                         </div>
-                                        {{-- Delivery Notice --}}
-                                        <div id="qo-delivery-notice" class="mt-2 p-2 rounded"
-                                             style="display:none; background:rgba(1,92,60,0.06); border:1px solid rgba(1,92,60,0.2); font-size:12.5px; color:var(--text-dark); line-height:1.7;"></div>
                                     </div>
 
                                     <div class="col-12">
@@ -314,32 +267,25 @@ echo Schema::product()
                                     <!-- Payment Method -->
                                     <div class="col-12">
                                         <label class="form-label fw-bold">Payment Method</label>
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <label class="delivery-option-card w-100 active" style="cursor:pointer;">
-                                                    <input type="radio" name="payment_method" value="cod" checked>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <i class="fas fa-money-bill-wave" style="font-size:18px; color:#28a745;"></i>
-                                                        <div>
-                                                            <div style="font-weight:700; font-size:12.5px;">Cash on Delivery</div>
-                                                            <div style="font-size:11px; color:var(--text-muted);">Pay when you receive</div>
-                                                        </div>
-                                                        <i class="fas fa-check-circle text-success ms-auto" style="font-size:16px;"></i>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="delivery-option-card w-100" style="opacity:0.5; cursor:not-allowed;" title="Coming soon">
-                                                    <input type="radio" name="payment_method" value="online" disabled>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <i class="fas fa-credit-card" style="font-size:18px; color:#0d6efd;"></i>
-                                                        <div>
-                                                            <div style="font-weight:700; font-size:12.5px;">Online Payment</div>
-                                                            <div style="font-size:11px; color:var(--text-muted);">Coming soon</div>
-                                                        </div>
-                                                    </div>
-                                                </label>
-                                            </div>
+                                        <div class="payment-method-list">
+                                            <label class="payment-method-card active">
+                                                <input type="radio" name="payment_method" value="cod" checked>
+                                                <div class="payment-method-icon"><i class="fas fa-money-bill-wave"></i></div>
+                                                <div class="payment-method-text">
+                                                    <div class="payment-method-title">Cash on Delivery</div>
+                                                    <div class="payment-method-sub">Pay when you receive</div>
+                                                </div>
+                                                <i class="fas fa-check-circle payment-method-check"></i>
+                                            </label>
+                                            <label class="payment-method-card disabled" title="Coming soon">
+                                                <input type="radio" name="payment_method" value="online" disabled>
+                                                <div class="payment-method-icon"><i class="fas fa-credit-card"></i></div>
+                                                <div class="payment-method-text">
+                                                    <div class="payment-method-title">Online Payment</div>
+                                                    <div class="payment-method-sub">Card, bKash, Nagad &amp; more</div>
+                                                </div>
+                                                <span class="payment-method-badge">Coming Soon</span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -361,6 +307,8 @@ echo Schema::product()
 
 @section('extra_js')
 <script>
+var deliveryCharge = 70;
+
 function qoFillAddress(sel) {
     var opt = sel.options[sel.selectedIndex];
     if (!opt || !opt.value) return;
@@ -482,12 +430,6 @@ updateQOVariationUI();
 @else
 var unitPrice = {{ (float)($product->sale_price ?? $product->price ?? 0) }};
 @endif
-var deliveryCharge = 70;
-
-var qoDeliveryNotices = {
-    3: 'আপনি যদি সকাল ১১টার মধ্যে এক্সপ্রেস অর্ডার প্লেস না করেন তাহলে সেটা রেগুলার ডেলিভারিতে যাবে। বিঃ দ্রঃ - এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।',
-    4: 'সুপার এক্সপ্রেস ডেলিভারিতে ডেলিভারি চার্জ যেটা আসবে সেটা আপনাকে পে করতে হবে ডেলিভারিম্যান কে।  এবং প্রোডাক্টের মূল্য আগে পরিশোধ করতে হবে।  বিঃ দ্রঃ - সুপার এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।'
-};
 
 function changeQty(delta) {
     var input = document.getElementById('qtyInput');
@@ -497,7 +439,7 @@ function changeQty(delta) {
     var maxVal = parseInt(input.max);
     if (maxVal && val > maxVal) val = maxVal;
     input.value = val;
-    checkFreeEligibility();
+    recalcTotal();
 }
 
 function setQODelivery(charge, locationVal) {
@@ -507,68 +449,17 @@ function setQODelivery(charge, locationVal) {
     var ds  = document.getElementById('deliveryShow');
     if (dh)  dh.value  = charge;
     if (dlh) dlh.value = locationVal;
-    if (ds) {
-        if (locationVal === 4) ds.textContent = 'কুরিয়ারকে পেমেন্ট';
-        else if (locationVal === 5) ds.textContent = 'ফ্রি';
-        else ds.textContent = '৳' + charge;
-    }
+    if (ds)  ds.textContent = '৳' + charge;
 
-    ['qo-inside','qo-outside','qo-express','qo-super-express','qo-free'].forEach(function(id) {
+    ['qo-inside','qo-outside'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.classList.remove('active');
     });
-    var idMap = {1:'qo-inside', 2:'qo-outside', 3:'qo-express', 4:'qo-super-express', 5:'qo-free'};
+    var idMap = {1:'qo-inside', 2:'qo-outside'};
     var activeEl = document.getElementById(idMap[locationVal]);
     if (activeEl) activeEl.classList.add('active');
 
-    // Show / hide notice
-    var notice = document.getElementById('qo-delivery-notice');
-    if (notice) {
-        if (qoDeliveryNotices[locationVal]) {
-            notice.innerHTML = '<i class="fas fa-info-circle me-1" style="color:var(--primary-dark);"></i> ' + qoDeliveryNotices[locationVal];
-            notice.style.display = '';
-        } else {
-            notice.innerHTML = '';
-            notice.style.display = 'none';
-        }
-    }
     recalcTotal();
-}
-
-function checkFreeEligibility() {
-    var input = document.getElementById('qtyInput');
-    var qty = input ? (parseInt(input.value) || 1) : 1;
-    var freeCard  = document.getElementById('qo-free');
-    var freeRadio = document.getElementById('qo-free-radio');
-    var freeHint  = document.getElementById('qo-free-hint');
-    var dlh = document.getElementById('deliveryLocationHidden');
-    var currentLoc = dlh ? parseInt(dlh.value) : 1;
-
-    if (qty >= 3) {
-        if (freeCard)  { freeCard.style.opacity = '1'; freeCard.style.cursor = 'pointer'; }
-        if (freeRadio) { freeRadio.disabled = false; }
-        if (freeHint)  freeHint.textContent = '✅ মোট ' + qty + 'টি কোয়ান্টিটি!';
-        // Auto-select free delivery and show notification only on transition
-        if (currentLoc !== 5) {
-            if (freeRadio) { freeRadio.checked = true; }
-            setQODelivery(0, 5);
-            if (typeof showFreeDeliveryUnlocked === 'function') showFreeDeliveryUnlocked();
-        } else {
-            recalcTotal();
-        }
-    } else {
-        if (freeCard)  { freeCard.style.opacity = '0.55'; freeCard.style.cursor = 'not-allowed'; }
-        if (freeRadio) { freeRadio.disabled = true; freeRadio.checked = false; }
-        if (freeHint)  freeHint.textContent = 'মোট ৩টি কোয়ান্টিটি হলে ফ্রী।';
-        // If free was selected, switch back to Inside Dhaka
-        if (currentLoc === 5) {
-            var insideRadio = document.querySelector('#qo-inside input[type=radio]');
-            if (insideRadio) { insideRadio.checked = true; }
-            setQODelivery(70, 1);
-        } else {
-            recalcTotal();
-        }
-    }
 }
 
 function recalcTotal() {

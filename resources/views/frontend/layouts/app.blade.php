@@ -315,7 +315,7 @@
         }
 
         .category-nav-link {
-            color: rgba(255, 255, 255, .85);
+            color: #fff;
             padding: 12px 18px;
             font-size: 13.5px;
             font-weight: 500;
@@ -326,8 +326,16 @@
 
         .category-nav-link:hover, .category-nav-link.active {
             color: #fff;
-            background: rgba(255, 255, 255, .12);
-            border-bottom-color: rgba(255, 255, 255, .9)
+            background: rgba(255, 255, 255, .15);
+            border-bottom-color: #FFCF2F
+        }
+
+        /* Browsers give :visited links extra specificity over the base
+           `a:visited { color: inherit }` rule, which otherwise makes
+           already-visited menu links render in the dark body text color
+           (invisible against the green nav background). Force white back. */
+        .category-nav-link:visited {
+            color: #fff
         }
 
         .hero-swiper {
@@ -721,105 +729,6 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         }, 3000);
     }
 
-    // ─── Free Delivery Promo Banner ───────────────────────────────────
-    function showFreeDeliveryPromo() {
-        var existing = document.getElementById('free-delivery-promo-banner');
-        if (existing) {
-            existing.parentNode.removeChild(existing);
-        }
-        var banner = document.createElement('div');
-        banner.id = 'free-delivery-promo-banner';
-        banner.innerHTML =
-            '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
-            + '<span style="font-size:22px;">🚚</span>'
-            + '<div>'
-            + '<div style="font-weight:800;font-size:14px;letter-spacing:0.3px;">ফ্রি ডেলিভারি অফার!</div>'
-            + '<div style="font-size:12.5px;margin-top:2px;opacity:0.92;">৩টি প্রোডাক্ট অর্ডার করলে ডেলিভারি চার্জ সম্পূর্ণ <strong>ফ্রী</strong>!</div>'
-            + '</div>'
-            + '<button onclick="this.closest(\'#free-delivery-promo-banner\').remove()" style="margin-left:auto;background:rgba(255,255,255,0.25);border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;color:#fff;line-height:1;flex-shrink:0;">×</button>'
-            + '</div>';
-        Object.assign(banner.style, {
-            position: 'fixed',
-            bottom: '80px',
-            left: '50%',
-            transform: 'translateX(-50%) translateY(20px)',
-            zIndex: '99999',
-            background: 'linear-gradient(135deg, #015C3C, #027B50)',
-            color: '#fff',
-            padding: '14px 20px',
-            borderRadius: '14px',
-            boxShadow: '0 8px 32px rgba(1,92,60,0.35)',
-            maxWidth: '420px',
-            width: 'calc(100% - 32px)',
-            opacity: '0',
-            transition: 'opacity 0.4s, transform 0.4s',
-            border: '2px solid rgba(255,255,255,0.25)',
-        });
-        document.body.appendChild(banner);
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                banner.style.opacity = '1';
-                banner.style.transform = 'translateX(-50%) translateY(0)';
-            });
-        });
-        setTimeout(function () {
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateX(-50%) translateY(20px)';
-            setTimeout(function () {
-                if (banner.parentNode) banner.parentNode.removeChild(banner);
-            }, 500);
-        }, 6000);
-    }
-
-    function showFreeDeliveryUnlocked() {
-        var existing = document.getElementById('free-delivery-promo-banner');
-        if (existing) {
-            existing.parentNode.removeChild(existing);
-        }
-        var banner = document.createElement('div');
-        banner.id = 'free-delivery-promo-banner';
-        banner.innerHTML =
-            '<div style="display:flex;align-items:center;gap:12px;">'
-            + '<span style="font-size:30px;flex-shrink:0;">🎉</span>'
-            + '<div>'
-            + '<div style="font-weight:800;font-size:15px;letter-spacing:0.3px;">ফ্রি ডেলিভারি আনলক!</div>'
-            + '<div style="font-size:13px;margin-top:3px;opacity:0.95;">৩টি প্রোডাক্ট অর্ডার করার জন্য আপনি পাচ্ছেন <strong>ফ্রি ডেলিভারি</strong> 🚚</div>'
-            + '</div>'
-            + '<button onclick="this.closest(\'#free-delivery-promo-banner\').remove()" style="margin-left:auto;background:rgba(255,255,255,0.25);border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:15px;color:#fff;line-height:1;flex-shrink:0;">×</button>'
-            + '</div>';
-        Object.assign(banner.style, {
-            position: 'fixed',
-            bottom: '80px',
-            left: '50%',
-            transform: 'translateX(-50%) translateY(20px)',
-            zIndex: '99999',
-            background: 'linear-gradient(135deg, #015C3C, #027B50)',
-            color: '#fff',
-            padding: '16px 22px',
-            borderRadius: '16px',
-            boxShadow: '0 10px 40px rgba(1,92,60,0.45)',
-            maxWidth: '440px',
-            width: 'calc(100% - 32px)',
-            opacity: '0',
-            transition: 'opacity 0.4s, transform 0.4s',
-            border: '2px solid rgba(255,255,255,0.3)',
-        });
-        document.body.appendChild(banner);
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                banner.style.opacity = '1';
-                banner.style.transform = 'translateX(-50%) translateY(0)';
-            });
-        });
-        setTimeout(function () {
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateX(-50%) translateY(20px)';
-            setTimeout(function () {
-                if (banner.parentNode) banner.parentNode.removeChild(banner);
-            }, 500);
-        }, 7000);
-    }
-
     // ─── Add to cart via AJAX ────────────────────────────────────────
     function addToCart(productId, qty) {
         qty = qty || 1;
@@ -854,13 +763,6 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                             currency:     'BDT'
                         }, {eventID: data.atc_event_id || ''});
                     }
-                    setTimeout(function () {
-                        if (data.cart_qty >= 3) {
-                            showFreeDeliveryUnlocked();
-                        } else {
-                            showFreeDeliveryPromo();
-                        }
-                    }, 800);
                 } else {
                     showToast(data.message || 'Could not add item.', 'error');
                 }

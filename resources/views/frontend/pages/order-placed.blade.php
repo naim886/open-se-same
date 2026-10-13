@@ -48,24 +48,6 @@
             </div>
             @endif
 
-            {{-- Delivery method notice for Express / Super Express --}}
-            @if(in_array(session('delivery_location'), [3, 4]))
-            <div class="p-3 rounded mb-4 text-start"
-                 style="background:rgba(1,92,60,0.07); border:1px solid rgba(1,92,60,0.25);">
-                <h6 class="fw-bold mb-2" style="color:var(--primary-dark); font-size:13.5px;">
-                    <i class="{{ session('delivery_location') == 4 ? 'fas fa-rocket' : 'fas fa-bolt' }} me-1"></i>
-                    {{ session('delivery_location') == 4 ? 'Super Express' : 'Express' }} ডেলিভারি নোট
-                </h6>
-                <p class="mb-0" style="font-size:13px; line-height:1.8; color:var(--text-dark);">
-                    @if(session('delivery_location') == 3)
-                        আপনি যদি সকাল ১১টার মধ্যে এক্সপ্রেস অর্ডার প্লেস না করেন তাহলে সেটা রেগুলার ডেলিভারিতে যাবে। বিঃ দ্রঃ - এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।
-                    @else
-                        সুপার এক্সপ্রেস ডেলিভারিতে ডেলিভারি চার্জ যেটা আসবে সেটা আপনাকে পে করতে হবে ডেলিভারিম্যান কে।&nbsp; এবং প্রোডাক্টের মূল্য আগে পরিশোধ করতে হবে।&nbsp; বিঃ দ্রঃ - সুপার এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।
-                    @endif
-                </p>
-            </div>
-            @endif
-
             <div class="p-3 rounded mb-4" style="background:rgba(1,92,60,0.05); border:1px dashed rgba(1,92,60,0.25);">
                 <p class="mb-0" style="font-size:13.5px; line-height:1.7; color:var(--text-dark);">
                     <i class="fas fa-info-circle" style="color:var(--primary-dark);"></i>

@@ -218,6 +218,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
 <!-- Product Detail -->
 <section class="product-detail-section">
     <div class="container">
+        <div class="product-detail-card">
         <div class="row g-4">
 
             <!-- Images -->
@@ -374,7 +375,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="d-flex gap-3 flex-wrap mb-3">
+                <div class="product-action-row mb-3">
                     @if($product->stock === null || $product->stock > 0 || $product->isVariantProduct())
                         <button class="btn-add-cart-lg" id="addToCartBtn" onclick="handleAddToCart({{ $product->id }}, {{ $product->isVariantProduct() ? 'true' : 'false' }})">
                             <i class="fas fa-shopping-cart me-2"></i>Add to Cart
@@ -403,12 +404,27 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 </div>
 
                 <!-- Delivery Info -->
-                <div class="p-3 rounded mb-3" style="background:rgba(1,92,60,0.04); border:1px dashed rgba(1,92,60,0.25);">
-                    <div class="d-flex align-items-center gap-3 flex-wrap" style="font-size:13px;">
-                        <span><i class="fas fa-truck text-danger me-1"></i> Inside Dhaka: <strong>৳70</strong></span>
-                        <span><i class="fas fa-truck text-danger me-1"></i> Outside Dhaka: <strong>৳120</strong></span>
-                        <span><i class="fas fa-bolt text-danger me-1"></i> Express: <strong>৳150</strong> <small class="text-muted">(before 11 AM)</small></span>
-                        <span><i class="fas fa-headset text-danger me-1"></i> <a href="tel:+8801886870406" class="text-danger fw-bold">01886870406</a></span>
+                <div class="product-delivery-info">
+                    <div class="product-delivery-item">
+                        <i class="fas fa-location-dot"></i>
+                        <div>
+                            <strong>Inside Dhaka</strong>
+                            <span>৳70 · 1–2 days</span>
+                        </div>
+                    </div>
+                    <div class="product-delivery-item">
+                        <i class="fas fa-truck-fast"></i>
+                        <div>
+                            <strong>Outside Dhaka</strong>
+                            <span>৳120 · 2–5 days</span>
+                        </div>
+                    </div>
+                    <div class="product-delivery-item">
+                        <i class="fas fa-headset"></i>
+                        <div>
+                            <strong>Need help?</strong>
+                            <span><a href="tel:+8801886870406">01886870406</a></span>
+                        </div>
                     </div>
                 </div>
 
@@ -444,6 +460,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 </div>
 
             </div>
+        </div>
         </div>
 
         <!-- Product Tabs -->
@@ -487,7 +504,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                     @endif
                 </ul>
 
-                <div class="tab-content p-4" style="background:#fff; border:1px solid var(--border); border-top:none; border-radius:0 0 10px 10px;">
+                <div class="tab-content p-4" style="background:#fff; border:1px solid var(--border); border-top:none; border-radius:0 0 12px 12px; box-shadow:var(--shadow);">
 
                     <!-- Description Tab -->
                     <div class="tab-pane fade show active" id="tabDescription" role="tabpanel">
@@ -521,22 +538,17 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                         @else
                             <div class="row g-4" style="font-size:14px;">
                                 <div class="col-md-6">
-                                    <h6 class="fw-bold mb-3"><i class="fas fa-truck text-danger me-2"></i>Delivery Charges</h6>
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-truck" style="color:var(--primary);"></i> Delivery Charges</h6>
                                     <table class="table table-sm mb-0">
                                         <tr><td>Inside Dhaka</td><td><strong>৳70</strong></td></tr>
                                         <tr><td>Outside Dhaka</td><td><strong>৳120</strong></td></tr>
-                                        <tr>
-                                            <td><i class="fas fa-bolt text-danger me-1"></i> Express (Inside Dhaka)</td>
-                                            <td><strong>৳150</strong> <small class="text-muted">before 11 AM</small></td>
-                                        </tr>
                                     </table>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6 class="fw-bold mb-3"><i class="fas fa-clock text-danger me-2"></i>Delivery Time</h6>
+                                    <h6 class="fw-bold mb-3"><i class="fas fa-clock" style="color:var(--primary);"></i> Delivery Time</h6>
                                     <ul style="padding-left:18px; line-height:2.2; margin:0;">
                                         <li>Inside Dhaka: 1–2 business days</li>
                                         <li>Outside Dhaka: 2–5 business days</li>
-                                        <li>Express: Same day (order before 11 AM)</li>
                                         <li>Counted from order confirmation</li>
                                     </ul>
                                 </div>

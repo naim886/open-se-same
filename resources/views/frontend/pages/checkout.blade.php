@@ -26,39 +26,17 @@
         @php
             $cart = session('cart', []);
             $cartCount = count($cart);
-            $cartTotalQty = array_sum(array_column($cart, 'quantity'));
-            $freeEligible = $cartTotalQty >= 3;
 
-            // location param (set by cart page) takes priority — covers Super Express (4) and Free (5)
-            if (request()->has('location')) {
-                $deliveryInitLocation = (int) request('location');
-                $delivery = match($deliveryInitLocation) {
-                    1 => 70,
-                    2 => 120,
-                    3 => 150,
-                    4, 5 => 0,
-                    default => $freeEligible ? 0 : 70,
-                };
-                if ($deliveryInitLocation === 5 && !$freeEligible) {
-                    // not eligible for free, fall back to inside Dhaka
-                    $deliveryInitLocation = 1;
-                    $delivery = 70;
-                }
-            } elseif (request()->has('delivery')) {
-                $delivery = (int) request('delivery');
-                $deliveryInitLocation = match(true) {
-                    $delivery === 70  => 1,
-                    $delivery === 120 => 2,
-                    $delivery === 150 => 3,
-                    $freeEligible     => 5,
-                    default           => 1,
-                };
-            } elseif ($freeEligible) {
-                $delivery = 0;
-                $deliveryInitLocation = 5;
+            // location param (set by cart page) takes priority
+            if (request()->has('location') && (int) request('location') === 2) {
+                $deliveryInitLocation = 2;
+                $delivery = 120;
+            } elseif (request()->has('delivery') && (int) request('delivery') === 120) {
+                $deliveryInitLocation = 2;
+                $delivery = 120;
             } else {
-                $delivery = 70;
                 $deliveryInitLocation = 1;
+                $delivery = 70;
             }
             $subtotal = collect($cart)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']);
             $total = $subtotal + $delivery;
@@ -148,111 +126,53 @@
                     <div class="checkout-card">
                         <h5 class="checkout-card-title"><i class="fas fa-truck"></i>Delivery Method</h5>
                         <div class="row g-2">
-                            <div class="col-6 col-md-4">
+                            <div class="col-6">
                                 <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 1 ? 'active' : '' }}" id="co-inside">
                                     <input type="radio" name="_delivery_select" value="70" {{ $deliveryInitLocation == 1 ? 'checked' : '' }} onchange="setDelivery(70, 1)">
                                     <div>
+                                        <i class="fas fa-location-dot delivery-option-icon"></i>
                                         <div style="font-weight:700; font-size:12.5px;">Inside Dhaka</div>
                                         <div style="font-size:11px; color:var(--text-muted);">1–2 days</div>
                                         <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳70</div>
                                     </div>
                                 </label>
                             </div>
-                            <div class="col-6 col-md-4">
+                            <div class="col-6">
                                 <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 2 ? 'active' : '' }}" id="co-outside">
                                     <input type="radio" name="_delivery_select" value="120" {{ $deliveryInitLocation == 2 ? 'checked' : '' }} onchange="setDelivery(120, 2)">
                                     <div>
+                                        <i class="fas fa-truck-fast delivery-option-icon"></i>
                                         <div style="font-weight:700; font-size:12.5px;">Outside Dhaka</div>
                                         <div style="font-size:11px; color:var(--text-muted);">2–5 days</div>
                                         <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳120</div>
                                     </div>
                                 </label>
                             </div>
-                            <div class="col-6 col-md-4">
-                                <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 3 ? 'active' : '' }}" id="co-express">
-                                    <input type="radio" name="_delivery_select" value="150" {{ $deliveryInitLocation == 3 ? 'checked' : '' }} onchange="setDelivery(150, 3)">
-                                    <div>
-                                        <div style="font-weight:700; font-size:12px; display:flex; align-items:center; gap:3px;">
-                                            <i class="fas fa-bolt" style="color:var(--primary-dark);"></i> Express
-                                            <span style="background:var(--primary-gradient); color:#fff; font-size:9px; padding:1px 5px; border-radius:8px;">FAST</span>
-                                        </div>
-                                        <div style="font-size:11px; color:var(--text-muted);">ঢাকা / ১১টার আগে</div>
-                                        <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳150</div>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-6 col-md-6">
-                                <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 4 ? 'active' : '' }}" id="co-super-express">
-                                    <input type="radio" name="_delivery_select" value="se" {{ $deliveryInitLocation == 4 ? 'checked' : '' }} onchange="setDelivery(0, 4)">
-                                    <div>
-                                        <div style="font-weight:700; font-size:12px; display:flex; align-items:center; gap:3px;">
-                                            <i class="fas fa-rocket" style="color:var(--primary-dark);"></i> Super Express
-                                            <span style="background:var(--primary-gradient); color:#fff; font-size:9px; padding:1px 5px; border-radius:8px;">URGENT</span>
-                                        </div>
-                                        <div style="font-size:11px; color:var(--text-muted);">ঢাকা / চার্জ কুরিয়ারকে</div>
-                                        <div style="font-size:12px; font-weight:700; color:var(--primary-dark);">কুরিয়ারকে</div>
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="col-6 col-md-6">
-                                <label class="delivery-option-card w-100 {{ $freeEligible && $deliveryInitLocation == 5 ? 'active' : '' }}"
-                                       id="co-free"
-                                       style="{{ !$freeEligible ? 'opacity:0.55; cursor:not-allowed;' : '' }}">
-                                    <input type="radio" name="_delivery_select" value="free"
-                                           {{ $freeEligible && $deliveryInitLocation == 5 ? 'checked' : '' }}
-                                           {{ !$freeEligible ? 'disabled' : '' }}
-                                           onchange="setDelivery(0, 5)">
-                                    <div>
-                                        <div style="font-weight:700; font-size:12px; display:flex; align-items:center; gap:3px;">
-                                            <i class="fas fa-gift" style="color:#28a745;"></i> Free Delivery
-                                        </div>
-                                        <div style="font-size:10.5px; color:var(--text-muted); line-height:1.4;">
-                                            @if($freeEligible)
-                                                ✅ আপনার কার্টে {{ $cartTotalQty }}টি পণ্য!
-                                            @else
-                                                ৩টি প্রোডাক্ট অর্ডার করলে ডেলিভারি চার্জ সম্পূর্ণ ফ্রী।
-                                            @endif
-                                        </div>
-                                        <div style="font-size:13px; font-weight:700; color:#28a745;">ফ্রি!</div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        {{-- Delivery Notice --}}
-                        <div id="co-delivery-notice" class="mt-3 p-2 rounded"
-                             style="{{ in_array($deliveryInitLocation, [3,4]) ? '' : 'display:none;' }} background:rgba(1,92,60,0.06); border:1px solid rgba(1,92,60,0.2); font-size:13px; color:var(--text-dark); line-height:1.7;">
-                            @if($deliveryInitLocation == 3)
-                                <i class="fas fa-info-circle me-1" style="color:var(--primary-dark);"></i> আপনি যদি সকাল ১১টার মধ্যে এক্সপ্রেস অর্ডার প্লেস না করেন তাহলে সেটা রেগুলার ডেলিভারিতে যাবে। বিঃ দ্রঃ - এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।
-                            @elseif($deliveryInitLocation == 4)
-                                <i class="fas fa-info-circle me-1" style="color:var(--primary-dark);"></i> সুপার এক্সপ্রেস ডেলিভারিতে ডেলিভারি চার্জ যেটা আসবে সেটা আপনাকে পে করতে হবে ডেলিভারিম্যান কে।&nbsp; এবং প্রোডাক্টের মূল্য আগে পরিশোধ করতে হবে।&nbsp; বিঃ দ্রঃ - সুপার এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।
-                            @endif
                         </div>
                     </div>
 
                     <!-- Payment Method -->
                     <div class="checkout-card">
                         <h5 class="checkout-card-title"><i class="fas fa-credit-card"></i>Payment Method</h5>
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <div class="p-3 rounded d-flex align-items-center gap-3" style="background:rgba(40,167,69,0.08); border:2px solid #28a745;">
-                                    <i class="fas fa-money-bill-wave" style="font-size:24px; color:#28a745; flex-shrink:0;"></i>
-                                    <div>
-                                        <div style="font-weight:700; font-size:14px;">Cash on Delivery</div>
-                                        <div style="font-size:12px; color:var(--text-muted);">Pay when you receive your order</div>
-                                    </div>
-                                    <i class="fas fa-check-circle text-success ms-auto" style="font-size:18px;"></i>
+                        <div class="payment-method-list">
+                            <label class="payment-method-card active">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <div class="payment-method-icon"><i class="fas fa-money-bill-wave"></i></div>
+                                <div class="payment-method-text">
+                                    <div class="payment-method-title">Cash on Delivery</div>
+                                    <div class="payment-method-sub">Pay in cash when your order arrives</div>
                                 </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="p-3 rounded d-flex align-items-center gap-3" style="background:#f8f8f8; border:1.5px solid #ddd; opacity:0.55; cursor:not-allowed;" title="Coming soon">
-                                    <i class="fas fa-credit-card" style="font-size:24px; color:#0d6efd; flex-shrink:0;"></i>
-                                    <div>
-                                        <div style="font-weight:700; font-size:14px;">Online Payment</div>
-                                        <div style="font-size:12px; color:var(--text-muted);">Card, Mobile Banking &amp; more — Coming soon</div>
-                                    </div>
-                                    <span class="ms-auto" style="font-size:11px; background:#ffc107; color:#333; padding:2px 8px; border-radius:10px; font-weight:700;">Soon</span>
+                                <i class="fas fa-check-circle payment-method-check"></i>
+                            </label>
+                            <label class="payment-method-card disabled" title="Coming soon">
+                                <input type="radio" name="payment_method" value="online" disabled>
+                                <div class="payment-method-icon"><i class="fas fa-credit-card"></i></div>
+                                <div class="payment-method-text">
+                                    <div class="payment-method-title">Online Payment</div>
+                                    <div class="payment-method-sub">Card, bKash, Nagad &amp; more</div>
                                 </div>
-                            </div>
+                                <span class="payment-method-badge">Coming Soon</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -336,11 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sel) sel.dispatchEvent(new Event('change'));
 });
 
-var coDeliveryNotices = {
-    3: 'আপনি যদি সকাল ১১টার মধ্যে এক্সপ্রেস অর্ডার প্লেস না করেন তাহলে সেটা রেগুলার ডেলিভারিতে যাবে। বিঃ দ্রঃ - এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।',
-    4: 'সুপার এক্সপ্রেস ডেলিভারিতে ডেলিভারি চার্জ যেটা আসবে সেটা আপনাকে পে করতে হবে ডেলিভারিম্যান কে।  এবং প্রোডাক্টের মূল্য আগে পরিশোধ করতে হবে।  বিঃ দ্রঃ - সুপার এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।'
-};
-
 function setDelivery(charge, locationVal) {
     var hd  = document.getElementById('hiddenDelivery');
     var ht  = document.getElementById('hiddenTotal');
@@ -353,33 +268,17 @@ function setDelivery(charge, locationVal) {
     if (hlo) hlo.value = locationVal;
 
     // Delivery label in summary
-    if (sd) {
-        if (locationVal === 5) sd.textContent = 'ফ্রি';
-        else if (locationVal === 4) sd.textContent = 'কুরিয়ারকে পেমেন্ট';
-        else sd.textContent = '৳' + charge;
-    }
+    if (sd) sd.textContent = '৳' + charge;
     if (st) st.textContent = '৳' + (baseSubtotal + charge).toLocaleString();
 
-    ['co-inside','co-outside','co-express','co-super-express','co-free'].forEach(function(id) {
+    ['co-inside','co-outside'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.classList.remove('active');
     });
 
-    var idMap = {1:'co-inside', 2:'co-outside', 3:'co-express', 4:'co-super-express', 5:'co-free'};
+    var idMap = {1:'co-inside', 2:'co-outside'};
     var activeEl = document.getElementById(idMap[locationVal]);
     if (activeEl) activeEl.classList.add('active');
-
-    // Show / hide notice
-    var notice = document.getElementById('co-delivery-notice');
-    if (notice) {
-        if (coDeliveryNotices[locationVal]) {
-            notice.innerHTML = '<i class="fas fa-info-circle me-1" style="color:var(--primary-dark);"></i> ' + coDeliveryNotices[locationVal];
-            notice.style.display = '';
-        } else {
-            notice.innerHTML = '';
-            notice.style.display = 'none';
-        }
-    }
 }
 
 @php

@@ -292,9 +292,9 @@ if (isset($featuredProducts) && $featuredProducts->count() > 0) {
             </div>
             <div class="col-6 col-md-3 text-center">
                 <div class="why-card">
-                    <i class="fas fa-bolt"></i>
-                    <h3>Express Delivery</h3>
-                    <p>Same-day express delivery inside Dhaka (৳150).</p>
+                    <i class="fas fa-truck-fast"></i>
+                    <h3>Fast Delivery</h3>
+                    <p>Inside Dhaka ৳70, Outside Dhaka ৳120 — nationwide coverage.</p>
                 </div>
             </div>
             <div class="col-6 col-md-3 text-center">
