@@ -116,6 +116,10 @@
             color: inherit
         }
 
+        a:visited {
+            color: inherit
+        }
+
         img {
             max-width: 100%
         }
@@ -557,13 +561,19 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 <!-- Footer -->
 <footer class="main-footer">
     <div class="container">
-        <div class="row g-4">
-            <!-- Brand -->
-            <div class="col-lg-3 col-md-6">
-                <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="footer-logo mb-3" width="175" height="71"
+        <div class="row g-4 footer-top">
+            <!-- Brand & Contact -->
+            <div class="col-lg-4 col-md-12">
+                <img src="{{ asset('images/logo-web.png') }}" alt="Open Se Same" class="footer-logo mb-3" width="175" height="78"
                      loading="lazy" onerror="this.style.display='none'">
                 <p class="footer-desc">Shop your favourite products at the best prices. Quality products & fast delivery is our promise.</p>
-                <div class="footer-social mt-3">
+                <ul class="footer-contact-block">
+                    <li><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span>Dhaka, Bangladesh</span></li>
+                    <li><i class="fas fa-headset" aria-hidden="true"></i> <a href="tel:+8801886870406">01886870406</a></li>
+                    <li><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:info@opensesame.com">info@opensesame.com</a></li>
+                    <li><i class="fas fa-clock" aria-hidden="true"></i> <span>Open: 24/7, 365 Days</span></li>
+                </ul>
+                <div class="footer-social">
                     <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i
                             class="fab fa-facebook-f" aria-hidden="true"></i></a>
                     <a href="https://wa.me/+8801886870406" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i
@@ -573,69 +583,60 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div class="col-lg-2 col-md-6">
-                <h4 class="footer-heading">Quick Links</h4>
+            <!-- Company -->
+            <div class="col-lg-2 col-md-4">
+                <h4 class="footer-heading">Company</h4>
                 <ul class="footer-links">
-                    <li><a href="{{ route('shop.home') }}"><i class="fas fa-chevron-right me-1"></i>Home</a></li>
-                    <li><a href="{{ route('shop.products') }}"><i class="fas fa-chevron-right me-1"></i>All Products</a></li>
-                    <li><a href="{{ route('shop.blogs') }}"><i class="fas fa-chevron-right me-1"></i>Blog</a></li>
-                    <li><a href="{{ route('shop.cart') }}"><i class="fas fa-chevron-right me-1"></i>Shopping Cart</a></li>
-                    <li><a href="{{ route('shop.checkout') }}"><i class="fas fa-chevron-right me-1"></i>Checkout</a></li>
-                    <li><a href="{{ route('shop.contact') }}"><i class="fas fa-chevron-right me-1"></i>Contact Us</a></li>
-                    <li><a href="{{ route('shop.track-order') }}"><i class="fas fa-map-marker-alt me-1"></i>Track Order</a></li>
+                    <li><a href="{{ route('shop.home') }}">Home</a></li>
+                    <li><a href="{{ route('shop.products') }}">All Products</a></li>
+                    <li><a href="{{ route('shop.blogs') }}">Blog</a></li>
+                    <li><a href="{{ route('shop.contact') }}">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="col-lg-3 col-md-4">
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ route('shop.track-order') }}">Track Order</a></li>
+                    <li><a href="{{ route('shop.cart') }}">Shopping Cart</a></li>
+                    <li><a href="{{ route('shop.checkout') }}">Checkout</a></li>
+                    @forelse($footerPages as $fp)
+                        <li><a href="{{ route('shop.page', $fp->slug) }}">{{ $fp->title }}</a></li>
+                    @empty
+                    @endforelse
                     @auth
                         @if(auth()->user()->hasRole('Registered Customer'))
-                        <li><a href="{{ route('customer.dashboard') }}"><i class="fas fa-user-circle me-1"></i>My Account</a></li>
+                        <li><a href="{{ route('customer.dashboard') }}">My Account</a></li>
                         @endif
                     @else
-                        <li><a href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-1"></i>Login / Register</a></li>
+                        <li><a href="{{ route('login') }}">Login / Register</a></li>
                     @endauth
                 </ul>
             </div>
 
-            <!-- Pages -->
-            <div class="col-lg-2 col-md-6">
-                <h4 class="footer-heading">Pages</h4>
-                <ul class="footer-links">
-                    @forelse($footerPages as $fp)
-                        <li><a href="{{ route('shop.page', $fp->slug) }}"><i class="fas fa-chevron-right me-1"></i>{{ $fp->title }}</a></li>
-                    @empty
-                        <li><span style="opacity:0.5; font-size:13px;">No pages yet.</span></li>
-                    @endforelse
-                </ul>
-            </div>
-
             <!-- Categories -->
-            <div class="col-lg-2 col-md-6">
+            <div class="col-lg-3 col-md-4">
                 <h4 class="footer-heading">Categories</h4>
                 <ul class="footer-links">
                     @foreach($navCategories->take(6) as $cat)
-                        <li><a href="{{ route('shop.category', $cat->slug) }}"><i class="fas fa-chevron-right me-1"></i>{{ $cat->name }}</a></li>
+                        <li><a href="{{ route('shop.category', $cat->slug) }}">{{ $cat->name }}</a></li>
                     @endforeach
                 </ul>
             </div>
-
-            <!-- Contact Info -->
-            <div class="col-lg-3 col-md-6">
-                <h4 class="footer-heading">Contact Us</h4>
-                <ul class="footer-contact">
-                    <li><i class="fas fa-phone"></i> <a href="tel:+8801886870406">01886870406</a></li>
-                    <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/+8801886870406">Chat on WhatsApp</a></li>
-                    <li><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/opensesame1" target="_blank">Facebook Page</a></li>
-                    <li><i class="fas fa-clock"></i> Available: <strong>24/7, 365 Days</strong></li>
-                </ul>
-                <div class="delivery-info mt-3">
-                    <p><i class="fas fa-truck me-1"></i> Inside Dhaka: <strong>৳70</strong></p>
-                    <p><i class="fas fa-truck me-1"></i> Outside Dhaka: <strong>৳120</strong></p>
-                    <p><i class="fas fa-bolt me-1"></i> Express (Inside Dhaka): <strong>৳150</strong></p>
-                </div>
-            </div>
         </div>
 
-        <hr class="footer-divider">
+        <!-- Trust Row -->
+        <div class="footer-trust-row">
+            <div class="footer-trust-item"><i class="fas fa-truck" aria-hidden="true"></i> Nationwide Delivery</div>
+            <div class="footer-trust-item"><i class="fas fa-money-bill-wave" aria-hidden="true"></i> Cash on Delivery</div>
+            <div class="footer-trust-item"><i class="fas fa-shield-alt" aria-hidden="true"></i> Secure Checkout</div>
+            <div class="footer-trust-item"><i class="fas fa-medal" aria-hidden="true"></i> Authentic Products</div>
+        </div>
+    </div>
 
-        <div class="text-center">
+    <div class="footer-bottom">
+        <div class="container">
             <p class="footer-copyright">© {{ date('Y') }} <strong>Open Se Same</strong>. All rights reserved.</p>
         </div>
     </div>
