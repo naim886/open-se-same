@@ -80,7 +80,7 @@
     .panel-nav li a:hover,
     .panel-nav li a.active {
         color: var(--primary);
-        background: rgba(194, 67, 107, .06);
+        background: rgba(2,123,80, .06);
         border-left-color: var(--primary);
     }
 
@@ -313,7 +313,7 @@
 
     .panel-form .form-control:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(194,67,107,.12);
+        box-shadow: 0 0 0 3px rgba(2,123,80,.12);
         background: #fff;
     }
 

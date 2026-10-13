@@ -12,16 +12,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            --primary:          #C2436B;
-            --primary-dark:     #7A1235;
-            --primary-mid:      #A33560;
-            --primary-light:    #E070A0;
-            --primary-gradient: linear-gradient(135deg, #7A1235 0%, #C2436B 55%, #E070A0 100%);
-            --text-dark:        #1E0010;
-            --text-body:        #3A2030;
+            --primary:          #027B50;
+            --primary-dark:     #015C3C;
+            --primary-mid:      #039C63;
+            --primary-light:    #04A871;
+            --primary-gradient: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
+            --text-dark:        #10211B;
+            --text-body:        #33413C;
             --text-muted:       #998899;
-            --bg-light:         #FFF6FB;
-            --border:           #F2D0DF;
+            --bg-light:         #F3FAF6;
+            --border:           #D8EDE3;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -36,7 +36,7 @@
         /* Header */
         .error-header {
             background: #fff;
-            box-shadow: 0 3px 24px rgba(122,18,53,0.12);
+            box-shadow: 0 3px 24px rgba(1,92,60,0.12);
             border-bottom: 3px solid transparent;
             border-image: var(--primary-gradient) 1;
             padding: 16px 0;
@@ -49,7 +49,7 @@
             text-decoration: none; transition: all 0.25s ease;
             display: inline-flex; align-items: center; gap: 7px;
         }
-        .back-home-btn:hover { color: #fff; box-shadow: 0 6px 24px rgba(122,18,53,0.35); transform: translateY(-2px); }
+        .back-home-btn:hover { color: #fff; box-shadow: 0 6px 24px rgba(1,92,60,0.35); transform: translateY(-2px); }
         /* Main */
         .error-main {
             flex: 1; display: flex; align-items: center;
@@ -57,7 +57,7 @@
         }
         .error-card {
             background: #fff; border-radius: 24px;
-            box-shadow: 0 20px 80px rgba(122,18,53,0.13);
+            box-shadow: 0 20px 80px rgba(1,92,60,0.13);
             padding: 60px 50px; text-align: center;
             max-width: 620px; width: 100%;
             position: relative; overflow: hidden;
@@ -73,7 +73,7 @@
             background: var(--primary-gradient);
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 20px;
-            box-shadow: 0 10px 32px rgba(122,18,53,0.25);
+            box-shadow: 0 10px 32px rgba(1,92,60,0.25);
             font-size: 36px; color: #fff;
             animation: bubblePop 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -115,14 +115,14 @@
             padding: 12px 30px; font-size: 14px; font-weight: 600; text-decoration: none;
             transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;
         }
-        .btn-primary-brand:hover { color: #fff; box-shadow: 0 8px 28px rgba(122,18,53,0.35); transform: translateY(-2px); }
+        .btn-primary-brand:hover { color: #fff; box-shadow: 0 8px 28px rgba(1,92,60,0.35); transform: translateY(-2px); }
         .btn-outline-brand {
             background: transparent; color: var(--primary-mid);
             border: 2px solid var(--primary-mid); border-radius: 50px;
             padding: 10px 28px; font-size: 14px; font-weight: 600; text-decoration: none;
             transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px;
         }
-        .btn-outline-brand:hover { background: var(--primary-gradient); border-color: transparent; color: #fff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(122,18,53,0.25); }
+        .btn-outline-brand:hover { background: var(--primary-gradient); border-color: transparent; color: #fff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(1,92,60,0.25); }
         /* Quick links */
         .quick-links-section { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
         .quick-links-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 14px; }

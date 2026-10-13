@@ -68,7 +68,7 @@
                 <div class="col-lg-6 col-md-8 text-center">
                     <div class="card border-0 py-5" style="border-radius:var(--radius);box-shadow:var(--shadow);">
                         <div class="card-body">
-                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#ffe0ec,#ffc2d4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#dcf5ea,#c3ecd9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
                                 <i class="fas fa-search" style="font-size:28px;color:var(--primary);"></i>
                             </div>
                             <h5 class="fw-bold mb-2" style="color:var(--text-dark);">No Order Found</h5>
@@ -88,7 +88,7 @@
 
                 {{-- Order Header --}}
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 py-3 px-4"
-                     style="background:linear-gradient(135deg,#fff5f9,#fff0f7);border-bottom:1.5px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;">
+                     style="background:linear-gradient(135deg,#f3faf6,#eaf7f1);border-bottom:1.5px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;">
                     <div class="d-flex align-items-center gap-3">
                         <div style="width:44px;height:44px;background:var(--primary-gradient);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                             <i class="fas fa-box" style="color:#fff;font-size:17px;"></i>
@@ -369,7 +369,7 @@
                     <div class="col-md-4">
                         <div class="card border-0 h-100 p-2" style="border-radius:var(--radius);box-shadow:var(--shadow);">
                             <div class="card-body text-center p-4">
-                                <div style="width:52px;height:52px;background:linear-gradient(135deg,#ffe0ec,#ffc2d4);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+                                <div style="width:52px;height:52px;background:linear-gradient(135deg,#dcf5ea,#c3ecd9);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
                                     <i class="{{ $tip['icon'] }}" style="font-size:20px;color:var(--primary);"></i>
                                 </div>
                                 <h6 class="fw-bold mb-2" style="font-size:14px;color:var(--text-dark);">{{ $tip['title'] }}</h6>

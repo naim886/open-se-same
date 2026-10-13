@@ -55,7 +55,7 @@
         margin-bottom: 20px; /* Spacing between paragraphs */
      }
      .content a {
-        color: #a60004; /* Brand accent color */
+        color: #027B50; /* Brand accent color */
         text-decoration: underline;
      }
 
@@ -69,11 +69,11 @@
     }
     .button-td {
        border-radius: 5px;
-       background: #a60004; /* Brand button color */
+       background: #027B50; /* Brand button color */
     }
     .button-a {
-      background: #a60004;
-      border: 15px solid #a60004; /* Padding via border */
+      background: #027B50;
+      border: 15px solid #027B50; /* Padding via border */
       padding: 0 25px; /* Horizontal padding */
       color: #ffffff !important; /* White text */
       display: block; /* Make it block level */
@@ -148,8 +148,8 @@
                 <!-- Button -->
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: auto;">
                     <tr>
-                        <td class="button-td" style="border-radius: 5px; background: #a60004; text-align: center;">
-                            <a href="{{env('APP_URL')}}" target="_blank" class="button-a" style="background: #a60004; border: 15px solid #a60004; padding: 0 25px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.1; text-align: center; text-decoration: none !important; display: block; border-radius: 5px; font-weight: bold; color: #ffffff !important;">
+                        <td class="button-td" style="border-radius: 5px; background: #027B50; text-align: center;">
+                            <a href="{{env('APP_URL')}}" target="_blank" class="button-a" style="background: #027B50; border: 15px solid #027B50; padding: 0 25px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.1; text-align: center; text-decoration: none !important; display: block; border-radius: 5px; font-weight: bold; color: #ffffff !important;">
                                 Shop New Arrivals &rarr;
                             </a>
                         </td>

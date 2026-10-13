@@ -205,7 +205,7 @@
                             </div>
                             {{-- Express / Super Express notice --}}
                             <div id="cart-delivery-notice" class="mt-2 p-2 rounded"
-                                 style="display:none; background:rgba(107,0,2,0.06); border:1px solid rgba(107,0,2,0.2); font-size:12.5px; color:var(--text-dark); line-height:1.7;"></div>
+                                 style="display:none; background:rgba(1,92,60,0.06); border:1px solid rgba(1,92,60,0.2); font-size:12.5px; color:var(--text-dark); line-height:1.7;"></div>
                         </div>
 
                         <hr class="cart-summary-divider">

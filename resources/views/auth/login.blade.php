@@ -15,7 +15,7 @@
 .auth-card {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(122,18,53,.10);
+    box-shadow: 0 4px 30px rgba(1,92,60,.10);
     padding: 40px 36px;
     max-width: 440px;
     margin: 0 auto;
@@ -55,7 +55,7 @@
 }
 .auth-card .form-control:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(194,67,107,.12);
+    box-shadow: 0 0 0 3px rgba(2,123,80,.12);
     background: #fff;
     outline: none;
 }

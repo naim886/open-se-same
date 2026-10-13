@@ -51,7 +51,7 @@
             {{-- Delivery method notice for Express / Super Express --}}
             @if(in_array(session('delivery_location'), [3, 4]))
             <div class="p-3 rounded mb-4 text-start"
-                 style="background:rgba(107,0,2,0.07); border:1px solid rgba(107,0,2,0.25);">
+                 style="background:rgba(1,92,60,0.07); border:1px solid rgba(1,92,60,0.25);">
                 <h6 class="fw-bold mb-2" style="color:var(--primary-dark); font-size:13.5px;">
                     <i class="{{ session('delivery_location') == 4 ? 'fas fa-rocket' : 'fas fa-bolt' }} me-1"></i>
                     {{ session('delivery_location') == 4 ? 'Super Express' : 'Express' }} ডেলিভারি নোট
@@ -66,7 +66,7 @@
             </div>
             @endif
 
-            <div class="p-3 rounded mb-4" style="background:rgba(107,0,2,0.05); border:1px dashed rgba(107,0,2,0.25);">
+            <div class="p-3 rounded mb-4" style="background:rgba(1,92,60,0.05); border:1px dashed rgba(1,92,60,0.25);">
                 <p class="mb-0" style="font-size:13.5px; line-height:1.7; color:var(--text-dark);">
                     <i class="fas fa-info-circle" style="color:var(--primary-dark);"></i>
                     For any queries, <strong>WhatsApp</strong> us at:

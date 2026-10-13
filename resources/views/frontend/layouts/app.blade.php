@@ -78,20 +78,20 @@
     ══════════════════════════════════════════════════════════════════════ --}}
     <style>
         :root {
-            --primary: #C2436B;
-            --primary-dark: #7A1235;
-            --primary-mid: #A33560;
-            --primary-light: #E070A0;
-            --primary-gradient: linear-gradient(135deg, #7A1235 0%, #C2436B 55%, #E070A0 100%);
-            --primary-gradient-rev: linear-gradient(135deg, #E070A0 0%, #C2436B 55%, #7A1235 100%);
-            --hero-gradient: linear-gradient(135deg, #3d0020 0%, #7A1235 40%, #C2436B 75%, #E08FAD 100%);
-            --text-dark: #1E0010;
-            --text-body: #3A2030;
+            --primary: #027B50;
+            --primary-dark: #015C3C;
+            --primary-mid: #039C63;
+            --primary-light: #04A871;
+            --primary-gradient: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
+            --primary-gradient-rev: linear-gradient(135deg, #04A871 0%, #027B50 55%, #015C3C 100%);
+            --hero-gradient: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%);
+            --text-dark: #10211B;
+            --text-body: #33413C;
             --text-muted: #767676;
-            --bg-light: #FFF6FB;
+            --bg-light: #F3FAF6;
             --bg-white: #fff;
-            --border: #F2D0DF;
-            --shadow: 0 2px 14px rgba(122, 18, 53, .08);
+            --border: #D8EDE3;
+            --shadow: 0 2px 14px rgba(1, 92, 60, .08);
             --radius: 10px;
             --transition: all .25s ease
         }
@@ -105,8 +105,8 @@
         body {
             font-family: 'Poppins', system-ui, -apple-system, sans-serif;
             font-size: 15px;
-            color: #3A2030;
-            background: #FFF6FB;
+            color: #33413C;
+            background: #F3FAF6;
             overflow-x: hidden
         }
 
@@ -121,10 +121,10 @@
 
         .main-header {
             background: #fff;
-            box-shadow: 0 3px 24px rgba(122, 18, 53, .12);
+            box-shadow: 0 3px 24px rgba(1, 92, 60, .12);
             z-index: 1000;
             border-bottom: 3px solid transparent;
-            border-image: linear-gradient(135deg, #7A1235 0%, #C2436B 55%, #E070A0 100%) 1
+            border-image: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%) 1
         }
 
         .header-logo {
@@ -141,7 +141,7 @@
         }
 
         .search-form .form-control.search-input {
-            border: 2px solid #C2436B;
+            border: 2px solid #027B50;
             border-right: none;
             border-radius: 10px 0 0 10px;
             padding: 10px 16px;
@@ -151,14 +151,14 @@
         }
 
         .search-form .form-control.search-input:focus {
-            border-color: #7A1235;
+            border-color: #015C3C;
             box-shadow: none
         }
 
         .search-form .btn-search {
-            background: linear-gradient(135deg, #7A1235 0%, #C2436B 55%, #E070A0 100%);
+            background: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
             color: #fff;
-            border: 2px solid #C2436B;
+            border: 2px solid #027B50;
             border-left: none;
             border-radius: 0 10px 10px 0;
             padding: 10px 20px;
@@ -178,7 +178,7 @@
             position: relative;
             display: inline-flex;
             align-items: center;
-            background: linear-gradient(135deg, #7A1235 0%, #C2436B 55%, #E070A0 100%);
+            background: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
             color: #fff;
             padding: 8px 16px;
             border-radius: 25px;
@@ -189,7 +189,7 @@
 
         .cart-badge {
             background: #fff;
-            color: #7A1235;
+            color: #015C3C;
             border-radius: 50%;
             width: 20px;
             height: 20px;
@@ -216,14 +216,14 @@
         .mobile-menu-btn {
             background: none;
             border: none;
-            color: #7A1235;
+            color: #015C3C;
             font-size: 20px;
             cursor: pointer;
             padding: 4px 6px
         }
 
         .category-nav {
-            background: linear-gradient(135deg, #3d0020 0%, #7A1235 40%, #C2436B 75%, #E08FAD 100%);
+            background: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%);
             border-top: 1px solid rgba(255, 255, 255, .12)
         }
 
@@ -258,7 +258,7 @@
 
         .hero-swiper {
             width: 100%;
-            background: linear-gradient(135deg, #3d0020 0%, #7A1235 40%, #C2436B 75%, #E08FAD 100%)
+            background: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%)
         }
 
         .hero-swiper .swiper-slide {
@@ -653,11 +653,11 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             left: '50%',
             transform: 'translateX(-50%) translateY(20px)',
             zIndex: '99999',
-            background: 'linear-gradient(135deg, #6b0002, #c0392b)',
+            background: 'linear-gradient(135deg, #015C3C, #027B50)',
             color: '#fff',
             padding: '14px 20px',
             borderRadius: '14px',
-            boxShadow: '0 8px 32px rgba(107,0,2,0.35)',
+            boxShadow: '0 8px 32px rgba(1,92,60,0.35)',
             maxWidth: '420px',
             width: 'calc(100% - 32px)',
             opacity: '0',
@@ -702,11 +702,11 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             left: '50%',
             transform: 'translateX(-50%) translateY(20px)',
             zIndex: '99999',
-            background: 'linear-gradient(135deg, #6b0002, #c0392b)',
+            background: 'linear-gradient(135deg, #015C3C, #027B50)',
             color: '#fff',
             padding: '16px 22px',
             borderRadius: '16px',
-            boxShadow: '0 10px 40px rgba(107,0,2,0.45)',
+            boxShadow: '0 10px 40px rgba(1,92,60,0.45)',
             maxWidth: '440px',
             width: 'calc(100% - 32px)',
             opacity: '0',
@@ -792,7 +792,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         <!-- Heading -->
         <div style="text-align:center;margin-bottom:18px;">
             <div style="font-size:32px;margin-bottom:6px;">🚀</div>
-            <h5 style="margin:0;font-weight:700;color:var(--primary-dark,#7A1235);font-size:1.1rem;">
+            <h5 style="margin:0;font-weight:700;color:var(--primary-dark,#015C3C);font-size:1.1rem;">
                 দ্রুত ডেলিভারির জন্য ফর্মটি পূরণ করুন
             </h5>
             <p style="margin:6px 0 0;font-size:.85rem;color:#666;">
@@ -817,7 +817,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             </div>
             <div id="lpMsg" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:8px;font-size:.88rem;"></div>
             <button type="submit" id="lpBtn"
-                    style="width:100%;padding:11px;background:var(--primary-gradient,linear-gradient(135deg,#7A1235,#C2436B));color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;letter-spacing:.3px;">
+                    style="width:100%;padding:11px;background:var(--primary-gradient,linear-gradient(135deg,#015C3C,#027B50));color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;letter-spacing:.3px;">
                 Submit &rarr;
             </button>
         </form>

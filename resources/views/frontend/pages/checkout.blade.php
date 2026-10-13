@@ -89,7 +89,7 @@
                             $savedAddresses = auth()->user()->addresses()->get();
                         @endphp
                         @if($savedAddresses->isNotEmpty())
-                        <div class="mb-3 p-3 rounded" style="background:rgba(194,67,107,.05); border:1.5px solid rgba(194,67,107,.2);">
+                        <div class="mb-3 p-3 rounded" style="background:rgba(2,123,80,.05); border:1.5px solid rgba(2,123,80,.2);">
                             <label class="form-label" style="font-size:13px; font-weight:600; color:var(--primary);">
                                 <i class="fas fa-address-book me-1"></i> Use Saved Address
                             </label>
@@ -220,7 +220,7 @@
                         </div>
                         {{-- Delivery Notice --}}
                         <div id="co-delivery-notice" class="mt-3 p-2 rounded"
-                             style="{{ in_array($deliveryInitLocation, [3,4]) ? '' : 'display:none;' }} background:rgba(107,0,2,0.06); border:1px solid rgba(107,0,2,0.2); font-size:13px; color:var(--text-dark); line-height:1.7;">
+                             style="{{ in_array($deliveryInitLocation, [3,4]) ? '' : 'display:none;' }} background:rgba(1,92,60,0.06); border:1px solid rgba(1,92,60,0.2); font-size:13px; color:var(--text-dark); line-height:1.7;">
                             @if($deliveryInitLocation == 3)
                                 <i class="fas fa-info-circle me-1" style="color:var(--primary-dark);"></i> আপনি যদি সকাল ১১টার মধ্যে এক্সপ্রেস অর্ডার প্লেস না করেন তাহলে সেটা রেগুলার ডেলিভারিতে যাবে। বিঃ দ্রঃ - এক্সপ্রেস ডেলিভারি শুধু ঢাকা সিটি এর মধ্যে।
                             @elseif($deliveryInitLocation == 4)

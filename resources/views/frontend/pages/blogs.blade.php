@@ -91,14 +91,14 @@ echo Schema::breadcrumbList()->itemListElement([
                             background:#fff;
                             border-radius:16px;
                             overflow:hidden;
-                            box-shadow:0 2px 14px rgba(122,18,53,0.07);
+                            box-shadow:0 2px 14px rgba(1,92,60,0.07);
                             transition:all 0.28s ease;
                             border:1px solid var(--border);
                             display:flex;
                             flex-direction:column;
                         "
-                        onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(122,18,53,0.16)';"
-                        onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 14px rgba(122,18,53,0.07)';">
+                        onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(1,92,60,0.16)';"
+                        onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 14px rgba(1,92,60,0.07)';">
 
                             <!-- Thumbnail -->
                             <div style="position:relative; overflow:hidden;">
@@ -171,7 +171,7 @@ echo Schema::breadcrumbList()->itemListElement([
                                     </span>
                                     @if($blog->faqs_count > 0)
                                         <span style="
-                                            background:rgba(194,67,107,0.09);color:var(--primary);
+                                            background:rgba(2,123,80,0.09);color:var(--primary);
                                             font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">
                                             {{ $blog->faqs_count }} FAQ{{ $blog->faqs_count > 1 ? 's' : '' }}
                                         </span>

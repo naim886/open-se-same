@@ -13,8 +13,8 @@
     transition: var(--transition);
     background: #fff;
 }
-.address-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(194,67,107,.1); }
-.address-card.is-default { border-color: var(--primary); background: rgba(194,67,107,.04); }
+.address-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(2,123,80,.1); }
+.address-card.is-default { border-color: var(--primary); background: rgba(2,123,80,.04); }
 .address-label-badge {
     display: inline-block;
     padding: 2px 10px;
@@ -40,7 +40,7 @@
     font-size: 11px;
     font-weight: 700;
     color: var(--primary);
-    background: rgba(194,67,107,.1);
+    background: rgba(2,123,80,.1);
     border-radius: 20px;
     padding: 2px 10px;
 }

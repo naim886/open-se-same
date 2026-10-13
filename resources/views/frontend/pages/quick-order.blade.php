@@ -67,7 +67,7 @@ echo Schema::product()
     <div class="container">
         <!-- Free Delivery Promo Banner -->
         <div class="mb-4 p-3 rounded-3 d-flex align-items-center gap-3"
-             style="background:linear-gradient(135deg,#6b0002,#c0392b); color:#fff; border:2px solid rgba(255,255,255,0.2); box-shadow:0 4px 18px rgba(107,0,2,0.3);">
+             style="background:linear-gradient(135deg,#015C3C,#027B50); color:#fff; border:2px solid rgba(255,255,255,0.2); box-shadow:0 4px 18px rgba(1,92,60,0.3);">
             <span style="font-size:32px; flex-shrink:0;">🚚</span>
             <div>
                 <div style="font-weight:800; font-size:15px; letter-spacing:0.3px;">ফ্রি ডেলিভারি অফার!</div>
@@ -169,7 +169,7 @@ echo Schema::product()
                                     @php $qoAddresses = auth()->user()->addresses()->get(); @endphp
                                     @if($qoAddresses->isNotEmpty())
                                     <div class="col-12">
-                                        <div class="p-3 rounded mb-1" style="background:rgba(194,67,107,.05); border:1.5px solid rgba(194,67,107,.2);">
+                                        <div class="p-3 rounded mb-1" style="background:rgba(2,123,80,.05); border:1.5px solid rgba(2,123,80,.2);">
                                             <label class="form-label mb-1" style="font-size:13px; font-weight:600; color:var(--primary);">
                                                 <i class="fas fa-address-book me-1"></i> Use Saved Address
                                             </label>
@@ -284,7 +284,7 @@ echo Schema::product()
                                         </div>
                                         {{-- Delivery Notice --}}
                                         <div id="qo-delivery-notice" class="mt-2 p-2 rounded"
-                                             style="display:none; background:rgba(107,0,2,0.06); border:1px solid rgba(107,0,2,0.2); font-size:12.5px; color:var(--text-dark); line-height:1.7;"></div>
+                                             style="display:none; background:rgba(1,92,60,0.06); border:1px solid rgba(1,92,60,0.2); font-size:12.5px; color:var(--text-dark); line-height:1.7;"></div>
                                     </div>
 
                                     <div class="col-12">

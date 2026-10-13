@@ -227,7 +227,7 @@ echo Schema::breadcrumbList()->itemListElement([
                                            border-radius:50px; padding:14px 40px; font-size:15px;
                                            font-weight:600; cursor:pointer; transition:var(--transition);
                                            display:inline-flex; align-items:center; gap:8px;"
-                                    onmouseover="this.style.boxShadow='0 8px 28px rgba(122,18,53,0.35)'; this.style.transform='translateY(-1px)'"
+                                    onmouseover="this.style.boxShadow='0 8px 28px rgba(1,92,60,0.35)'; this.style.transform='translateY(-1px)'"
                                     onmouseout="this.style.boxShadow='none'; this.style.transform='none'">
                                 <i class="fas fa-paper-plane"></i>
                                 <span>Send Message</span>
@@ -274,7 +274,7 @@ echo Schema::breadcrumbList()->itemListElement([
     .contact-input:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(194,67,107,0.1);
+        box-shadow: 0 0 0 3px rgba(2,123,80,0.1);
         background: #fff;
     }
     .contact-input.is-invalid {

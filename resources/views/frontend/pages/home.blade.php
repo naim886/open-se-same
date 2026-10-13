@@ -159,13 +159,13 @@ if (isset($featuredProducts) && $featuredProducts->count() > 0) {
     <style>
         .flash-sale-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
         .flash-sale-title { color:#fff; font-size:1.6rem; font-weight:800; margin:0 0 4px; letter-spacing:-0.5px; }
-        .flash-sale-title span { color:#ffd6e7; }
+        .flash-sale-title span { color:#FFE066; }
         .flash-sale-sub { color:rgba(255,255,255,0.65); font-size:13px; margin:0; }
         .flash-cd { display:flex; align-items:center; gap:6px; }
         .flash-cd-box { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:6px 12px; text-align:center; min-width:54px; backdrop-filter:blur(6px); }
         .flash-cd-val { display:block; font-size:1.4rem; font-weight:800; color:#fff; line-height:1; }
         .flash-cd-lbl { display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:1px; margin-top:2px; }
-        .flash-cd-sep { font-size:1.4rem; font-weight:800; color:#ffd6e7; margin-bottom:14px; }
+        .flash-cd-sep { font-size:1.4rem; font-weight:800; color:#FFE066; margin-bottom:14px; }
         .flash-sale-badge { display:inline-flex; align-items:center; gap:6px; background:var(--primary-dark); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.5px; border:1px solid rgba(255,255,255,0.3); animation:flashPulse 1.4s ease-in-out infinite; }
         @keyframes flashPulse { 0%,100%{opacity:1} 50%{opacity:.7} }
         .flash-view-all { color:#fff; font-size:13px; font-weight:600; text-decoration:none; border:1px solid rgba(255,255,255,0.45); padding:6px 16px; border-radius:20px; transition:all .2s; }

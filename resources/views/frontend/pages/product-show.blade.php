@@ -90,8 +90,8 @@
 }
 /* ── Key Benefits ── */
 .key-benefits-section {
-    background: rgba(122,18,53,0.04);
-    border: 1px solid rgba(122,18,53,0.14);
+    background: rgba(1,92,60,0.04);
+    border: 1px solid rgba(1,92,60,0.14);
     border-radius: 12px;
     padding: 14px 16px;
 }
@@ -403,7 +403,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 </div>
 
                 <!-- Delivery Info -->
-                <div class="p-3 rounded mb-3" style="background:rgba(107,0,2,0.04); border:1px dashed rgba(107,0,2,0.25);">
+                <div class="p-3 rounded mb-3" style="background:rgba(1,92,60,0.04); border:1px dashed rgba(1,92,60,0.25);">
                     <div class="d-flex align-items-center gap-3 flex-wrap" style="font-size:13px;">
                         <span><i class="fas fa-truck text-danger me-1"></i> Inside Dhaka: <strong>৳70</strong></span>
                         <span><i class="fas fa-truck text-danger me-1"></i> Outside Dhaka: <strong>৳120</strong></span>
