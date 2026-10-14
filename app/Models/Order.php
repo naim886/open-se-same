@@ -92,6 +92,30 @@ class Order extends Model
         self::DELIVERY_FREE          => self::DELIVERY_FREE_COST,
     ];
 
+    // Customer-facing delivery options (cart/checkout/quick-order only offer these two)
+    public const DELIVERY_CUSTOMER_LIST = [
+        self::DELIVERY_INSIDE_DHAKA  => 'Inside Dhaka',
+        self::DELIVERY_OUTSIDE_DHAKA => 'Outside Dhaka',
+    ];
+
+    // Payment Method Constants
+    public const PAYMENT_METHOD_COD    = 1;
+    public const PAYMENT_METHOD_ONLINE = 2;
+
+    public const PAYMENT_METHOD_LIST = [
+        self::PAYMENT_METHOD_COD    => 'Cash on Delivery',
+        self::PAYMENT_METHOD_ONLINE => 'Online Payment',
+    ];
+
+    // Payment Status Constants
+    public const PAYMENT_STATUS_UNPAID = 1;
+    public const PAYMENT_STATUS_PAID   = 2;
+
+    public const PAYMENT_STATUS_LIST = [
+        self::PAYMENT_STATUS_UNPAID => 'Unpaid',
+        self::PAYMENT_STATUS_PAID   => 'Paid',
+    ];
+
 
     /**
      * Get all orders with pagination
@@ -174,6 +198,8 @@ class Order extends Model
             'product_price'     => isset($payload['product_price']) ? (float)$payload['product_price'] : 0.0,
             'delivery_location' => $payload['delivery_location'] ?? null,
             'delivery_charge'   => isset($payload['delivery_charge']) ? (float)$payload['delivery_charge'] : 0.0,
+            'payment_method'    => $payload['payment_method'] ?? self::PAYMENT_METHOD_COD,
+            'payment_status'    => $payload['payment_status'] ?? self::PAYMENT_STATUS_UNPAID,
             'paid_amount'       => isset($payload['paid_amount']) ? (float)$payload['paid_amount'] : 0.0,
             'total_amount'      => isset($payload['order_total']) ? (float)$payload['order_total'] : 0.0,
             'status'            => $payload['status'] ?? self::STATUS_PENDING,
@@ -313,6 +339,22 @@ class Order extends Model
     final public function getStatusColor(): string
     {
         return self::STATUS_COLORS[$this->status] ?? 'secondary';
+    }
+
+    /**
+     * Get payment method label
+     */
+    final public function getPaymentMethodText(): string
+    {
+        return self::PAYMENT_METHOD_LIST[$this->payment_method] ?? 'Cash on Delivery';
+    }
+
+    /**
+     * Get payment status label
+     */
+    final public function getPaymentStatusText(): string
+    {
+        return self::PAYMENT_STATUS_LIST[$this->payment_status] ?? 'Unpaid';
     }
 
     /**
@@ -634,6 +676,8 @@ class Order extends Model
                 'product_price'     => isset($payload['product_price']) ? (float) $payload['product_price'] : $this->product_price,
                 'delivery_location' => $payload['delivery_location'] ?? $this->delivery_location,
                 'delivery_charge'   => isset($payload['delivery_charge']) ? (float) $payload['delivery_charge'] : $this->delivery_charge,
+                'payment_method'    => $payload['payment_method'] ?? $this->payment_method,
+                'payment_status'    => $payload['payment_status'] ?? $this->payment_status,
                 'paid_amount'       => isset($payload['paid_amount']) ? (float) $payload['paid_amount'] : $this->paid_amount,
                 'total_amount'      => isset($payload['order_total']) ? (float) $payload['order_total'] : $this->total_amount,
                 'status'            => $payload['status'] ?? $this->status,
