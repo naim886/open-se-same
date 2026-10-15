@@ -83,7 +83,11 @@ RUN chmod +x /var/www/docker/run.sh
 RUN chmod -Rf 777 . /var/www/storage/logs/
 #RUN chmod -R 777 /var/www/public/images
 
-RUN php artisan o:c
+# Cache clearing deliberately does NOT run at build time: the default cache
+# store is the database, which is not reachable while the image is built, and
+# clearing here would also throw away the config/route caches created above.
+# docker/run.sh does the clear-and-rebuild at container start instead, where the
+# real environment is available.
 
 EXPOSE 80
 ENTRYPOINT ["/var/www/docker/run.sh"]
