@@ -71,7 +71,8 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::create($category);
+            // Keyed on slug so re-seeding updates instead of duplicating.
+            Category::firstOrCreate(['slug' => $category['slug']], $category);
         }
     }
 }

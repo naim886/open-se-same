@@ -27,7 +27,8 @@ class AttributeNameSeeder extends Seeder
         ];
 
         foreach ($attributeNames as $attributeName) {
-            AttributeName::create($attributeName);
+            // Keyed on name so re-seeding updates instead of duplicating.
+            AttributeName::firstOrCreate(['name' => $attributeName['name']], $attributeName);
         }
     }
 }

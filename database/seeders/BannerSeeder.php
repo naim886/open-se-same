@@ -44,7 +44,8 @@ class BannerSeeder extends Seeder
         ];
 
         foreach ($banners as $banner) {
-            Banner::create($banner);
+            // Keyed on title so re-seeding updates instead of duplicating.
+            Banner::firstOrCreate(['title' => $banner['title']], $banner);
         }
     }
 }
