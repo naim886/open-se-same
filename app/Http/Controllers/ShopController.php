@@ -35,7 +35,9 @@ class ShopController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // "Shop by Category" tiles: top level categories only, in sort order.
         $categories = Category::where('status', Category::STATUS_ACTIVE)
+            ->whereNull('category_id')
             ->withCount(['products' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)])
             ->orderBy('sort_order', 'asc')
             ->limit(16)

@@ -1078,63 +1078,88 @@ hr {
     border-color: var(--border-subtle) !important;
 }
 
-/* ── Select2 (shared by order/product screens) ───────────────── */
-.select2-container--default .select2-selection--single,
-.select2-container--default .select2-selection--multiple {
+/* ── Select2 (shared by order/product screens) ───────────────────
+   Select2 ships its own light stylesheet which the page loads *after*
+   this file, so equal-specificity rules below would lose on load
+   order. Every rule is therefore scoped with `body` to outrank the
+   vendor defaults, and the disabled states are styled explicitly. */
+body .select2-container--default .select2-selection--single,
+body .select2-container--default .select2-selection--multiple {
     background-color: var(--theme-color);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     color: var(--theme-text-color);
 }
-.select2-container--default.select2-container--focus .select2-selection--multiple,
-.select2-container--default.select2-container--focus .select2-selection--single {
+body .select2-container--default.select2-container--focus .select2-selection--multiple,
+body .select2-container--default.select2-container--focus .select2-selection--single {
     border-color: var(--brand-light);
     box-shadow: 0 0 0 0.2rem var(--accent-soft);
 }
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--multiple .select2-selection__rendered {
-    color: var(--theme-text-color);
+/* Disabled fields — e.g. the attribute value picker before an
+   attribute name is chosen — must stay dark, not select2's light grey. */
+body .select2-container--default.select2-container--disabled .select2-selection--single,
+body .select2-container--default.select2-container--disabled .select2-selection--multiple {
+    background-color: var(--bg-surface-alt);
+    border-color: var(--border-subtle);
+    color: var(--placeholder-color);
+    cursor: not-allowed;
 }
-.select2-container--default .select2-selection--single .select2-selection__placeholder {
+body .select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__rendered,
+body .select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered {
     color: var(--placeholder-color);
 }
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
+body .select2-container--default .select2-selection--single .select2-selection__rendered,
+body .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    color: var(--theme-text-color);
+}
+body .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: var(--placeholder-color);
+}
+body .select2-container--default .select2-selection--single .select2-selection__arrow b {
     border-color: var(--theme-link-color) transparent transparent transparent;
 }
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
+body .select2-container--default .select2-selection--multiple .select2-selection__choice {
     background-color: var(--brand);
     border: 1px solid var(--brand);
     color: #fff;
     border-radius: 4px;
 }
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+body .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     color: #fff;
 }
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+body .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
     background-color: rgba(0, 0, 0, 0.25);
     color: #fff;
 }
-.select2-dropdown {
+/* Inline search input rendered inside a multiple select */
+body .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+    background: transparent;
+    color: var(--theme-text-color);
+}
+body .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+    color: var(--placeholder-color);
+}
+body .select2-dropdown {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-strong);
     color: var(--theme-text-color);
 }
-.select2-container--default .select2-results__option {
+body .select2-container--default .select2-results__option {
     color: var(--theme-text-color);
     background-color: transparent;
 }
-.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+body .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
     background-color: var(--brand);
     color: #fff;
 }
-.select2-container--default .select2-results__option--selected {
+body .select2-container--default .select2-results__option--selected {
     background-color: rgba(var(--brand-rgb), 0.28);
     color: #fff;
 }
-.select2-results__group {
+body .select2-results__group {
     color: var(--theme-link-color);
 }
-.select2-search--dropdown .select2-search__field {
+body .select2-search--dropdown .select2-search__field {
     background-color: var(--bg-surface-alt);
     border: 1px solid var(--border-strong);
     color: var(--theme-text-color);
