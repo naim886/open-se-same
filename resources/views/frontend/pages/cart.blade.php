@@ -151,7 +151,7 @@
                                             <i class="fas fa-truck-fast delivery-option-icon"></i>
                                             <div style="font-size:12.5px; font-weight:700;">Outside Dhaka</div>
                                             <div style="font-size:11px; color:var(--text-muted);">2–5 days</div>
-                                            <div style="font-size:12.5px; font-weight:700; color:var(--primary-dark);">৳120</div>
+                                            <div style="font-size:12.5px; font-weight:700; color:var(--primary-dark);">৳{{ number_format($dcOutside, 0) }}</div>
                                         </div>
                                     </label>
                                 </div>
@@ -161,12 +161,12 @@
                         <hr class="cart-summary-divider">
                         <div class="cart-summary-row">
                             <span>Delivery Charge:</span>
-                            <span id="deliveryCharge">৳70</span>
+                            <span id="deliveryCharge">৳{{ number_format($dcInside, 0) }}</span>
                         </div>
                         <hr class="cart-summary-divider">
                         <div class="cart-summary-row">
                             <span class="fw-bold">Grand Total:</span>
-                            <span class="cart-summary-total" id="grandTotal">৳{{ number_format($subtotal + 70, 0) }}</span>
+                            <span class="cart-summary-total" id="grandTotal">৳{{ number_format($subtotal + $dcInside, 0) }}</span>
                         </div>
 
                         <a href="{{ route('shop.checkout') }}" class="btn-checkout mt-3" id="checkoutBtn">
@@ -189,14 +189,17 @@
 var subtotal = {{ $subtotal ?? 0 }};
 
 var cartDeliveryLabels = {
-    1: '৳70', 2: '৳120'
+    1: '৳{{ number_format($dcInside, 0) }}', 2: '৳{{ number_format($dcOutside, 0) }}'
 };
+var cartDeliveryCharges = {1: {{ $dcInside }}, 2: {{ $dcOutside }}};
 var cartOptMap = {1:'inside-dhaka-opt', 2:'outside-dhaka-opt'};
 
 function updateDelivery(charge, locationVal) {
     var deliveryEl = document.getElementById('deliveryCharge');
     var totalEl    = document.getElementById('grandTotal');
     var btn        = document.getElementById('checkoutBtn');
+
+    if (cartDeliveryCharges[locationVal] !== undefined) charge = cartDeliveryCharges[locationVal];
 
     if (deliveryEl) deliveryEl.textContent = cartDeliveryLabels[locationVal] || ('৳' + charge);
     if (totalEl)    totalEl.textContent    = '৳' + (subtotal + charge).toLocaleString();
@@ -224,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btn) {
         try {
             var url = new URL(btn.href);
-            url.searchParams.set('delivery', 70);
+            url.searchParams.set('delivery', {{ $dcInside }});
             url.searchParams.set('location', 1);
             btn.href = url.toString();
         } catch(e) {}

@@ -210,6 +210,48 @@ class Order extends Model
     }
 
     /**
+     * Resolve the unit cost for each order line, preferring the variation's
+     * cost and falling back to the parent product's cost.
+     *
+     * @param  array<int, mixed>  $productIds
+     * @param  array<int, mixed>  $variationIds
+     * @return array<int, float|null> Keyed by line index.
+     */
+    private function resolveItemCosts(array $productIds, array $variationIds): array
+    {
+        $productIds   = array_values($productIds);
+        $variationIds = array_values($variationIds);
+
+        $cleanProductIds   = array_filter(array_map('intval', $productIds));
+        $cleanVariationIds = array_filter(array_map('intval', $variationIds));
+
+        $productCosts = $cleanProductIds
+            ? Product::query()->whereIn('id', $cleanProductIds)->pluck('cost', 'id')->all()
+            : [];
+
+        $variationCosts = $cleanVariationIds
+            ? ProductVariation::query()->whereIn('id', $cleanVariationIds)->pluck('cost', 'id')->all()
+            : [];
+
+        $costs = [];
+
+        foreach ($productIds as $idx => $prodId) {
+            $variationId = (int) ($variationIds[$idx] ?? 0);
+            $cost        = null;
+
+            if ($variationId && array_key_exists($variationId, $variationCosts)) {
+                $cost = $variationCosts[$variationId];
+            } elseif (array_key_exists((int) $prodId, $productCosts)) {
+                $cost = $productCosts[(int) $prodId];
+            }
+
+            $costs[$idx] = ($cost === null || $cost === '') ? null : (float) $cost;
+        }
+
+        return $costs;
+    }
+
+    /**
      * Store a new order with multiple items.
      *
      * @param array $payload Validated payload from controller
@@ -236,6 +278,8 @@ class Order extends Model
             'customer_address'  => $payload['customer_address'] ?? null,
             'customer_email'    => $payload['customer_email'] ?? null,
             'product_price'     => isset($payload['product_price']) ? (float)$payload['product_price'] : 0.0,
+            'coupon_code'       => $payload['coupon_code'] ?? null,
+            'discount_amount'   => isset($payload['discount_amount']) ? (float)$payload['discount_amount'] : 0.0,
             'delivery_location' => $payload['delivery_location'] ?? null,
             'delivery_charge'   => isset($payload['delivery_charge']) ? (float)$payload['delivery_charge'] : 0.0,
             'payment_method'    => $payload['payment_method'] ?? self::PAYMENT_METHOD_COD,
@@ -259,6 +303,8 @@ class Order extends Model
         $variationIds    = $payload['variation_ids']     ?? [];
         $variationLabels = $payload['variation_labels']  ?? [];
 
+        $itemCosts = $this->resolveItemCosts($productIds, $variationIds);
+
         $items = [];
         foreach ($productIds as $idx => $prodId) {
             $qty      = isset($quantities[$idx]) ? (int)$quantities[$idx] : 1;
@@ -272,6 +318,7 @@ class Order extends Model
                 'variation_label' => $variationLabels[$idx] ?? null,
                 'product_name'    => $productNames[$idx] ?? null,
                 'unit_price'      => $unit,
+                'cost_price'      => $itemCosts[$idx] ?? null,
                 'quantity'        => $qty,
                 'subtotal'        => $subtotal,
                 'created_at'      => now(),
@@ -306,6 +353,8 @@ class Order extends Model
                                 $newStock = max(0, (int)$product->stock - $qty);
                                 $product->stock = $newStock;
                                 $product->save();
+
+                                app(\App\Services\OrderNotificationService::class)->alertIfLowStock($product);
                             }
                         }
                     } catch (\Throwable $e) {
@@ -714,6 +763,8 @@ class Order extends Model
                 'customer_address'  => $payload['customer_address'] ?? $this->customer_address,
                 'customer_email'    => $payload['customer_email'] ?? $this->customer_email,
                 'product_price'     => isset($payload['product_price']) ? (float) $payload['product_price'] : $this->product_price,
+                'coupon_code'       => $payload['coupon_code'] ?? $this->coupon_code,
+                'discount_amount'   => isset($payload['discount_amount']) ? (float) $payload['discount_amount'] : $this->discount_amount,
                 'delivery_location' => $payload['delivery_location'] ?? $this->delivery_location,
                 'delivery_charge'   => isset($payload['delivery_charge']) ? (float) $payload['delivery_charge'] : $this->delivery_charge,
                 'payment_method'    => $payload['payment_method'] ?? $this->payment_method,
@@ -735,8 +786,18 @@ class Order extends Model
             $variationIds    = $payload['variation_ids']    ?? [];
             $variationLabels = $payload['variation_labels'] ?? [];
 
+            // Preserve the original cost snapshot for lines that survive the edit,
+            // so editing an order does not rewrite its historical margin.
+            $existingByKey = [];
+            foreach (DB::table('order_items')->where('order_id', $this->id)
+                ->get(['product_id', 'variation_id', 'cost_price']) as $row) {
+                $existingByKey[$row->product_id . ':' . ($row->variation_id ?? 0)] = $row->cost_price;
+            }
+
             // remove existing items
             DB::table('order_items')->where('order_id', $this->id)->delete();
+
+            $itemCosts = $this->resolveItemCosts($productIds, $variationIds);
 
             $items = [];
             foreach ($productIds as $idx => $prodId) {
@@ -744,12 +805,15 @@ class Order extends Model
                 $unit = isset($unitPrices[$idx]) ? (float) $unitPrices[$idx] : 0.0;
                 $subtotal = $qty * $unit;
 
+                $lineKey = (int) $prodId . ':' . (int) ($variationIds[$idx] ?? 0);
+
                 $items[] = [
                     'order_id'        => $this->id,
                     'product_id'      => (int) $prodId,
                     'variation_id'    => $variationIds[$idx]    ?? null,
                     'variation_label' => $variationLabels[$idx] ?? null,
                     'unit_price'      => $unit,
+                    'cost_price'      => $existingByKey[$lineKey] ?? $itemCosts[$idx] ?? null,
                     'quantity'        => $qty,
                     'subtotal'        => $subtotal,
                     'created_at'      => now(),

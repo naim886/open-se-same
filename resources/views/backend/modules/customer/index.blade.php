@@ -13,12 +13,18 @@
                 {{ number_format($totalCustomers) }} unique customers &nbsp;·&nbsp;
                 {{ number_format($totalOrders) }} total orders &nbsp;·&nbsp;
                 {{ number_format($repeatCustomers) }} repeat buyers
+                ({{ number_format($repeatRate, 1) }}%)
             </div>
         </div>
-        <a href="{{ route('customers.export', request()->query()) }}"
-           class="btn btn-sm btn-outline-success">
-            <i class="fas fa-file-csv me-1"></i>Export CSV
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('customers.tags.index') }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-tags me-1"></i>Manage Tags
+            </a>
+            <a href="{{ route('customers.export', request()->query()) }}"
+               class="btn btn-sm btn-outline-success">
+                <i class="fas fa-file-csv me-1"></i>Export CSV
+            </a>
+        </div>
     </div>
 
     {{-- ── Summary Cards ── --}}
@@ -40,6 +46,10 @@
                  style="border:1.5px solid rgba(32,201,151,.3) !important; background:rgba(32,201,151,.05)!important;">
                 <div class="text-muted small mb-1">Repeat Buyers</div>
                 <div class="fw-bold fs-2 text-success" style="color:#20c997!important;">{{ number_format($repeatCustomers) }}</div>
+                <div class="small text-muted">
+                    {{ number_format($repeatRate, 1) }}% of customers &nbsp;·&nbsp;
+                    {{ $repeatThreshold }}+ orders
+                </div>
             </div>
         </div>
     </div>
@@ -83,10 +93,33 @@
                     </select>
                 </div>
 
+                {{-- Tag filter --}}
+                <div>
+                    <label class="form-label mb-1 small">Tag</label>
+                    <select name="tag" class="form-select form-select-sm" style="min-width:150px;">
+                        <option value="">All Tags</option>
+                        @foreach($allTags as $tag)
+                            <option value="{{ $tag->id }}" {{ (int) request('tag') === $tag->id ? 'selected' : '' }}>
+                                {{ $tag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Repeat filter --}}
+                <div>
+                    <label class="form-label mb-1 small d-block">Buyer Type</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="repeatFilter" name="repeat" value="1" @checked($repeat)>
+                        <label class="form-check-label small" for="repeatFilter">Repeat only</label>
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-sm btn-primary">
                     <i class="fas fa-search me-1"></i>Filter
                 </button>
-                @if(request()->hasAny(['search','source','sort']))
+                @if(request()->hasAny(['search','source','sort','tag','repeat']))
                     <a href="{{ route('customers.index') }}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-times me-1"></i>Clear
                     </a>
@@ -131,10 +164,27 @@
                                         {{ strtoupper(substr($customer->customer_name ?? '?',0,1)) }}
                                     </div>
                                     <div>
-                                        <div class="fw-semibold" style="font-size:13px;">{{ $customer->customer_name }}</div>
+                                        <div class="fw-semibold d-flex align-items-center gap-1 flex-wrap" style="font-size:13px;">
+                                            <span>{{ $customer->customer_name }}</span>
+                                            @if(($customer->order_count ?? 0) >= $repeatThreshold)
+                                                <span class="badge bg-success" style="font-size:9px;"
+                                                      title="{{ $repeatThreshold }}+ orders">REPEAT</span>
+                                            @endif
+                                        </div>
                                         <div class="text-muted" style="font-size:11px;">{{ $customer->customer_phone }}</div>
                                         @if($customer->customer_email)
                                             <div class="text-muted" style="font-size:10px;">{{ $customer->customer_email }}</div>
+                                        @endif
+                                        @php $rowTags = $customerTags[$customer->customer_phone] ?? []; @endphp
+                                        @if(!empty($rowTags))
+                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                                @foreach($rowTags as $rowTag)
+                                                    <span class="badge"
+                                                          style="background:{{ $rowTag->color }};font-size:9px;padding:2px 6px;">
+                                                        {{ $rowTag->name }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
                                         @endif
                                     </div>
                                 </div>

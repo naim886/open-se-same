@@ -50,6 +50,11 @@ echo Schema::product()
 @endsection
 
 @section('content')
+@php
+    $deliveryCosts = \App\Models\Order::deliveryCostList();
+    $dcInside      = $deliveryCosts[\App\Models\Order::DELIVERY_INSIDE_DHAKA] ?? 0;
+    $dcOutside     = $deliveryCosts[\App\Models\Order::DELIVERY_OUTSIDE_DHAKA] ?? 0;
+@endphp
 
 <div class="shop-breadcrumb">
     <div class="container">
@@ -113,9 +118,9 @@ echo Schema::product()
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="product_price" id="productPriceHidden" value="{{ $product->isVariantProduct() ? 0 : ($product->sale_price ?? $product->price) }}">
-                                <input type="hidden" name="delivery_charge" id="deliveryHidden" value="70">
+                                <input type="hidden" name="delivery_charge" id="deliveryHidden" value="{{ $dcInside }}">
                                 <input type="hidden" name="delivery_location" id="deliveryLocationHidden" value="1">
-                                <input type="hidden" name="order_total" id="orderTotalHidden" value="{{ $product->isVariantProduct() ? 70 : (($product->sale_price ?? $product->price) + 70) }}">
+                                <input type="hidden" name="order_total" id="orderTotalHidden" value="{{ $product->isVariantProduct() ? $dcInside : (($product->sale_price ?? $product->price) + $dcInside) }}">
                                 @if($product->isVariantProduct())
                                 <input type="hidden" name="variation_id" id="variationIdHidden" value="">
                                 @endif
@@ -219,25 +224,37 @@ echo Schema::product()
                                         <div class="row g-2">
                                             <div class="col-6">
                                                 <label class="delivery-option-card w-100 active" id="qo-inside">
-                                                    <input type="radio" name="_qo_delivery" value="70" checked onchange="setQODelivery(70, 1)">
+                                                    <input type="radio" name="_qo_delivery" value="{{ $dcInside }}" checked onchange="setQODelivery({{ $dcInside }}, 1)">
                                                     <div>
                                                         <i class="fas fa-location-dot delivery-option-icon"></i>
                                                         <div style="font-weight:700; font-size:12px;">Inside Dhaka</div>
-                                                        <div style="font-size:11px; color:var(--primary-dark);">৳70</div>
+                                                        <div style="font-size:11px; color:var(--primary-dark);">৳{{ number_format($dcInside, 0) }}</div>
                                                     </div>
                                                 </label>
                                             </div>
                                             <div class="col-6">
                                                 <label class="delivery-option-card w-100" id="qo-outside">
-                                                    <input type="radio" name="_qo_delivery" value="120" onchange="setQODelivery(120, 2)">
+                                                    <input type="radio" name="_qo_delivery" value="{{ $dcOutside }}" onchange="setQODelivery({{ $dcOutside }}, 2)">
                                                     <div>
                                                         <i class="fas fa-truck-fast delivery-option-icon"></i>
                                                         <div style="font-weight:700; font-size:12px;">Outside Dhaka</div>
-                                                        <div style="font-size:11px; color:var(--primary-dark);">৳120</div>
+                                                        <div style="font-size:11px; color:var(--primary-dark);">৳{{ number_format($dcOutside, 0) }}</div>
                                                     </div>
                                                 </label>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Coupon Code</label>
+                                        <input type="hidden" name="coupon_code" id="qoCouponHidden" value="">
+                                        <div class="d-flex gap-2">
+                                            <input type="text" id="qoCouponInput" class="form-control text-uppercase"
+                                                   placeholder="Enter code" autocomplete="off">
+                                            <button type="button" class="btn btn-outline-primary text-nowrap"
+                                                    onclick="applyQoCoupon()">Apply</button>
+                                        </div>
+                                        <div id="qoCouponMessage" class="mt-1" style="font-size:12px;"></div>
                                     </div>
 
                                     <div class="col-12">
@@ -254,12 +271,16 @@ echo Schema::product()
                                             </div>
                                             <div class="d-flex justify-content-between mb-2" style="font-size:14px;">
                                                 <span>Delivery:</span>
-                                                <span id="deliveryShow">৳70</span>
+                                                <span id="deliveryShow">৳{{ number_format($dcInside, 0) }}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-2 d-none" style="font-size:14px;" id="qoDiscountRow">
+                                                <span>Discount <span id="qoCouponCode" class="text-muted"></span>:</span>
+                                                <span class="text-success" id="qoDiscountShow">৳0</span>
                                             </div>
                                             <hr style="margin:8px 0; border-color:var(--border);">
                                             <div class="d-flex justify-content-between">
                                                 <span class="fw-bold">Grand Total:</span>
-                                                <span class="fw-bold" style="font-size:18px; background:var(--primary-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">৳<span id="totalShow">{{ number_format(($product->sale_price ?? $product->price) + 70, 0) }}</span></span>
+                                                <span class="fw-bold" style="font-size:18px; background:var(--primary-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">৳<span id="totalShow">{{ number_format(($product->sale_price ?? $product->price) + $dcInside, 0) }}</span></span>
                                             </div>
                                         </div>
                                     </div>
@@ -307,7 +328,78 @@ echo Schema::product()
 
 @section('extra_js')
 <script>
-var deliveryCharge = 70;
+var deliveryCharge = {{ $dcInside }};
+var couponDiscount = 0;
+
+function qoSubtotal() {
+    var input = document.getElementById('qtyInput');
+    var qty = input ? (parseInt(input.value) || 1) : 1;
+    return unitPrice * qty;
+}
+
+function applyQoCoupon() {
+    var input  = document.getElementById('qoCouponInput');
+    var msg    = document.getElementById('qoCouponMessage');
+    var hidden = document.getElementById('qoCouponHidden');
+    var row    = document.getElementById('qoDiscountRow');
+    var code   = input ? input.value.trim() : '';
+
+    if (!code) {
+        couponDiscount = 0;
+        if (hidden) hidden.value = '';
+        if (row) row.classList.add('d-none');
+        if (msg) { msg.textContent = 'Please enter a coupon code.'; msg.className = 'mt-1 text-danger'; }
+        recalcTotal();
+        return;
+    }
+
+    var phoneEl = document.getElementById('qo_phone');
+    var locEl   = document.getElementById('deliveryLocationHidden');
+
+    var body = new URLSearchParams({
+        code:              code,
+        subtotal:          String(qoSubtotal()),
+        delivery_location: String(locEl ? locEl.value : 1),
+        phone:             phoneEl ? phoneEl.value : ''
+    });
+
+    fetch('{{ route('shop.coupon.validate') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: body.toString()
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        if (data.ok) {
+            couponDiscount = parseFloat(data.discount) || 0;
+            if (hidden) hidden.value = data.code || code;
+            if (row) row.classList.remove('d-none');
+
+            var dEl = document.getElementById('qoDiscountShow');
+            var cEl = document.getElementById('qoCouponCode');
+            if (dEl) dEl.textContent = '৳' + couponDiscount.toLocaleString();
+            if (cEl) cEl.textContent = '(' + (data.code || code) + ')';
+            if (msg) { msg.textContent = data.message; msg.className = 'mt-1 text-success'; }
+        } else {
+            couponDiscount = 0;
+            if (hidden) hidden.value = '';
+            if (row) row.classList.add('d-none');
+            if (msg) { msg.textContent = data.message || 'Invalid coupon code.'; msg.className = 'mt-1 text-danger'; }
+        }
+        recalcTotal();
+    })
+    .catch(function () {
+        couponDiscount = 0;
+        if (hidden) hidden.value = '';
+        if (row) row.classList.add('d-none');
+        if (msg) { msg.textContent = 'Could not validate the coupon. Please try again.'; msg.className = 'mt-1 text-danger'; }
+        recalcTotal();
+    });
+}
 
 function qoFillAddress(sel) {
     var opt = sel.options[sel.selectedIndex];
@@ -466,7 +558,7 @@ function recalcTotal() {
     var input = document.getElementById('qtyInput');
     var qty = input ? (parseInt(input.value) || 1) : 1;
     var productTotal = unitPrice * qty;
-    var total = productTotal + deliveryCharge;
+    var total = Math.max(0, productTotal + deliveryCharge - couponDiscount);
 
     var ps = document.getElementById('productPriceShow');
     var ts = document.getElementById('totalShow');

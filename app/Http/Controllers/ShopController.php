@@ -15,6 +15,8 @@ use App\Models\SiteContent;
 use App\Models\TopSellingProduct;
 use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendFacebookCapiEvent;
+use App\Services\CouponService;
+use App\Services\OrderNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -276,7 +278,7 @@ class ShopController extends Controller
     // ============================================================
     // PLACE QUICK ORDER (single product)
     // ============================================================
-    public function placeQuickOrder(Request $request): RedirectResponse
+    public function placeQuickOrder(Request $request, CouponService $coupons): RedirectResponse
     {
         $request->validate([
             'product_id'       => 'required|exists:products,id',
@@ -304,6 +306,11 @@ class ShopController extends Controller
         }
         $dc      = Order::deliveryCost($request->delivery_location);
 
+        // Coupons are validated server-side against the true product subtotal.
+        $lineTotal    = (float) ($price * $qty);
+        $couponResult = $coupons->validate($request->input('coupon_code'), $lineTotal, $request->customer_phone);
+        $discount     = $couponResult->ok ? $couponResult->discount : 0.0;
+
         $payload = [
             'customer_name'     => $request->customer_name,
             'customer_phone'    => $request->customer_phone,
@@ -315,11 +322,13 @@ class ShopController extends Controller
             'unit_prices'       => [$price],
             'variation_ids'     => [$variation?->id],
             'variation_labels'  => [$variation?->label],
-            'product_price'     => $price * $qty,
+            'product_price'     => $lineTotal,
             'delivery_location' => (int) $request->delivery_location,
             'delivery_charge'   => $dc,
             'paid_amount'       => 0,
-            'order_total'       => ($price * $qty) + $dc,
+            'order_total'       => max(0, $lineTotal + $dc - $discount),
+            'coupon_code'       => $couponResult->ok ? $couponResult->coupon->code : null,
+            'discount_amount'   => $discount,
             'note'              => $request->note,
             'status'            => Order::STATUS_PENDING,
             'source'            => 'website',
@@ -327,6 +336,12 @@ class ShopController extends Controller
 
         try {
             $order = (new Order())->storeOrder($payload);
+
+            if ($couponResult->ok) {
+                $coupons->recordUsage($couponResult->coupon, $order->id, $request->customer_phone, $discount);
+            }
+
+            app(OrderNotificationService::class)->orderPlaced($order);
 
             // ── CAPI: Purchase ────────────────────────────────────
             $purchaseEventId = Str::uuid()->toString();
@@ -372,9 +387,44 @@ class ShopController extends Controller
     }
 
     // ============================================================
+    // COUPON: LIVE VALIDATION (AJAX)
+    // ============================================================
+    public function validateCoupon(Request $request, CouponService $coupons): JsonResponse
+    {
+        $request->validate([
+            'code' => 'required|string|max:50',
+        ]);
+
+        // Prefer the server-side cart subtotal. The client-supplied value is only
+        // a preview fallback for the single-product quick-order page.
+        $cart     = session('cart', []);
+        $subtotal = (float) $request->input('subtotal', 0);
+
+        if (! empty($cart)) {
+            $subtotal = (float) collect($cart)->sum(
+                fn ($item) => ($item['sale_price'] ?? $item['price']) * $item['quantity']
+            );
+        }
+
+        $result = $coupons->validate($request->input('code'), $subtotal, $request->input('phone'));
+
+        $delivery = Order::deliveryCost($request->input('delivery_location', Order::DELIVERY_INSIDE_DHAKA));
+
+        return response()->json([
+            'ok'       => $result->ok,
+            'message'  => $result->message !== ''
+                ? $result->message
+                : ($result->ok ? 'Coupon applied successfully.' : 'Invalid coupon code.'),
+            'code'     => $result->coupon?->code,
+            'discount' => $result->discount,
+            'total'    => max(0, $subtotal + $delivery - $result->discount),
+        ]);
+    }
+
+    // ============================================================
     // PLACE CART ORDER
     // ============================================================
-    public function placeOrder(Request $request): RedirectResponse
+    public function placeOrder(Request $request, CouponService $coupons): RedirectResponse
     {
         $request->validate([
             'customer_name'    => 'required|string|max:255',
@@ -411,6 +461,10 @@ class ShopController extends Controller
 
         $dc = Order::deliveryCost($request->delivery_location);
 
+        // Coupons are validated server-side against the true cart subtotal.
+        $couponResult = $coupons->validate($request->input('coupon_code'), $productTotal, $request->customer_phone);
+        $discount     = $couponResult->ok ? $couponResult->discount : 0.0;
+
         $payload = [
             'customer_name'     => $request->customer_name,
             'customer_phone'    => $request->customer_phone,
@@ -426,7 +480,9 @@ class ShopController extends Controller
             'delivery_location' => (int) $request->delivery_location,
             'delivery_charge'   => $dc,
             'paid_amount'       => 0,
-            'order_total'       => $productTotal + $dc,
+            'order_total'       => max(0, $productTotal + $dc - $discount),
+            'coupon_code'       => $couponResult->ok ? $couponResult->coupon->code : null,
+            'discount_amount'   => $discount,
             'note'              => $request->note,
             'status'            => Order::STATUS_PENDING,
             'source'            => 'website',
@@ -434,6 +490,12 @@ class ShopController extends Controller
 
         try {
             $order = (new Order())->storeOrder($payload);
+
+            if ($couponResult->ok) {
+                $coupons->recordUsage($couponResult->coupon, $order->id, $request->customer_phone, $discount);
+            }
+
+            app(OrderNotificationService::class)->orderPlaced($order);
 
             // Clear cart after successful order
             session()->forget('cart');

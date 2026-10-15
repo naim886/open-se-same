@@ -27,17 +27,21 @@
             $cart = session('cart', []);
             $cartCount = count($cart);
 
+            // Charges are admin-configurable, so resolve them instead of hardcoding.
+            $deliveryCosts = \App\Models\Order::deliveryCostList();
+            $dcInside      = $deliveryCosts[\App\Models\Order::DELIVERY_INSIDE_DHAKA] ?? 0;
+            $dcOutside     = $deliveryCosts[\App\Models\Order::DELIVERY_OUTSIDE_DHAKA] ?? 0;
+
             // location param (set by cart page) takes priority
             if (request()->has('location') && (int) request('location') === 2) {
                 $deliveryInitLocation = 2;
-                $delivery = 120;
-            } elseif (request()->has('delivery') && (int) request('delivery') === 120) {
+            } elseif (request()->has('delivery') && (float) request('delivery') === (float) $dcOutside) {
                 $deliveryInitLocation = 2;
-                $delivery = 120;
             } else {
                 $deliveryInitLocation = 1;
-                $delivery = 70;
             }
+
+            $delivery = $deliveryInitLocation === 2 ? $dcOutside : $dcInside;
             $subtotal = collect($cart)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']);
             $total = $subtotal + $delivery;
         @endphp
@@ -128,23 +132,23 @@
                         <div class="row g-2">
                             <div class="col-6">
                                 <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 1 ? 'active' : '' }}" id="co-inside">
-                                    <input type="radio" name="_delivery_select" value="70" {{ $deliveryInitLocation == 1 ? 'checked' : '' }} onchange="setDelivery(70, 1)">
+                                    <input type="radio" name="_delivery_select" value="{{ $dcInside }}" {{ $deliveryInitLocation == 1 ? 'checked' : '' }} onchange="setDelivery({{ $dcInside }}, 1)">
                                     <div>
                                         <i class="fas fa-location-dot delivery-option-icon"></i>
                                         <div style="font-weight:700; font-size:12.5px;">Inside Dhaka</div>
                                         <div style="font-size:11px; color:var(--text-muted);">1–2 days</div>
-                                        <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳70</div>
+                                        <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳{{ number_format($dcInside, 0) }}</div>
                                     </div>
                                 </label>
                             </div>
                             <div class="col-6">
                                 <label class="delivery-option-card w-100 {{ $deliveryInitLocation == 2 ? 'active' : '' }}" id="co-outside">
-                                    <input type="radio" name="_delivery_select" value="120" {{ $deliveryInitLocation == 2 ? 'checked' : '' }} onchange="setDelivery(120, 2)">
+                                    <input type="radio" name="_delivery_select" value="{{ $dcOutside }}" {{ $deliveryInitLocation == 2 ? 'checked' : '' }} onchange="setDelivery({{ $dcOutside }}, 2)">
                                     <div>
                                         <i class="fas fa-truck-fast delivery-option-icon"></i>
                                         <div style="font-weight:700; font-size:12.5px;">Outside Dhaka</div>
                                         <div style="font-size:11px; color:var(--text-muted);">2–5 days</div>
-                                        <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳120</div>
+                                        <div style="font-size:13px; font-weight:700; color:var(--primary-dark);">৳{{ number_format($dcOutside, 0) }}</div>
                                     </div>
                                 </label>
                             </div>
@@ -214,6 +218,24 @@
                             <span>Delivery Charge:</span>
                             <span id="coSummaryDelivery">৳{{ number_format($delivery, 0) }}</span>
                         </div>
+
+                        {{-- Coupon --}}
+                        <input type="hidden" name="coupon_code" id="couponCodeHidden" value="">
+                        <div class="mt-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Coupon Code</label>
+                            <div class="d-flex gap-2">
+                                <input type="text" id="couponInput" class="form-control form-control-sm text-uppercase"
+                                       placeholder="Enter code" autocomplete="off">
+                                <button type="button" class="btn btn-sm btn-outline-primary text-nowrap"
+                                        id="couponApplyBtn" onclick="applyCoupon()">Apply</button>
+                            </div>
+                            <div id="couponMessage" class="mt-1" style="font-size:12px;"></div>
+                        </div>
+
+                        <div class="cart-summary-row d-none" id="coDiscountRow">
+                            <span>Discount <span id="couponAppliedCode" class="text-muted"></span>:</span>
+                            <span class="text-success" id="coSummaryDiscount">৳0</span>
+                        </div>
                         <hr class="cart-summary-divider">
                         <div class="cart-summary-row">
                             <span class="fw-bold fs-6">Grand Total:</span>
@@ -237,7 +259,95 @@
 
 @section('extra_js')
 <script>
-var baseSubtotal = {{ $subtotal ?? 0 }};
+var baseSubtotal   = {{ $subtotal ?? 0 }};
+var couponDiscount = 0;
+var couponCode     = '';
+
+function computeTotal(delivery) {
+    return Math.max(0, baseSubtotal + delivery - couponDiscount);
+}
+
+function currentDelivery() {
+    var el = document.getElementById('hiddenDelivery');
+    return el ? (parseFloat(el.value) || 0) : 0;
+}
+
+function refreshSummary() {
+    var total = computeTotal(currentDelivery());
+    var st = document.getElementById('coSummaryTotal');
+    var ht = document.getElementById('hiddenTotal');
+    if (st) st.textContent = '৳' + total.toLocaleString();
+    if (ht) ht.value = total;
+}
+
+function applyCoupon() {
+    var input  = document.getElementById('couponInput');
+    var msg    = document.getElementById('couponMessage');
+    var hidden = document.getElementById('couponCodeHidden');
+    var row    = document.getElementById('coDiscountRow');
+    var code   = input ? input.value.trim() : '';
+
+    if (!code) {
+        couponDiscount = 0;
+        couponCode     = '';
+        if (hidden) hidden.value = '';
+        if (row) row.classList.add('d-none');
+        if (msg) { msg.textContent = 'Please enter a coupon code.'; msg.className = 'mt-1 text-danger'; }
+        refreshSummary();
+        return;
+    }
+
+    var phoneEl = document.getElementById('co_phone');
+    var locEl   = document.getElementById('hiddenDeliveryLocation');
+
+    var body = new URLSearchParams({
+        code:              code,
+        subtotal:          String(baseSubtotal),
+        delivery_location: String(locEl ? locEl.value : 1),
+        phone:             phoneEl ? phoneEl.value : ''
+    });
+
+    fetch('{{ route('shop.coupon.validate') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: body.toString()
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        if (data.ok) {
+            couponDiscount = parseFloat(data.discount) || 0;
+            couponCode     = data.code || code;
+
+            if (hidden) hidden.value = couponCode;
+            if (row) row.classList.remove('d-none');
+
+            var dEl = document.getElementById('coSummaryDiscount');
+            var cEl = document.getElementById('couponAppliedCode');
+            if (dEl) dEl.textContent = '৳' + couponDiscount.toLocaleString();
+            if (cEl) cEl.textContent = '(' + couponCode + ')';
+            if (msg) { msg.textContent = data.message; msg.className = 'mt-1 text-success'; }
+        } else {
+            couponDiscount = 0;
+            couponCode     = '';
+            if (hidden) hidden.value = '';
+            if (row) row.classList.add('d-none');
+            if (msg) { msg.textContent = data.message || 'Invalid coupon code.'; msg.className = 'mt-1 text-danger'; }
+        }
+        refreshSummary();
+    })
+    .catch(function () {
+        couponDiscount = 0;
+        couponCode     = '';
+        if (hidden) hidden.value = '';
+        if (row) row.classList.add('d-none');
+        if (msg) { msg.textContent = 'Could not validate the coupon. Please try again.'; msg.className = 'mt-1 text-danger'; }
+        refreshSummary();
+    });
+}
 
 function fillFromSavedAddress(sel) {
     var opt = sel.options[sel.selectedIndex];
@@ -264,12 +374,12 @@ function setDelivery(charge, locationVal) {
     var st  = document.getElementById('coSummaryTotal');
 
     if (hd)  hd.value  = charge;
-    if (ht)  ht.value  = baseSubtotal + charge;
+    if (ht)  ht.value  = computeTotal(charge);
     if (hlo) hlo.value = locationVal;
 
     // Delivery label in summary
     if (sd) sd.textContent = '৳' + charge;
-    if (st) st.textContent = '৳' + (baseSubtotal + charge).toLocaleString();
+    if (st) st.textContent = '৳' + computeTotal(charge).toLocaleString();
 
     ['co-inside','co-outside'].forEach(function(id) {
         var el = document.getElementById(id);

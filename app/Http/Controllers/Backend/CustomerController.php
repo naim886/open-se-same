@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerNote;
+use App\Models\CustomerTag;
 use App\Models\Order;
+use App\Models\Setting;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -44,6 +48,11 @@ class CustomerController extends Controller
         $search = $request->input('search');
         $source = $request->input('source');
         $sort   = $request->input('sort', 'last_order');
+        $tagId  = $request->integer('tag') ?: null;
+        $repeat = $request->boolean('repeat');
+
+        // Orders needed before a customer counts as a repeat buyer.
+        $repeatThreshold = max(2, Setting::int('crm.repeat_min_orders'));
 
         // Base query: one row per unique customer_phone
         $query = DB::table('orders')
@@ -81,6 +90,19 @@ class CustomerController extends Controller
             $query->where('orders.source', $source);
         }
 
+        // Tag filter
+        if ($tagId && CustomerTag::whereKey($tagId)->exists()) {
+            $query->whereIn('orders.customer_phone', function ($sub) use ($tagId) {
+                $sub->select('phone')->from('customer_tag_assignments')
+                    ->where('customer_tag_id', $tagId);
+            });
+        }
+
+        // Repeat-buyer filter
+        if ($repeat) {
+            $query->havingRaw('COUNT(orders.id) >= ?', [$repeatThreshold]);
+        }
+
         // Sort
         match ($sort) {
             'most_orders'   => $query->orderByDesc('order_count'),
@@ -93,6 +115,10 @@ class CustomerController extends Controller
         $customers    = $query->paginate(20)->withQueryString();
         $sourceList   = self::SOURCE_LIST;
         $sourceColors = self::SOURCE_COLORS;
+
+        // Tags for the current page of customers, in one extra query.
+        $customerTags = CustomerTag::forPhones($customers->pluck('customer_phone')->all());
+        $allTags      = CustomerTag::orderBy('name')->get(['id', 'name', 'color']);
 
         // Summary stats
         $totals = DB::table('orders')
@@ -107,12 +133,16 @@ class CustomerController extends Controller
         $totalOrders     = $totals->total_orders ?? 0;
 
         $repeatCustomers = DB::table(DB::raw(
-            '(SELECT customer_phone FROM orders WHERE deleted_at IS NULL GROUP BY customer_phone HAVING COUNT(id) > 1) as sub'
+            '(SELECT customer_phone FROM orders WHERE deleted_at IS NULL GROUP BY customer_phone HAVING COUNT(id) >= '
+            . (int) $repeatThreshold . ') as sub'
         ))->count();
+
+        $repeatRate = $totalCustomers > 0 ? ($repeatCustomers / $totalCustomers) * 100 : 0.0;
 
         return view('backend.modules.customer.index', compact(
             'customers', 'sourceList', 'sourceColors',
-            'totalCustomers', 'totalOrders', 'repeatCustomers'
+            'totalCustomers', 'totalOrders', 'repeatCustomers', 'repeatRate',
+            'customerTags', 'allTags', 'tagId', 'repeat', 'repeatThreshold'
         ));
     }
 
@@ -157,9 +187,79 @@ class CustomerController extends Controller
         $sourceList   = self::SOURCE_LIST;
         $sourceColors = self::SOURCE_COLORS;
 
+        // CRM: tags, notes and repeat status
+        $allTags         = CustomerTag::orderBy('name')->get(['id', 'name', 'color']);
+        $assignedTags    = CustomerTag::forPhones([$phone])[$phone] ?? [];
+        $assignedTagIds  = array_column($assignedTags, 'id');
+        $notes           = CustomerNote::with('author')->where('phone', $phone)
+                                ->orderByDesc('created_at')->get();
+        $repeatThreshold = max(2, Setting::int('crm.repeat_min_orders'));
+        $isRepeat        = $stats->order_count >= $repeatThreshold;
+
         return view('backend.modules.customer.show', compact(
-            'customer', 'orders', 'stats', 'sourceList', 'sourceColors', 'sourceDist'
+            'customer', 'orders', 'stats', 'sourceList', 'sourceColors', 'sourceDist',
+            'allTags', 'assignedTags', 'assignedTagIds', 'notes', 'isRepeat', 'repeatThreshold'
         ));
+    }
+
+    // ── Tags: attach a tag to a customer ─────────────────────────────────
+    public function attachTag(Request $request, string $phone): RedirectResponse
+    {
+        $validated = $request->validate([
+            'customer_tag_id' => ['required', 'integer', 'exists:customer_tags,id'],
+        ]);
+
+        $alreadyAssigned = DB::table('customer_tag_assignments')
+            ->where('phone', $phone)
+            ->where('customer_tag_id', $validated['customer_tag_id'])
+            ->exists();
+
+        if (! $alreadyAssigned) {
+            DB::table('customer_tag_assignments')->insert([
+                'phone'            => $phone,
+                'customer_tag_id'  => $validated['customer_tag_id'],
+                'assigned_by'      => auth()->id(),
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Tag added.');
+    }
+
+    // ── Tags: remove a tag from a customer ───────────────────────────────
+    public function detachTag(string $phone, int $tagId): RedirectResponse
+    {
+        DB::table('customer_tag_assignments')
+            ->where('phone', $phone)
+            ->where('customer_tag_id', $tagId)
+            ->delete();
+
+        return back()->with('success', 'Tag removed.');
+    }
+
+    // ── Notes: add an internal note ──────────────────────────────────────
+    public function storeNote(Request $request, string $phone): RedirectResponse
+    {
+        $validated = $request->validate([
+            'note' => ['required', 'string', 'max:2000'],
+        ]);
+
+        CustomerNote::create([
+            'phone'   => $phone,
+            'user_id' => auth()->id(),
+            'note'    => $validated['note'],
+        ]);
+
+        return back()->with('success', 'Note added.');
+    }
+
+    // ── Notes: delete an internal note ───────────────────────────────────
+    public function destroyNote(string $phone, int $noteId): RedirectResponse
+    {
+        CustomerNote::where('phone', $phone)->where('id', $noteId)->delete();
+
+        return back()->with('success', 'Note deleted.');
     }
 
     // ── Update source on a single order ──────────────────────────────────

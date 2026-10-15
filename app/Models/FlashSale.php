@@ -101,8 +101,19 @@ class FlashSale extends Model
     public static function applyFlashPrice(Product $product): void
     {
         $flashPrice = static::getFlashPriceForProduct($product->id);
-        if ($flashPrice !== null) {
-            $product->sale_price = $flashPrice;
+
+        if ($flashPrice === null) {
+            return;
         }
+
+        // A campaign may lower a price but never raise it: if the product already
+        // sells for less than the campaign price, keep the cheaper price.
+        $currentPrice = (float) ($product->sale_price ?? $product->price ?? 0);
+
+        if ($currentPrice > 0 && $flashPrice >= $currentPrice) {
+            return;
+        }
+
+        $product->sale_price = $flashPrice;
     }
 }

@@ -13,6 +13,14 @@
                     <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-sm btn-primary me-2">
                         <i class="ri-edit-line"></i> Edit Order
                     </a>
+                    <a href="{{ route('orders.invoice', $order->id) }}" class="btn btn-sm btn-outline-primary me-2"
+                       title="Download A4 invoice PDF">
+                        <i class="fas fa-file-invoice me-1"></i> Invoice
+                    </a>
+                    <a href="{{ route('orders.label', $order->id) }}" class="btn btn-sm btn-outline-dark me-2"
+                       title="Download 4x6in courier label PDF">
+                        <i class="fas fa-tag me-1"></i> Label
+                    </a>
                     @if(!$order->consignment_id)
                     <button type="button" class="btn btn-sm btn-warning me-2"
                         onclick="openCourierModal(
@@ -320,6 +328,17 @@
                                 <td>Delivery ({{ \App\Models\Order::DELIVERY_LIST[$order->delivery_location] ?? '—' }})</td>
                                 <td class="text-end">{{ number_format($order->delivery_charge ?? 0, 2) }} tk</td>
                             </tr>
+                            @if((float) $order->discount_amount > 0)
+                            <tr class="text-success">
+                                <td>
+                                    Discount
+                                    @if($order->coupon_code)
+                                        <span class="badge bg-secondary" style="font-size:10px;">{{ $order->coupon_code }}</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">- {{ number_format($order->discount_amount, 2) }} tk</td>
+                            </tr>
+                            @endif
                             <tr>
                                 <th>Order Total</th>
                                 <th class="text-end">{{ number_format($order->total_amount, 2) }} tk</th>

@@ -161,6 +161,102 @@
         </div>
     </div>
 
+    {{-- ── CRM: Tags & Notes ── --}}
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header border-0 py-3" style="background:rgba(255,255,255,.03);">
+                    <span class="fw-semibold">
+                        <i class="fas fa-tags me-2 text-primary"></i>Tags
+                        @if($isRepeat)
+                            <span class="badge bg-success ms-1" style="font-size:10px;"
+                                  title="{{ $stats->order_count }} orders">REPEAT BUYER</span>
+                        @endif
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        @forelse($assignedTags as $tag)
+                            <span class="badge d-inline-flex align-items-center gap-1 mb-1"
+                                  style="background:{{ $tag->color }};font-size:12px;padding:6px 8px 6px 10px;">
+                                {{ $tag->name }}
+                                <form action="{{ route('customers.tags.detach', [$customer->customer_phone, $tag->id]) }}"
+                                      method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-close btn-close-white align-middle"
+                                            style="font-size:8px;" title="Remove tag" aria-label="Remove tag"></button>
+                                </form>
+                            </span>
+                        @empty
+                            <span class="text-muted small">No tags assigned.</span>
+                        @endforelse
+                    </div>
+
+                    @php $availableTags = $allTags->whereNotIn('id', $assignedTagIds); @endphp
+                    @if($availableTags->isNotEmpty())
+                        <form action="{{ route('customers.tags.attach', $customer->customer_phone) }}"
+                              method="POST" class="d-flex gap-2">
+                            @csrf
+                            <select name="customer_tag_id" class="form-select form-select-sm">
+                                @foreach($availableTags as $tag)
+                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary text-nowrap">
+                                <i class="fas fa-plus me-1"></i>Add
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header border-0 py-3" style="background:rgba(255,255,255,.03);">
+                    <span class="fw-semibold">
+                        <i class="fas fa-note-sticky me-2 text-warning"></i>Internal Notes
+                        <span class="badge bg-secondary ms-1">{{ $notes->count() }}</span>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('customers.notes.store', $customer->customer_phone) }}"
+                          method="POST" class="mb-3">
+                        @csrf
+                        <textarea name="note" rows="2" class="form-control form-control-sm"
+                                  placeholder="Add an internal note (not visible to the customer)…"
+                                  required maxlength="2000">{{ old('note') }}</textarea>
+                        <button type="submit" class="btn btn-sm btn-primary mt-2">
+                            <i class="fas fa-plus me-1"></i>Add Note
+                        </button>
+                    </form>
+
+                    @forelse($notes as $note)
+                        <div class="border rounded p-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div style="font-size:13px; white-space:pre-line;">{{ $note->note }}</div>
+                                <form action="{{ route('customers.notes.destroy', [$customer->customer_phone, $note->id]) }}"
+                                      method="POST" onsubmit="return confirm('Delete this note?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0"
+                                            title="Delete note"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                            <div class="text-muted mt-1" style="font-size:11px;">
+                                {{ $note->author?->name ?? 'System' }} ·
+                                {{ $note->created_at?->format('d M Y, h:i A') }}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-muted small">No notes yet.</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- ── Order History ── --}}
     <div class="card border-0 shadow-sm">
         <div class="card-header border-0 py-3"

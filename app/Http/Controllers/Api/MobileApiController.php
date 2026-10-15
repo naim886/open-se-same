@@ -735,6 +735,8 @@ class MobileApiController extends Controller
         try {
             $order = (new Order())->storeOrder($payload);
 
+            app(\App\Services\OrderNotificationService::class)->orderPlaced($order);
+
             return response()->json([
                 'success'      => true,
                 'message'      => 'Your order has been placed successfully!',
@@ -818,6 +820,8 @@ class MobileApiController extends Controller
 
         try {
             $order = (new Order())->storeOrder($payload);
+
+            app(\App\Services\OrderNotificationService::class)->orderPlaced($order);
 
             return response()->json([
                 'success'      => true,

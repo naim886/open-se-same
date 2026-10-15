@@ -85,6 +85,7 @@ Route::prefix('/')->name('shop.')->group(function () {
     // Order placement
     Route::post('/order/place',       [ShopController::class, 'placeOrder'])->name('order.place');
     Route::post('/order/quick',       [ShopController::class, 'placeQuickOrder'])->name('order.quick');
+    Route::post('/coupon/validate',   [ShopController::class, 'validateCoupon'])->name('coupon.validate');
 
     // Blog & Pages (CMS)
     Route::get('/blogs',              [ShopController::class, 'blogs'])->name('blogs');
@@ -117,11 +118,18 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::post('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::post('orders/{order}/notes', [OrderController::class, 'addNote'])->name('orders.addNote');
     Route::post('orders/{order}/send-to-courier', [OrderController::class, 'sendToCourier'])->name('orders.sendToCourier');
+    // Printable documents. The "Tk" currency label is used instead of ৳ because
+    // the PDF fonts bundled with dompdf do not include the Bengali glyph.
+    Route::get('orders/{order}/invoice', [\App\Http\Controllers\Backend\InvoiceController::class, 'invoice'])->name('orders.invoice');
+    Route::get('orders/{order}/label', [\App\Http\Controllers\Backend\InvoiceController::class, 'label'])->name('orders.label');
     Route::get('orders-filter', [OrderController::class, 'filterByStatus'])->name('orders.filter');
     // Reports
     Route::get('reports/sales', [\App\Http\Controllers\Backend\SalesReportController::class, 'index'])->name('reports.sales');
     Route::get('reports/commission', [\App\Http\Controllers\Backend\CommissionReportController::class, 'index'])->name('reports.commission');
     Route::get('reports/product-performance', [\App\Http\Controllers\Backend\ProductPerformanceController::class, 'index'])->name('reports.product-performance');
+    Route::get('reports/category-sales', [\App\Http\Controllers\Backend\CategorySalesReportController::class, 'index'])->name('reports.category-sales');
+    Route::get('reports/margin', [\App\Http\Controllers\Backend\MarginReportController::class, 'index'])->name('reports.margin');
+    Route::get('reports/sales-summary', [\App\Http\Controllers\Backend\SalesSummaryReportController::class, 'index'])->name('reports.sales-summary');
     Route::get('reports/stock-value', [\App\Http\Controllers\Backend\StockValueController::class, 'index'])->name('reports.stock-value');
     Route::get('reports/balance-sheet', [\App\Http\Controllers\Backend\BalanceSheetController::class, 'index'])->name('reports.balance-sheet');
     // Accounts
@@ -131,7 +139,21 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     // Customers
     Route::get('customers', [\App\Http\Controllers\Backend\CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/export', [\App\Http\Controllers\Backend\CustomerController::class, 'export'])->name('customers.export');
+
+    // Customer tag management. Declared before customers/{phone} so the literal
+    // "tags" segment is not captured as a phone number.
+    Route::get('customers/tags', [\App\Http\Controllers\Backend\CustomerTagController::class, 'index'])->name('customers.tags.index');
+    Route::post('customers/tags', [\App\Http\Controllers\Backend\CustomerTagController::class, 'store'])->name('customers.tags.store');
+    Route::put('customers/tags/{tag}', [\App\Http\Controllers\Backend\CustomerTagController::class, 'update'])->name('customers.tags.update');
+    Route::delete('customers/tags/{tag}', [\App\Http\Controllers\Backend\CustomerTagController::class, 'destroy'])->name('customers.tags.destroy');
+
     Route::get('customers/{phone}', [\App\Http\Controllers\Backend\CustomerController::class, 'show'])->name('customers.show');
+
+    // Per-customer tags & internal notes
+    Route::post('customers/{phone}/tags', [\App\Http\Controllers\Backend\CustomerController::class, 'attachTag'])->name('customers.tags.attach');
+    Route::delete('customers/{phone}/tags/{tagId}', [\App\Http\Controllers\Backend\CustomerController::class, 'detachTag'])->name('customers.tags.detach');
+    Route::post('customers/{phone}/notes', [\App\Http\Controllers\Backend\CustomerController::class, 'storeNote'])->name('customers.notes.store');
+    Route::delete('customers/{phone}/notes/{noteId}', [\App\Http\Controllers\Backend\CustomerController::class, 'destroyNote'])->name('customers.notes.destroy');
     Route::patch('customers/order/{order}/source', [\App\Http\Controllers\Backend\CustomerController::class, 'updateOrderSource'])->name('customers.order-source');
     // CMS modules
     Route::resource('page', PageController::class);
@@ -150,6 +172,15 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     // Popup Leads
     Route::get('popup-leads', [PopupLeadController::class, 'index'])->name('popup-leads.index');
     Route::delete('popup-leads/{popupLead}', [PopupLeadController::class, 'destroy'])->name('popup-leads.destroy');
+
+    // Coupons
+    Route::get('coupon', [\App\Http\Controllers\Backend\CouponController::class, 'index'])->name('coupon.index');
+    Route::get('coupon/create', [\App\Http\Controllers\Backend\CouponController::class, 'create'])->name('coupon.create');
+    Route::post('coupon', [\App\Http\Controllers\Backend\CouponController::class, 'store'])->name('coupon.store');
+    Route::get('coupon/{coupon}/edit', [\App\Http\Controllers\Backend\CouponController::class, 'edit'])->name('coupon.edit');
+    Route::put('coupon/{coupon}', [\App\Http\Controllers\Backend\CouponController::class, 'update'])->name('coupon.update');
+    Route::patch('coupon/{coupon}/toggle', [\App\Http\Controllers\Backend\CouponController::class, 'toggle'])->name('coupon.toggle');
+    Route::delete('coupon/{coupon}', [\App\Http\Controllers\Backend\CouponController::class, 'destroy'])->name('coupon.destroy');
     // Contact Messages
     Route::resource('contact', ContactController::class)->only(['index', 'show', 'destroy']);
     Route::post('contact/{contact}/mark-read', [ContactController::class, 'markRead'])->name('contact.markRead');
@@ -157,6 +188,10 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::get('search-keywords', [SearchKeywordController::class, 'index'])->name('search-keywords.index');
     // TinyMCE image upload
     Route::post('tinymce/upload', [\App\Http\Controllers\TinymceController::class, 'uploadImage'])->name('tinymce.upload');
+    // Settings
+    Route::get('settings', [\App\Http\Controllers\Backend\SettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [\App\Http\Controllers\Backend\SettingController::class, 'update'])->name('settings.update');
+
     // Users (Admin/Super Admin only)
     Route::get('users', [\App\Http\Controllers\Backend\UserController::class, 'index'])->name('admin.users.index');
     Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Backend\UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');

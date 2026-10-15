@@ -21,8 +21,28 @@ class Product extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'key_benefits' => 'array',
+        'key_benefits'          => 'array',
+        'low_stock_notified_at' => 'datetime',
     ];
+
+    /**
+     * Clear the low-stock alert flag once stock is replenished, so the admin is
+     * warned again the next time it dips below the threshold.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product) {
+            if (! $product->isDirty('stock')) {
+                return;
+            }
+
+            $threshold = Setting::int('inventory.low_stock_threshold');
+
+            if ($threshold > 0 && (int) $product->stock >= $threshold) {
+                $product->low_stock_notified_at = null;
+            }
+        });
+    }
 
     public const STATUS_ACTIVE = 1;
     public const STATUS_INACTIVE = 0;

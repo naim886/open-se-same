@@ -39,6 +39,24 @@
                 Product Performance
             </a>
 
+            <!-- Sales Summary -->
+            <a class="nav-link {{ request()->routeIs('reports.sales-summary') ? 'active' : '' }}" href="{{ route('reports.sales-summary') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-chart-column"></i></div>
+                Sales Summary
+            </a>
+
+            <!-- Category Sales -->
+            <a class="nav-link {{ request()->routeIs('reports.category-sales') ? 'active' : '' }}" href="{{ route('reports.category-sales') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
+                Category Sales
+            </a>
+
+            <!-- Profit & Margin -->
+            <a class="nav-link {{ request()->routeIs('reports.margin') ? 'active' : '' }}" href="{{ route('reports.margin') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-coins"></i></div>
+                Profit &amp; Margin
+            </a>
+
             <div class="sb-sidenav-menu-heading">Content Management</div>
 
             <!-- Banner Management -->
@@ -63,6 +81,12 @@
             <a class="nav-link {{ request()->routeIs('popup-leads.*') ? 'active' : '' }}" href="{{ route('popup-leads.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                 Popup Leads
+            </a>
+
+            <!-- Coupons -->
+            <a class="nav-link {{ request()->routeIs('coupon.*') ? 'active' : '' }}" href="{{ route('coupon.index') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-ticket"></i></div>
+                Coupons
             </a>
 
             <!-- Category Management -->
@@ -142,6 +166,12 @@
                 Users
             </a>
             @endif
+
+            <div class="sb-sidenav-menu-heading">Configuration</div>
+            <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-sliders-h"></i></div>
+                Settings
+            </a>
 
             <div class="sb-sidenav-menu-heading">Financial</div>
 
