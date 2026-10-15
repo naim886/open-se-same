@@ -501,9 +501,9 @@ class GoogleMerchantFeedController extends Controller
      * Checked in order — put more-specific keywords before broader ones.
      */
     private const CATEGORY_GOOGLE_MAP = [
-        // Apparel — map all common lingerie/sleepwear keywords
+        // Apparel — map all common miniature car/sleepwear keywords
         // Taxonomy ID 5713: Apparel & Accessories > Clothing > Sleepwear & Loungewear
-        'lingerie'     => 'Apparel & Accessories > Clothing > Sleepwear & Loungewear',
+        'miniature car'     => 'Apparel & Accessories > Clothing > Sleepwear & Loungewear',
         'sleepwear'    => 'Apparel & Accessories > Clothing > Sleepwear & Loungewear',
         'nightwear'    => 'Apparel & Accessories > Clothing > Sleepwear & Loungewear',
         'nightgown'    => 'Apparel & Accessories > Clothing > Sleepwear & Loungewear',

@@ -61,7 +61,7 @@
                                          class="img-thumbnail"
                                          style="max-width: 128px; height: auto;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div style="display: none; padding: 10px; background: #f8f9fa; border: 1px dashed #dee2e6; text-align: center;">
+                                    <div style="display: none; padding: 10px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center;">
                                         <i class="fa fa-exclamation-triangle text-warning"></i> Image not found
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                                          class="img-thumbnail"
                                          style="max-width: 300px; height: auto;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div style="display: none; padding: 10px; background: #f8f9fa; border: 1px dashed #dee2e6; text-align: center;">
+                                    <div style="display: none; padding: 10px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center;">
                                         <i class="fa fa-exclamation-triangle text-warning"></i> Image not found
                                     </div>
                                 </div>

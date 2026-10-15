@@ -94,7 +94,7 @@
                     var item = document.createElement('button');
                     item.type = 'button';
                     item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
-                    item.innerHTML = (p.thumb ? '<img src="' + p.thumb + '" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">' : '<div style="width:38px;height:38px;background:#eee;border-radius:6px;"></div>')
+                    item.innerHTML = (p.thumb ? '<img src="' + p.thumb + '" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">' : '<div style="width:38px;height:38px;background:var(--bg-surface-alt);border-radius:6px;"></div>')
                         + '<div class="flex-grow-1"><strong>' + escHtml(p.name) + '</strong><br>'
                         + '<small class="text-muted">৳' + p.price + (p.sale_price ? ' | Sale: ৳' + p.sale_price : '') + '</small></div>'
                         + '<span class="badge bg-success ms-auto"><i class="fas fa-plus"></i> Add</span>';
@@ -152,7 +152,7 @@
         ids.forEach(function (id) {
             var p  = selectedProducts[id];
             var tr = document.createElement('tr');
-            tr.innerHTML = '<td>' + (p.thumb ? '<img src="' + p.thumb + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;">' : '<div style="width:44px;height:44px;background:#eee;border-radius:6px;"></div>') + '</td>'
+            tr.innerHTML = '<td>' + (p.thumb ? '<img src="' + p.thumb + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;">' : '<div style="width:44px;height:44px;background:var(--bg-surface-alt);border-radius:6px;"></div>') + '</td>'
                 + '<td><strong>' + escHtml(p.name) + '</strong><input type="hidden" name="product_ids[]" value="' + p.id + '"></td>'
                 + '<td class="text-muted">৳' + p.price + (p.sale_price && p.sale_price < p.price ? ' <span class=\'badge bg-danger\'>Sale: ৳' + p.sale_price + '</span>' : '') + '</td>'
                 + '<td class="text-center"><button type="button" class="btn btn-sm btn-danger" onclick="removeProduct(' + p.id + ')"><i class="fas fa-times"></i></button></td>';

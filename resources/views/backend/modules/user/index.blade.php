@@ -138,7 +138,7 @@
                                     @if($user->photo)
                                         <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . $user->photo) }}"
                                              alt="{{ $user->name }}"
-                                             style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid #dee2e6;">
+                                             style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border-strong);">
                                     @else
                                         <div style="width:34px;height:34px;border-radius:50%;background:var(--bs-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;">
                                             {{ strtoupper(substr($user->name, 0, 1)) }}

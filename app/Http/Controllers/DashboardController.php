@@ -54,6 +54,11 @@ class DashboardController extends Controller
         $paidRevenue   = (clone $activeOrders)->sum('paid_amount');
         $dueRevenue    = $totalRevenue - $paidRevenue;
 
+        // AOV is derived from the same order set as revenue (cancelled &
+        // returned excluded) so the two figures stay consistent.
+        $activeOrderCount = (clone $activeOrders)->count();
+        $avgOrderValue    = $activeOrderCount > 0 ? round($totalRevenue / $activeOrderCount, 2) : 0;
+
         // Per-status counts
         $statusCounts = (clone $periodOrders)
             ->select('status', DB::raw('COUNT(*) as cnt'))
@@ -71,16 +76,21 @@ class DashboardController extends Controller
         })->values();
 
         // ── Inventory Stats (all-time, not period-filtered) ────────────────
-        $inStockCount       = Product::where('stock', '>', 2)->count();
-        $lowStockCount      = Product::where('stock', '>=', 0)->where('stock', '<=', 2)->count();
-        $outOfStockCount    = Product::where('stock', 0)->count();
+        // Anything below $lowStockThreshold units counts as low stock and
+        // raises the restock alert. The three tiles partition the catalogue
+        // (>= threshold / 1..threshold-1 / 0) so they don't double-count.
+        $lowStockThreshold   = 5;
+        $inStockCount        = Product::where('stock', '>=', $lowStockThreshold)->count();
+        $lowStockCount       = Product::where('stock', '>', 0)->where('stock', '<', $lowStockThreshold)->count();
+        $outOfStockCount     = Product::where('stock', 0)->count();
+        $lowStockAlertCount  = Product::where('stock', '>=', 0)->where('stock', '<', $lowStockThreshold)->count();
         $totalInventoryValue = Product::whereNotNull('stock')
             ->where('stock', '>', 0)
             ->selectRaw('SUM(stock * COALESCE(cost, price)) as total')
             ->value('total') ?? 0;
 
         $lowStockProducts = Product::where('stock', '>=', 0)
-            ->where('stock', '<=', 2)
+            ->where('stock', '<', $lowStockThreshold)
             ->orderBy('stock')
             ->orderBy('name')
             ->limit(10)
@@ -165,11 +175,37 @@ class DashboardController extends Controller
         $prevDateFrom  = $dateFrom->copy()->subDays($periodLength + 1);
         $prevDateTo    = $dateFrom->copy()->subDay();
 
-        $prevOrders  = Order::whereBetween('order_date', [$prevDateFrom, $prevDateTo])->count();
-        $prevRevenue = Order::whereBetween('order_date', [$prevDateFrom, $prevDateTo])->sum('total_amount');
+        // Previous period, compared like-for-like: each growth figure uses the
+        // same status filter as the current value it is compared against.
+        $prevScope       = Order::whereBetween('order_date', [$prevDateFrom, $prevDateTo]);
+        $prevTotalOrders = (clone $prevScope)->count();
 
-        $orderGrowth  = $prevOrders  > 0 ? round((($totalOrders - $prevOrders)   / $prevOrders)   * 100, 1) : null;
-        $revenueGrowth = $prevRevenue > 0 ? round((($totalRevenue - $prevRevenue) / $prevRevenue)  * 100, 1) : null;
+        $prevActiveScope   = (clone $prevScope)->whereNotIn('status', [Order::STATUS_CANCELLED, Order::STATUS_RETURNED]);
+        $prevOrders        = (clone $prevActiveScope)->count();
+        $prevRevenue       = (clone $prevActiveScope)->sum('total_amount');
+        $prevAvgOrderValue = $prevOrders > 0 ? $prevRevenue / $prevOrders : null;
+
+        $orderGrowth   = $prevTotalOrders > 0 ? round((($totalOrders - $prevTotalOrders) / $prevTotalOrders) * 100, 1) : null;
+        $revenueGrowth = $prevRevenue > 0 ? round((($totalRevenue - $prevRevenue) / $prevRevenue) * 100, 1) : null;
+        $aovGrowth     = $prevAvgOrderValue ? round((($avgOrderValue - $prevAvgOrderValue) / $prevAvgOrderValue) * 100, 1) : null;
+
+        // ── Top Selling Products (period, ranked by units sold) ────────────
+        // Aggregated from order_items rather than the curated TopSellingProduct
+        // module so the ranking reflects real sales in the selected period.
+        $topSellingProducts = DB::table('order_items as oi')
+            ->join('orders as o', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+            ->whereBetween('o.order_date', [$dateFrom, $dateTo])
+            ->whereNotIn('o.status', [Order::STATUS_CANCELLED, Order::STATUS_RETURNED])
+            ->groupBy('oi.product_id', 'p.name', 'p.primary_photo', 'oi.product_name')
+            ->selectRaw('oi.product_id as product_id')
+            ->selectRaw('COALESCE(p.name, oi.product_name) as name')
+            ->selectRaw('p.primary_photo as photo')
+            ->selectRaw('SUM(oi.quantity) as qty')
+            ->selectRaw('SUM(oi.subtotal) as revenue')
+            ->orderByDesc('qty')
+            ->limit(5)
+            ->get();
 
         // ── Recent Orders (10) ─────────────────────────────────────────────
         $recentOrders = (clone $periodOrders)
@@ -180,9 +216,11 @@ class DashboardController extends Controller
         return view('backend.index', compact(
             'period', 'dateFrom', 'dateTo',
             'totalOrders', 'totalRevenue', 'paidRevenue', 'dueRevenue',
+            'activeOrderCount', 'avgOrderValue', 'aovGrowth',
             'statusStats',
             'inStockCount', 'lowStockCount', 'outOfStockCount', 'totalInventoryValue',
-            'lowStockProducts',
+            'lowStockProducts', 'lowStockAlertCount', 'lowStockThreshold',
+            'topSellingProducts',
             'days',
             'deliveryPie',
             'placedByPie',

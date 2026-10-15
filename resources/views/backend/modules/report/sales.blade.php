@@ -164,7 +164,7 @@
                     {{-- Grand total row --}}
                     @if(count($userReport) > 1)
                     <tfoot>
-                        <tr style="border-top:2px solid rgba(212,236,255,.3);">
+                        <tr style="border-top:2px solid var(--border-strong);">
                             <td class="ps-3 fw-bold text-uppercase small" style="letter-spacing:.05em;">Grand Total</td>
                             <td class="text-center fw-bold text-primary">{{ number_format($grandTotal) }}</td>
                             @foreach(\App\Models\Order::STATUS_LIST as $sid => $slabel)
@@ -204,7 +204,7 @@
     }
 
     .report-table tfoot td {
-        background: rgba(13,110,253,.06);
+        background: rgba(2,123,80,.12);
     }
 
     .period-btn.btn-primary {

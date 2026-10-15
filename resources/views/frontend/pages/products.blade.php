@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
 @section('title', ($category ? $category->name.' - ' : 'All Products - ').'Open Se Same')
-@section('meta_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. Preserved roses, lingerie & fashion with fast delivery across Bangladesh.')
+@section('meta_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
 @section('og_title', ($category ? $category->name.' - ' : 'All Products - ').'Open Se Same')
-@section('og_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. Preserved roses, lingerie & fashion with fast delivery across Bangladesh.')
+@section('og_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
 @section('robots', 'index, follow')
 
 @section('schema')
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 $schemaPageTitle = $category ? $category->name.' - Open Se Same' : 'All Products - Open Se Same';
 $schemaPageDesc  = $category
     ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.'
-    : 'Shop all products at Open Se Same. Preserved roses, lingerie & fashion with fast delivery across Bangladesh.';
+    : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.';
 $schemaPageUrl   = $category ? route('shop.category', $category->slug) : route('shop.products');
 echo Schema::collectionPage()
     ->name($schemaPageTitle)

@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
 @section('title', 'Special Offers & Discounts — Open Se Same')
-@section('meta_description', 'Shop the best discounted products at Open Se Same. Huge savings on preserved roses, lingerie & fashion. Limited time offers with fast delivery across Bangladesh.')
+@section('meta_description', 'Shop the best discounted products at Open Se Same. Huge savings on treasures s, miniature car & fashion. Limited time offers with fast delivery across Bangladesh.')
 @section('og_title', 'Special Offers & Discounts — Open Se Same')
-@section('og_description', 'Shop the best discounted products at Open Se Same. Huge savings on preserved roses, lingerie & fashion.')
+@section('og_description', 'Shop the best discounted products at Open Se Same. Huge savings on treasures s, miniature car & fashion.')
 @section('robots', 'index, follow')
 
 @section('schema')

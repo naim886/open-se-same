@@ -574,15 +574,13 @@
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        /* Select2 dark theme for product filter */
+        /* Select2 colour theming comes from backend/css/styles.css;
+           this only matches the compact filter-bar sizing. */
         #filter-product-select + .select2-container .select2-selection--single {
-            background: #23272b;
-            border: 1px solid #6c757d;
             border-radius: 4px;
             height: 31px;
         }
         #filter-product-select + .select2-container .select2-selection--single .select2-selection__rendered {
-            color: #dee2e6;
             line-height: 29px;
             font-size: .875rem;
             padding-left: 8px;
@@ -590,43 +588,23 @@
         #filter-product-select + .select2-container .select2-selection--single .select2-selection__arrow {
             height: 29px;
         }
-        .select2-dropdown {
-            background: #23272b;
-            border-color: #495057;
-        }
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #0d6efd;
-        }
         .select2-results__option {
-            color: #dee2e6;
             font-size: .875rem;
-        }
-        .select2-search--dropdown .select2-search__field {
-            background: #1a1d20;
-            border-color: #495057;
-            color: #dee2e6;
         }
     </style>
     <style>
         .card {
-            background: transparent;
-            border: 1px solid silver;
-            color: white;
             margin-bottom: 24px;
         }
 
         .active-status-card {
-            border-color: #0d6efd !important;
-            box-shadow: 0 0 0 2px rgba(13,110,253,.45), 0 4px 16px rgba(13,110,253,.2) !important;
-            background: rgba(13,110,253,.08) !important;
+            border-color: var(--brand-light) !important;
+            box-shadow: 0 0 0 2px rgba(2,123,80,.45), 0 4px 16px rgba(2,123,80,.2) !important;
+            background: rgba(2,123,80,.12) !important;
         }
         .active-status-card p,
         .active-status-card h4 {
-            color: #7eb8ff !important;
-        }
-
-        .card-body {
-            background: transparent;
+            color: var(--yellow) !important;
         }
 
         small {
@@ -638,7 +616,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
-            border-bottom: 1px solid silver;
+            border-bottom: 1px solid var(--border-subtle);
             padding: 2px 0;
         }
     </style>

@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
 @section('title', 'Blog - Open Se Same')
-@section('meta_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about preserved roses, lingerie care & fashion trends in Bangladesh.')
+@section('meta_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
 @section('og_title', 'Blog - Open Se Same')
-@section('og_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about preserved roses, lingerie care & fashion trends in Bangladesh.')
+@section('og_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
 @section('robots', 'index, follow')
 
 @section('schema')
@@ -11,7 +11,7 @@
 use Spatie\SchemaOrg\Schema;
 echo Schema::collectionPage()
     ->name('Blog - Open Se Same')
-    ->description('Read the latest tips, guides & stories from Open Se Same. Learn about preserved roses, lingerie care & fashion trends in Bangladesh.')
+    ->description('Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
     ->url(route('shop.blogs'))
     ->toScript();
 echo Schema::breadcrumbList()->itemListElement([

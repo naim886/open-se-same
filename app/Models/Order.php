@@ -78,6 +78,8 @@ class Order extends Model
         self::DELIVERY_FREE          => 'Free Delivery',
     ];
 
+    // Fallback charges (Taka), used only when a value has not been configured
+    // in Admin → Settings. Runtime reads go through deliveryCostList().
     public const DELIVERY_INSIDE_DHAKA_COST  = 70;
     public const DELIVERY_OUTSIDE_DHAKA_COST = 120;
     public const DELIVERY_EXPRESS_COST       = 150;
@@ -91,6 +93,44 @@ class Order extends Model
         self::DELIVERY_SUPER_EXPRESS => self::DELIVERY_SUPER_EXPRESS_COST,
         self::DELIVERY_FREE          => self::DELIVERY_FREE_COST,
     ];
+
+    /** Settings key holding the admin-configured charge for each delivery area. */
+    public const DELIVERY_SETTING_KEYS = [
+        self::DELIVERY_INSIDE_DHAKA  => 'delivery.inside_dhaka',
+        self::DELIVERY_OUTSIDE_DHAKA => 'delivery.outside_dhaka',
+        self::DELIVERY_EXPRESS       => 'delivery.express',
+        self::DELIVERY_SUPER_EXPRESS => 'delivery.super_express',
+        self::DELIVERY_FREE          => 'delivery.free',
+    ];
+
+    /**
+     * Admin-configured delivery charges, keyed by delivery area.
+     *
+     * These are what the customer is actually charged, so every order-creation
+     * path must use this rather than the DELIVERY_COST_LIST constants.
+     */
+    public static function deliveryCostList(): array
+    {
+        $costs = [];
+
+        foreach (self::DELIVERY_SETTING_KEYS as $location => $settingKey) {
+            $costs[$location] = Setting::float($settingKey);
+        }
+
+        return $costs;
+    }
+
+    /**
+     * Charge for a single delivery area, falling back to Inside Dhaka for an
+     * unknown area so an order can never be created with a null charge.
+     */
+    public static function deliveryCost(int|string|null $location): float
+    {
+        $costs    = self::deliveryCostList();
+        $location = (int) $location;
+
+        return (float) ($costs[$location] ?? $costs[self::DELIVERY_INSIDE_DHAKA] ?? 0);
+    }
 
     // Customer-facing delivery options (cart/checkout/quick-order only offer these two)
     public const DELIVERY_CUSTOMER_LIST = [

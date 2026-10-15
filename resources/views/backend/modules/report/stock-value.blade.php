@@ -20,8 +20,7 @@
         <div class="col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex align-items-center gap-3">
-                    <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:52px;height:52px;background:rgba(13,110,253,.12);">
+                    <div class="stat-icon bg-tint-primary">
                         <i class="fas fa-box-open text-primary fs-5"></i>
                     </div>
                     <div>
@@ -102,13 +101,13 @@
 
                         @if($row['is_variant'])
                             {{-- ── Variant product header row ── --}}
-                            <tr style="background:rgba(13,110,253,.08);">
+                            <tr style="background:rgba(2,123,80,.10);">
                                 <td class="ps-3 text-muted small">{{ $i }}</td>
                                 <td colspan="2">
                                     <a href="{{ route('product.edit', $row['product']->id) }}" class="text-decoration-none fw-bold">
                                         {{ $row['product']->name }}
                                     </a>
-                                    <span class="badge ms-2" style="background:rgba(13,110,253,.25);color:#6ea8fe;font-size:10px;">Variant</span>
+                                    <span class="badge ms-2" style="background:rgba(2,123,80,.28);color:#8FE6BD;font-size:10px;">Variant</span>
                                     <span class="text-muted small ms-1">· {{ $row['variations']->count() }} variations</span>
                                 </td>
                                 <td class="text-end text-muted small">—</td>

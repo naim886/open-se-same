@@ -52,7 +52,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <a href="">Home</a>
-                <a href="">Preserved Rose</a>
+                <a href="">treasures </a>
                 <a href="">Night Dress</a>
                 <a href="">Baby Toys</a>
                 <a href="">Baby Accessories</a>
@@ -72,7 +72,7 @@
             <div class="col-lg-3">
                 <a href="#" class="category-card">
                     <img class="category-image img-thumbnail" src="{{asset('images/category/rose.webp')}}" alt="Category Image">
-                    <h3>Preserved Rose</h3>
+                    <h3>treasures </h3>
                 </a>
             </div>
             @endfor

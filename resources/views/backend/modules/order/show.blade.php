@@ -109,7 +109,7 @@
                                                 @if($item->variation_label)
                                                     <div class="d-flex flex-wrap gap-1 mt-1">
                                                         @foreach(explode(' / ', $item->variation_label) as $vPart)
-                                                            <span class="badge rounded-pill" style="background:rgba(13,110,253,.12);color:#0d6efd;border:1px solid rgba(13,110,253,.3);font-size:11px;font-weight:600;">{{ $vPart }}</span>
+                                                            <span class="badge rounded-pill" style="background:rgba(2,123,80,.20);color:#8FE6BD;border:1px solid rgba(2,123,80,.45);font-size:11px;font-weight:600;">{{ $vPart }}</span>
                                                         @endforeach
                                                     </div>
                                                 @endif
@@ -285,7 +285,7 @@
                         <p class="mb-0">
                             @php
                                 $sourceLabels = [
-                                    'website'    => ['label'=>'Website',    'color'=>'#0d6efd'],
+                                    'website'    => ['label'=>'Website',    'color'=>'#027B50'],
                                     'facebook'   => ['label'=>'Facebook',   'color'=>'#1877f2'],
                                     'instagram'  => ['label'=>'Instagram',  'color'=>'#e1306c'],
                                     'tiktok'     => ['label'=>'TikTok',     'color'=>'#010101'],
@@ -480,7 +480,7 @@
 {{-- ===== Steadfast Courier Modal ===== --}}
 <div class="modal fade" id="courierModal" tabindex="-1" aria-labelledby="courierModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background:#1e2130;color:#fff;border:1px solid rgba(255,255,255,0.2);">
+        <div class="modal-content" style="background:var(--bg-surface);color:var(--theme-text-color);border:1px solid var(--border-strong);">
             <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.15);">
                 <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Steadfast Courier</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -496,7 +496,7 @@
                             <tr><td style="opacity:.6;">COD Amount</td><td id="cm-amount"></td></tr>
                         </tbody>
                     </table>
-                    <div id="cm-bengali-warning" class="alert alert-warning d-none" style="background:rgba(255,193,7,.15);border-color:#ffc107;color:#ffc107;">
+                    <div id="cm-bengali-warning" class="alert alert-warning d-none" style="background:rgba(255,207,47,.15);border-color:var(--yellow);color:var(--yellow);">
                         <i class="fas fa-exclamation-triangle me-1"></i>
                         <strong>Bengali digits detected in phone number!</strong><br>
                         They will be auto-converted to English before submission.

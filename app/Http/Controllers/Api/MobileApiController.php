@@ -604,7 +604,7 @@ class MobileApiController extends Controller
         $options = collect(Order::DELIVERY_LIST)->map(fn($label, $id) => [
             'id'    => $id,
             'label' => $label,
-            'cost'  => Order::DELIVERY_COST_LIST[$id] ?? 0,
+            'cost'  => Order::deliveryCost($id),
         ])->values();
 
         return $this->ok(['delivery_options' => $options]);
@@ -712,7 +712,7 @@ class MobileApiController extends Controller
         FlashSale::applyFlashPrice($product);
 
         $price = $product->sale_price ?? $product->price;
-        $dc    = Order::DELIVERY_COST_LIST[(int) $request->delivery_location] ?? Order::DELIVERY_INSIDE_DHAKA_COST;
+        $dc    = Order::deliveryCost($request->delivery_location);
 
         $payload = [
             'customer_name'     => $request->customer_name,
@@ -796,7 +796,7 @@ class MobileApiController extends Controller
             $productTotal  += $price * $qty;
         }
 
-        $dc = Order::DELIVERY_COST_LIST[(int) $request->delivery_location] ?? Order::DELIVERY_INSIDE_DHAKA_COST;
+        $dc = Order::deliveryCost($request->delivery_location);
 
         $payload = [
             'customer_name'     => $request->customer_name,

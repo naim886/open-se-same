@@ -253,7 +253,7 @@
             display: inline-flex;
             align-items: center;
             background: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
-            color: #fff;
+            color: #fff!important;
             padding: 8px 16px;
             border-radius: 25px;
             font-size: 14px;

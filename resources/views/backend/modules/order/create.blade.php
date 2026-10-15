@@ -8,13 +8,11 @@
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .select2-container--default .select2-selection--single { background: var(--theme-color, #1e2130); border-color: rgba(255,255,255,.2); color: #fff; height: 44px; }
-        .select2-container--default .select2-selection--single .select2-selection__rendered { color: #fff; line-height: 42px; }
+        /* Colour theming comes from backend/css/styles.css; only
+           the sizing tweak for the taller order fields remains. */
+        .select2-container--default .select2-selection--single { height: 44px; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 42px; }
         .select2-container--default .select2-selection--single .select2-selection__arrow { height: 42px; }
-        .select2-dropdown { background: var(--theme-color, #1e2130); border-color: rgba(255,255,255,.2); }
-        .select2-container--default .select2-results__option { color: #fff; }
-        .select2-container--default .select2-results__option--highlighted { background: rgba(13,110,253,.35); }
-        .select2-search--dropdown .select2-search__field { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: #fff; }
     </style>
 @endpush
 @push('scripts')
@@ -86,7 +84,7 @@
 
         // Delivery costs mapping for calculation
         const DELIVERY_COST = {
-            @foreach(\App\Models\Order::DELIVERY_COST_LIST as $k => $v)
+            @foreach(\App\Models\Order::deliveryCostList() as $k => $v)
             "{{ $k }}": {{ $v }},
             @endforeach
         };

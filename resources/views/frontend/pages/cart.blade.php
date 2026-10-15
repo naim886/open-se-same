@@ -24,6 +24,9 @@
     <div class="container">
         @php
             $cart = session('cart', []);
+            $deliveryCosts = \App\Models\Order::deliveryCostList();
+            $dcInside      = $deliveryCosts[\App\Models\Order::DELIVERY_INSIDE_DHAKA] ?? 0;
+            $dcOutside     = $deliveryCosts[\App\Models\Order::DELIVERY_OUTSIDE_DHAKA] ?? 0;
         @endphp
 
         @if(count($cart) === 0)
@@ -132,18 +135,18 @@
                             <div class="row g-2">
                                 <div class="col-6">
                                     <label class="delivery-option-card w-100 active" id="inside-dhaka-opt">
-                                        <input type="radio" name="delivery_area" value="70" id="deliveryInside" checked onchange="updateDelivery(70,1)">
+                                        <input type="radio" name="delivery_area" value="{{ $dcInside }}" id="deliveryInside" checked onchange="updateDelivery({{ $dcInside }},1)">
                                         <div>
                                             <i class="fas fa-location-dot delivery-option-icon"></i>
                                             <div style="font-size:12.5px; font-weight:700;">Inside Dhaka</div>
                                             <div style="font-size:11px; color:var(--text-muted);">1–2 days</div>
-                                            <div style="font-size:12.5px; font-weight:700; color:var(--primary-dark);">৳70</div>
+                                            <div style="font-size:12.5px; font-weight:700; color:var(--primary-dark);">৳{{ number_format($dcInside, 0) }}</div>
                                         </div>
                                     </label>
                                 </div>
                                 <div class="col-6">
                                     <label class="delivery-option-card w-100" id="outside-dhaka-opt">
-                                        <input type="radio" name="delivery_area" value="120" id="deliveryOutside" onchange="updateDelivery(120,2)">
+                                        <input type="radio" name="delivery_area" value="{{ $dcOutside }}" id="deliveryOutside" onchange="updateDelivery({{ $dcOutside }},2)">
                                         <div>
                                             <i class="fas fa-truck-fast delivery-option-icon"></i>
                                             <div style="font-size:12.5px; font-weight:700;">Outside Dhaka</div>

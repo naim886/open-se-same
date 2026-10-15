@@ -222,7 +222,7 @@
                 <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="valentine-footer-logo mb-3">
                 <p class="text-white">At our heart, we don't just sell flowers we preserve the emotions that words often fail to capture. We
                     believe that true love, like a beautiful memory, should never have an expiration date. That is why we dedicated ourselves to
-                    the art of Preserved Roses the ultimate symbol of a love that stands the test of time.</p>
+                    the art of treasures s the ultimate symbol of a love that stands the test of time.</p>
             </div>
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <h5>Quick Links</h5>

@@ -157,7 +157,7 @@ $preloadedProducts = isset($flashSale)
                     var item = document.createElement('button');
                     item.type = 'button';
                     item.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
-                    item.innerHTML = (p.thumb ? '<img src="'+p.thumb+'" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">' : '<div style="width:38px;height:38px;background:#eee;border-radius:6px;"></div>')
+                    item.innerHTML = (p.thumb ? '<img src="'+p.thumb+'" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">' : '<div style="width:38px;height:38px;background:var(--bg-surface-alt);border-radius:6px;"></div>')
                         + '<div class="flex-grow-1"><strong>' + escHtml(p.name) + '</strong><br>'
                         + '<small class="text-muted">Price: ৳' + p.price + (p.sale_price ? ' | Sale: ৳'+p.sale_price : '') + '</small></div>'
                         + '<span class="badge bg-success ms-auto"><i class="fas fa-plus"></i> Add</span>';
@@ -249,7 +249,7 @@ $preloadedProducts = isset($flashSale)
             var p  = selectedProducts[id];
             var tr = document.createElement('tr');
             tr.innerHTML =
-                '<td>' + (p.thumb ? '<img src="'+p.thumb+'" style="width:44px;height:44px;object-fit:cover;border-radius:6px;">' : '<div style="width:44px;height:44px;background:#eee;border-radius:6px;"></div>') + '</td>'
+                '<td>' + (p.thumb ? '<img src="'+p.thumb+'" style="width:44px;height:44px;object-fit:cover;border-radius:6px;">' : '<div style="width:44px;height:44px;background:var(--bg-surface-alt);border-radius:6px;"></div>') + '</td>'
                 + '<td><strong>' + escHtml(p.name) + '</strong>'
                 + ' <input type="hidden" name="product_ids['+idx+']" value="'+p.id+'"></td>'
                 + '<td class="text-muted">৳' + p.price + '</td>'

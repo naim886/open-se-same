@@ -203,7 +203,7 @@
                             @endforeach
                         </tbody>
                         <tfoot>
-                            <tr style="border-top:2px solid rgba(212,236,255,.3);">
+                            <tr style="border-top:2px solid var(--border-strong);">
                                 <td colspan="4" class="ps-3 fw-bold text-uppercase small" style="letter-spacing:.05em;">Total</td>
                                 <td class="text-center fw-bold text-primary">
                                     —
@@ -310,20 +310,20 @@
     .nav-tabs .nav-link {
         color: var(--theme-link-color);
         background: rgba(255,255,255,.03);
-        border: 1px solid rgba(212,236,255,.15);
+        border: 1px solid var(--border-subtle);
         border-bottom: none;
         margin-right: 4px;
         border-radius: 6px 6px 0 0;
     }
     .nav-tabs .nav-link.active {
         color: var(--theme-text-color);
-        background: rgba(13,110,253,.12);
-        border-color: rgba(13,110,253,.4);
+        background: rgba(2,123,80,.18);
+        border-color: rgba(2,123,80,.5);
         border-bottom-color: transparent;
     }
     .perf-tab-pane > .card {
         border-radius: 0 6px 6px 6px;
-        border: 1px solid rgba(212,236,255,.1) !important;
+        border: 1px solid var(--border-subtle) !important;
     }
 
     @media print {

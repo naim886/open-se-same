@@ -34,8 +34,8 @@
                                 {{ number_format($kw->count) }}
                             </span>
                         </td>
-                        <td style="font-size:13px;color:#666;">{{ $kw->updated_at?->format('d M Y, h:i A') }}</td>
-                        <td style="font-size:13px;color:#666;">{{ $kw->created_at?->format('d M Y, h:i A') }}</td>
+                        <td style="font-size:13px;color:var(--theme-link-color);">{{ $kw->updated_at?->format('d M Y, h:i A') }}</td>
+                        <td style="font-size:13px;color:var(--theme-link-color);">{{ $kw->created_at?->format('d M Y, h:i A') }}</td>
                     </tr>
                 @empty
                     <tr>

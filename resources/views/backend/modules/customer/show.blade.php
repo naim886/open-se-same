@@ -247,7 +247,7 @@
                         @endforeach
                     </tbody>
                     <tfoot>
-                        <tr style="border-top:2px solid rgba(212,236,255,.3);">
+                        <tr style="border-top:2px solid var(--border-strong);">
                             <td class="ps-3 fw-bold text-uppercase small" style="letter-spacing:.05em;" colspan="3">Total</td>
                             <td class="text-end fw-bold text-success">৳{{ number_format($orders->sum('total_amount'), 0) }}</td>
                             <td class="text-end fw-bold text-muted">৳{{ number_format($orders->sum('paid_amount'), 0) }}</td>

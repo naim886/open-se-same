@@ -302,7 +302,7 @@ class ShopController extends Controller
                 $price = $variation->sale_price ?: $variation->price;
             }
         }
-        $dc      = Order::DELIVERY_COST_LIST[(int) $request->delivery_location] ?? Order::DELIVERY_INSIDE_DHAKA_COST;
+        $dc      = Order::deliveryCost($request->delivery_location);
 
         $payload = [
             'customer_name'     => $request->customer_name,
@@ -409,7 +409,7 @@ class ShopController extends Controller
             $productTotal += $price * $qty;
         }
 
-        $dc = Order::DELIVERY_COST_LIST[(int) $request->delivery_location] ?? Order::DELIVERY_INSIDE_DHAKA_COST;
+        $dc = Order::deliveryCost($request->delivery_location);
 
         $payload = [
             'customer_name'     => $request->customer_name,

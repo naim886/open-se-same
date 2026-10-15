@@ -4,52 +4,10 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .select2-container--default .select2-selection--multiple {
-            border: 1px solid #ced4da;
-            border-radius: 0.375rem;
-            min-height: 38px;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #0d6efd;
-            border: 1px solid #0d6efd;
-            color: white;
-            border-radius: 3px;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-            margin-right: 5px;
-        }
+        /* Select2 theming lives in backend/css/styles.css; only the
+           page-scoped layout tweak remains here. */
         .select2-container {
             width: 100% !important;
-        }
-        /* ── Select2 dropdown dark theme ── */
-        .select2-dropdown {
-            background-color: #0a1c3e;
-            border: 1px solid rgba(132, 163, 188, 0.4);
-            color: #d4ecff;
-        }
-        .select2-container--default .select2-results__option {
-            color: #d4ecff;
-            background-color: transparent;
-        }
-        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-            background-color: #0d6efd;
-            color: #fff;
-        }
-        .select2-container--default .select2-results__option--selected {
-            background-color: rgba(13, 110, 253, 0.25);
-            color: #d4ecff;
-        }
-        .select2-search--dropdown .select2-search__field {
-            background-color: #001235;
-            border: 1px solid rgba(132, 163, 188, 0.4);
-            color: #d4ecff;
-        }
-        .select2-search--dropdown .select2-search__field::placeholder {
-            color: rgba(132, 163, 188, 0.5);
-        }
-        .select2-container--default .select2-selection--multiple {
-            background-color: transparent !important;
         }
     </style>
 @endpush

@@ -59,7 +59,7 @@
                                          class="img-fluid rounded shadow"
                                          style="max-width: 128px; height: auto;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div style="display: none; padding: 20px; background: #f8f9fa; border: 1px dashed #dee2e6; text-align: center; border-radius: 5px;">
+                                    <div style="display: none; padding: 20px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center; border-radius: 5px;">
                                         <i class="fa fa-exclamation-triangle fa-2x text-warning mb-2"></i>
                                         <p class="text-muted mb-0">Icon image not found</p>
                                     </div>
@@ -74,7 +74,7 @@
                                          class="img-fluid rounded shadow"
                                          style="max-width: 100%; height: auto;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                    <div style="display: none; padding: 20px; background: #f8f9fa; border: 1px dashed #dee2e6; text-align: center; border-radius: 5px;">
+                                    <div style="display: none; padding: 20px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center; border-radius: 5px;">
                                         <i class="fa fa-exclamation-triangle fa-2x text-warning mb-2"></i>
                                         <p class="text-muted mb-0">Banner image not found</p>
                                     </div>

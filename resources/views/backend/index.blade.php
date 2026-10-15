@@ -41,14 +41,29 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════
+     Restock alert — raised whenever any product drops below
+     the low-stock threshold (5 units).
+══════════════════════════════════════════════════════════ --}}
+@if($lowStockAlertCount > 0)
+<div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-4" role="alert">
+    <i class="fas fa-triangle-exclamation"></i>
+    <span>
+        <strong>Low stock alert:</strong>
+        {{ $lowStockAlertCount }} {{ Str::plural('product', $lowStockAlertCount) }}
+        {{ $lowStockAlertCount === 1 ? 'has' : 'have' }} fewer than {{ $lowStockThreshold }} units remaining.
+    </span>
+    <a href="#low-stock-card" class="btn btn-sm theme-button-outline ms-auto">Review list</a>
+</div>
+@endif
+
+{{-- ══════════════════════════════════════════════════════════
      Row 1: Key Metrics
 ══════════════════════════════════════════════════════════ --}}
 <div class="row g-3 mb-4">
-    <div class="col-xl-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-xl">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                     style="width:52px;height:52px;background:rgba(13,110,253,.12);">
+                <div class="stat-icon bg-tint-primary">
                     <i class="fas fa-shopping-bag text-primary fs-5"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
@@ -64,11 +79,10 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-xl">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                     style="width:52px;height:52px;background:rgba(25,135,84,.12);">
+                <div class="stat-icon bg-tint-success">
                     <i class="fas fa-money-bill-wave text-success fs-5"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
@@ -84,11 +98,31 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-xl">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                     style="width:52px;height:52px;background:rgba(13,202,240,.12);">
+                <div class="stat-icon bg-tint-warning">
+                    <i class="fas fa-calculator text-warning fs-5"></i>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="text-muted small">Avg. Order Value</div>
+                    <div class="fw-bold fs-3 lh-1">৳{{ number_format($avgOrderValue, 0) }}</div>
+                    @if($aovGrowth !== null)
+                    <div class="small mt-1 {{ $aovGrowth >= 0 ? 'text-success' : 'text-danger' }}">
+                        <i class="fas fa-arrow-{{ $aovGrowth >= 0 ? 'up' : 'down' }} me-1" style="font-size:10px;"></i>
+                        {{ abs($aovGrowth) }}% vs prev
+                    </div>
+                    @else
+                    <div class="small text-muted mt-1">revenue ÷ {{ number_format($activeOrderCount) }} orders</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="stat-icon bg-tint-info">
                     <i class="fas fa-circle-check text-info fs-5"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
@@ -99,11 +133,10 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-sm-6">
+    <div class="col-12 col-sm-6 col-xl">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                     style="width:52px;height:52px;background:rgba(220,53,69,.12);">
+                <div class="stat-icon bg-tint-danger">
                     <i class="fas fa-hourglass-half text-danger fs-5"></i>
                 </div>
                 <div class="flex-grow-1 min-w-0">
@@ -130,8 +163,8 @@
             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
                 <a href="{{ route('orders.index', ['status' => $stat['id']]) }}"
                    class="text-decoration-none d-block text-center p-3 rounded-3 h-100 status-stat-card"
-                   style="border:1.5px solid rgba(212,236,255,.18); background:rgba(255,255,255,.03); transition:.2s;"
-                   onmouseover="this.style.background='rgba(255,255,255,.07)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,.03)';this.style.transform=''">
+                   style="border:1.5px solid var(--border-subtle); background:rgba(2,123,80,.10); transition:.2s;"
+                   onmouseover="this.style.background='rgba(2,123,80,.22)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(2,123,80,.10)';this.style.transform=''">
                     <div class="fw-bold fs-3 text-{{ $stat['color'] }}">{{ number_format($stat['count']) }}</div>
                     <div class="small text-muted">{{ $stat['label'] }}</div>
                 </a>
@@ -198,28 +231,28 @@
             <div class="card-body">
                 <div class="row g-3 text-center mb-3">
                     <div class="col-4">
-                        <div class="p-3 rounded-3" style="background:rgba(25,135,84,.08);">
+                        <div class="p-3 rounded-3 bg-tint-success">
                             <div class="fw-bold fs-3 text-success">{{ number_format($inStockCount) }}</div>
                             <div class="small text-muted">In Stock</div>
-                            <div class="tiny text-muted" style="font-size:11px;">stock &gt; 2</div>
+                            <div class="tiny text-muted" style="font-size:11px;">stock ≥ {{ $lowStockThreshold }}</div>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="p-3 rounded-3" style="background:rgba(255,193,7,.1);">
+                        <div class="p-3 rounded-3 bg-tint-warning">
                             <div class="fw-bold fs-3 text-warning">{{ number_format($lowStockCount) }}</div>
                             <div class="small text-muted">Low Stock</div>
-                            <div class="tiny text-muted" style="font-size:11px;">stock ≤ 2</div>
+                            <div class="tiny text-muted" style="font-size:11px;">1 – {{ $lowStockThreshold - 1 }}</div>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="p-3 rounded-3" style="background:rgba(220,53,69,.08);">
+                        <div class="p-3 rounded-3 bg-tint-danger">
                             <div class="fw-bold fs-3 text-danger">{{ number_format($outOfStockCount) }}</div>
                             <div class="small text-muted">Out of Stock</div>
                             <div class="tiny text-muted" style="font-size:11px;">stock = 0</div>
                         </div>
                     </div>
                 </div>
-                <div class="p-3 rounded-3 text-center" style="background:linear-gradient(135deg,rgba(13,110,253,.05),rgba(13,202,240,.05));border:1px dashed rgba(13,110,253,.2);">
+                <div class="p-3 rounded-3 text-center accent-panel">
                     <div class="text-muted small mb-1">Total Inventory Value</div>
                     <div class="fw-bold fs-2">৳{{ number_format($totalInventoryValue, 0) }}</div>
                     <div class="text-muted small">stock × cost price</div>
@@ -242,31 +275,31 @@
                 @endphp
                 <div class="row g-3 text-center mb-3">
                     <div class="col-6">
-                        <div class="p-4 rounded-3" style="background:rgba(13,202,240,.08);">
+                        <div class="p-4 rounded-3 bg-tint-info">
                             <i class="fas fa-user-plus text-info mb-2 d-block fs-4"></i>
                             <div class="fw-bold fs-3 text-info">{{ number_format($newCount) }}</div>
                             <div class="small text-muted">New Customers</div>
-                            <span class="badge mt-1" style="background:rgba(13,202,240,.2);color:#fff;">{{ $newPct }}%</span>
+                            <span class="badge mt-1" style="background:rgba(56,189,248,.22);color:#38BDF8;">{{ $newPct }}%</span>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="p-4 rounded-3" style="background:rgba(25,135,84,.08);">
+                        <div class="p-4 rounded-3 bg-tint-success">
                             <i class="fas fa-user-check text-success mb-2 d-block fs-4"></i>
                             <div class="fw-bold fs-3 text-success">{{ number_format($returningCount) }}</div>
                             <div class="small text-muted">Returning</div>
-                            <span class="badge mt-1" style="background:rgba(25,135,84,.2);color:#fff;">{{ $retPct }}%</span>
+                            <span class="badge mt-1" style="background:rgba(46,204,135,.22);color:#2ECC87;">{{ $retPct }}%</span>
                         </div>
                     </div>
                 </div>
                 @if($totalCust > 0)
                 <div class="progress rounded-pill mb-1" style="height:14px;">
-                    <div class="progress-bar" style="width:{{ $newPct }}%;background:#0dcaf0;"
+                    <div class="progress-bar" style="width:{{ $newPct }}%;background:#38BDF8;"
                          data-bs-toggle="tooltip" title="New: {{ $newCount }}"></div>
                     <div class="progress-bar bg-success" style="width:{{ $retPct }}%;"
                          data-bs-toggle="tooltip" title="Returning: {{ $returningCount }}"></div>
                 </div>
                 <div class="d-flex justify-content-between small text-muted">
-                    <span style="color:#0dcaf0;">● New {{ $newPct }}%</span>
+                    <span style="color:#38BDF8;">● New {{ $newPct }}%</span>
                     <span>{{ $totalCust }} unique</span>
                     <span class="text-success">● Returning {{ $retPct }}%</span>
                 </div>
@@ -279,16 +312,88 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════
-     Row 5: Low Stock Table + Recent Orders
+     Row 5: Top Selling Products
+══════════════════════════════════════════════════════════ --}}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center py-3">
+                <span class="fw-semibold">
+                    <i class="fas fa-fire me-2 text-warning"></i>Top Selling Products
+                    <small class="text-muted fw-normal">({{ $period }})</small>
+                </span>
+                <a href="{{ route('product.index') }}" class="btn btn-sm btn-outline-secondary">All Products</a>
+            </div>
+            <div class="card-body p-0">
+                @if($topSellingProducts->isEmpty())
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-box-open fa-2x mb-2 d-block"></i>No sales recorded in this period.
+                    </div>
+                @else
+                @php $topQty = $topSellingProducts->max('qty') ?: 1; @endphp
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0 align-middle">
+                        <thead class="thead-dm">
+                            <tr>
+                                <th class="ps-3" style="width:56px;">#</th>
+                                <th>Product</th>
+                                <th class="text-end">Units Sold</th>
+                                <th class="text-end pe-3">Revenue</th>
+                                <th class="pe-3" style="width:20%;">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($topSellingProducts as $i => $p)
+                            <tr>
+                                <td class="ps-3">
+                                    <span class="badge {{ $i === 0 ? 'bg-warning' : 'bg-secondary' }}">{{ $i + 1 }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if($p->photo)
+                                            <img src="{{ asset('storage/' . $p->photo) }}" alt="" class="rounded-2 flex-shrink-0" style="width:36px;height:36px;object-fit:cover;">
+                                        @else
+                                            <div class="rounded-2 flex-shrink-0 bg-tint-primary d-flex align-items-center justify-content-center" style="width:36px;height:36px;">
+                                                <i class="fas fa-box text-primary" style="font-size:12px;"></i>
+                                            </div>
+                                        @endif
+                                        @if($p->product_id)
+                                            <a href="{{ route('product.edit', $p->product_id) }}" class="text-decoration-none dm-link" style="font-size:13px;">{{ Str::limit($p->name ?? 'Unknown product', 44) }}</a>
+                                        @else
+                                            <span class="dm-link" style="font-size:13px;">{{ Str::limit($p->name ?? 'Unknown product', 44) }}</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="text-end fw-semibold">{{ number_format($p->qty) }}</td>
+                                <td class="text-end pe-3 fw-semibold">৳{{ number_format($p->revenue, 0) }}</td>
+                                <td class="pe-3">
+                                    <div class="progress rounded-pill" style="height:8px;">
+                                        <div class="progress-bar" style="width:{{ round(($p->qty / $topQty) * 100) }}%;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════
+     Row 6: Low Stock Alerts + Recent Orders
 ══════════════════════════════════════════════════════════ --}}
 <div class="row g-3 mb-4">
     <div class="col-xl-5">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm h-100" id="low-stock-card">
             <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center py-3">
                 <span class="fw-semibold">
-                    <i class="fas fa-triangle-exclamation me-2 text-warning"></i>Low Stock
-                    @if($lowStockCount > 0)
-                        <span class="badge bg-warning text-dark ms-1">{{ $lowStockCount }}</span>
+                    <i class="fas fa-triangle-exclamation me-2 text-warning"></i>Low Stock Alerts
+                    <small class="text-muted fw-normal ms-1">(&lt; {{ $lowStockThreshold }} units)</small>
+                    @if($lowStockAlertCount > 0)
+                        <span class="badge bg-warning text-dark ms-1">{{ $lowStockAlertCount }}</span>
                     @endif
                 </span>
                 <a href="{{ route('product.index') }}" class="btn btn-sm btn-outline-secondary">All Products</a>
@@ -322,7 +427,7 @@
                                 <td class="text-center">
                                     @if($p->stock == 0)
                                         <span class="badge bg-danger">Out</span>
-                                    @elseif($p->stock == 1)
+                                    @elseif($p->stock <= 2)
                                         <span class="badge bg-danger">{{ $p->stock }}</span>
                                     @else
                                         <span class="badge bg-warning text-dark">{{ $p->stock }}</span>
@@ -427,7 +532,7 @@
                 {
                     label: 'Orders',
                     data: ordersDs,
-                    backgroundColor: 'rgba(13,110,253,.7)',
+                    backgroundColor: 'rgba(2,123,80,.75)',
                     borderRadius: 5,
                     yAxisID: 'y',
                     order: 2,
@@ -436,12 +541,12 @@
                     label: 'Revenue (৳)',
                     data: revenueDs,
                     type: 'line',
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25,135,84,.1)',
+                    borderColor: '#FFCF2F',
+                    backgroundColor: 'rgba(255,207,47,.12)',
                     fill: true,
                     tension: 0.4,
                     pointRadius: 4,
-                    pointBackgroundColor: '#198754',
+                    pointBackgroundColor: '#FFCF2F',
                     yAxisID: 'y2',
                     order: 1,
                     hidden: true,
@@ -484,7 +589,7 @@
 
     // ── Delivery Pie ─────────────────────────────────────────────────────
     const pieData   = @json($deliveryPie);
-    const pieColors = ['#0d6efd','#198754','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+    const pieColors = ['#027B50','#FFCF2F','#04A871','#38BDF8','#2ECC87','#E0B100','#FF6B6B'];
 
     if (pieData.length > 0) {
         new Chart(document.getElementById('deliveryPieChart'), {
@@ -515,7 +620,7 @@
             const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
             legend.insertAdjacentHTML('beforeend',
                 `<div class="d-flex justify-content-between align-items-center small py-1"
-                      style="border-bottom:1px solid rgba(0,0,0,.05);">
+                      style="border-bottom:1px solid rgba(255,255,255,.07);">
                     <span>
                         <span class="rounded-1 me-2 d-inline-block align-middle"
                               style="width:11px;height:11px;background:${pieColors[i]};"></span>${d.label}
@@ -531,7 +636,7 @@
 
     // ── Placed-By Pie ─────────────────────────────────────────────────────
     const placedByData   = @json($placedByPie);
-    const placedByColors = ['#0dcaf0','#6f42c1','#fd7e14','#20c997','#e83e8c','#0d6efd','#ffc107','#198754','#dc3545','#adb5bd'];
+    const placedByColors = ['#38BDF8','#039C63','#FFCF2F','#2ECC87','#FF6B6B','#027B50','#E0B100','#015C3C','#8FC7AF','#adb5bd'];
 
     if (placedByData.length > 0) {
         new Chart(document.getElementById('placedByPieChart'), {
@@ -562,7 +667,7 @@
             const pct = pbTotal > 0 ? Math.round((d.count / pbTotal) * 100) : 0;
             pbLegend.insertAdjacentHTML('beforeend',
                 `<div class="d-flex justify-content-between align-items-center small py-1"
-                      style="border-bottom:1px solid rgba(0,0,0,.05);">
+                      style="border-bottom:1px solid rgba(255,255,255,.07);">
                     <span>
                         <span class="rounded-1 me-2 d-inline-block align-middle"
                               style="width:11px;height:11px;background:${placedByColors[i]};"></span>${d.label}
