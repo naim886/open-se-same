@@ -207,6 +207,66 @@ img { max-width: 100%; }
     color: #fff;
 }
 
+/* Nested sub categories, opened on hover (or keyboard focus) — never on click. */
+.category-nav-item {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+.category-nav-caret {
+    font-size: 10px;
+    margin-left: 4px;
+    transition: transform 0.25s ease;
+}
+.category-nav-item:hover .category-nav-caret,
+.category-nav-item:focus-within .category-nav-caret {
+    transform: rotate(180deg);
+}
+.category-nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 210px;
+    padding: 6px 0;
+    background: #fff;
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: 0 14px 30px rgba(1,92,60,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    z-index: 1200;
+}
+.category-nav-item:hover .category-nav-dropdown,
+.category-nav-item:focus-within .category-nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.category-nav-dropdown-link {
+    display: block;
+    padding: 9px 18px;
+    color: var(--text-dark);
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.category-nav-dropdown-link:hover,
+.category-nav-dropdown-link.active {
+    background: var(--bg-light);
+    color: var(--primary-dark);
+}
+.category-nav-dropdown-link:visited { color: var(--text-dark); }
+
+/* A scrolling parent clips absolutely positioned children, so the desktop
+   strip wraps its categories instead of scrolling them horizontally. */
+@media (min-width: 768px) {
+    .category-nav-inner {
+        overflow: visible;
+        flex-wrap: wrap;
+    }
+}
+
 /* ====== FLASH MESSAGES ====== */
 .alert-floating {
     position: fixed;
@@ -1263,6 +1323,31 @@ img { max-width: 100%; }
         font-size: 14px;
     }
     .category-nav-link:last-child { border-bottom: none; }
+
+    /* Touch devices cannot hover, so sub categories stay expanded. */
+    .category-nav-item { display: block; }
+    .category-nav-dropdown {
+        position: static;
+        min-width: 0;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: rgba(255,255,255,0.07);
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+    }
+    .category-nav-dropdown-link {
+        color: #fff;
+        padding: 10px 20px 10px 36px;
+    }
+    .category-nav-dropdown-link:hover,
+    .category-nav-dropdown-link.active {
+        background: rgba(255,255,255,0.14);
+        color: #fff;
+    }
+    .category-nav-dropdown-link:visited { color: #fff; }
+    .category-nav-item:last-child .category-nav-link { border-bottom: none; }
 }
 
 /* ====== FLOATING BUTTONS ====== */

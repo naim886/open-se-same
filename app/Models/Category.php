@@ -7,6 +7,8 @@ use App\Manager\Image\ImageUploadManager;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -38,7 +40,10 @@ class Category extends Model
 
     public function getCategories()
     {
-        return self::query()->orderBy('sort_order', 'asc')->paginate(GlobalConstants::DEFAULT_PAGINATION);
+        return self::query()
+            ->with('parent:id,name')
+            ->orderBy('sort_order', 'asc')
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
     }
 
     final public function storeCategory(Request $request): Model
@@ -54,6 +59,7 @@ class Category extends Model
             'short_description' => $request->input('short_description'),
             'status'            => $request->input('status'),
             'sort_order'        => $request->input('sort_order'),
+            'category_id'       => $this->resolveParentId($request),
         ];
 
         if ($request->hasFile('icon')) {
@@ -100,6 +106,7 @@ class Category extends Model
             'short_description' => $request->input('short_description'),
             'status'            => $request->input('status'),
             'sort_order'        => $request->input('sort_order'),
+            'category_id'       => $this->resolveParentId($request),
         ];
 
         // Handle icon upload and delete old icon if new one is uploaded
@@ -147,6 +154,79 @@ class Category extends Model
     final public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    // Nested category tree. The parent is stored in the self-referencing
+    // `category_id` column, exposed to forms/requests as `parent_id`.
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'category_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'category_id');
+    }
+
+    public function getParentIdAttribute(): ?int
+    {
+        return $this->category_id ? (int) $this->category_id : null;
+    }
+
+    /**
+     * Ids of every category below this one, excluding itself.
+     *
+     * @return array<int>
+     */
+    final public function descendantIds(): array
+    {
+        $ids = [];
+        $queue = [$this->id];
+
+        while ($queue !== []) {
+            $children = self::query()->whereIn('category_id', $queue)->pluck('id')->all();
+            $queue = array_values(array_diff($children, $ids));
+            $ids = array_values(array_unique(array_merge($ids, $queue)));
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Category options usable as a parent, excluding the given category and its
+     * descendants so the tree can never contain a cycle.
+     */
+    final public function getParentOptions(?int $excludeId = null): Collection
+    {
+        $query = self::query()->orderBy('name');
+
+        if ($excludeId !== null) {
+            $excluded = [$excludeId];
+            $category = self::query()->find($excludeId);
+            if ($category) {
+                $excluded = array_merge($excluded, $category->descendantIds());
+            }
+            $query->whereNotIn('id', $excluded);
+        }
+
+        return $query->pluck('name', 'id');
+    }
+
+    private function resolveParentId(Request $request): ?int
+    {
+        $parentId = $request->input('parent_id');
+
+        if (!$parentId) {
+            return null;
+        }
+
+        $parentId = (int) $parentId;
+
+        if ($this->exists && ($parentId === $this->id || in_array($parentId, $this->descendantIds(), true))) {
+            return null;
+        }
+
+        return $parentId;
     }
 
     // Relationship with products

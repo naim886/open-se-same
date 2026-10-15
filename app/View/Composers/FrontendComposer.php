@@ -19,7 +19,13 @@ class FrontendComposer
             ->get()
         );
 
+        // Top level categories only — sub categories are rendered inside the
+        // hover dropdown of their parent.
         $view->with('navCategories', Category::where('status', Category::STATUS_ACTIVE)
+            ->whereNull('category_id')
+            ->with(['children' => static fn ($query) => $query
+                ->where('status', Category::STATUS_ACTIVE)
+                ->orderBy('sort_order')])
             ->orderBy('sort_order')
             ->limit(8)
             ->get()

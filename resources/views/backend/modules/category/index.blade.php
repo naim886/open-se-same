@@ -15,6 +15,7 @@
                         <th>SL</th>
                         <th>Icon</th>
                         <th>Name</th>
+                        <th>Parent</th>
                         <th>Banner</th>
                         <th>Sort Order</th>
                         <th>Status</th>
@@ -39,13 +40,20 @@
                             </td>
                             <td>{{$category->name}}</td>
                             <td>
+                                @if($category->parent)
+                                    <span class="badge bg-secondary">{{ $category->parent->name }}</span>
+                                @else
+                                    <span class="text-muted">Top Level</span>
+                                @endif
+                            </td>
+                            <td>
                                 @if($category->banner_url)
                                     <img src="{{ $category->banner_url }}"
                                          alt="{{$category->name}}"
                                          class="img-thumbnail"
                                          style="width: 50px; height: 50px; object-fit: cover;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 4px; display: none;">
+                                    <div class="bg-secondary align-items-center justify-content-center" style="width: 50px; height: 50px; border-radius: 4px; display: none;">
                                         <i class="fa fa-image text-white"></i>
                                     </div>
                                 @else

@@ -16,6 +16,10 @@
                                 <td>{{ $category->slug }}</td>
                             </tr>
                             <tr>
+                                <th>Parent Category</th>
+                                <td>{{ $category->parent?->name ?? 'Top Level' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Short Description</th>
                                 <td>{{ $category->short_description ?? 'No description provided' }}</td>
                             </tr>

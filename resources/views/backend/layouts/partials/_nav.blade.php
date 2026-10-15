@@ -15,6 +15,12 @@
                 Orders
             </a>
 
+            <!-- POS -->
+            <a class="nav-link {{ request()->routeIs('orders.create') ? 'active' : '' }}" href="{{ route('orders.create') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-cash-register"></i></div>
+                POS
+            </a>
+
             <!-- Customers -->
             <a class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
@@ -27,11 +33,11 @@
                 Sales Report
             </a>
 
-            <!-- Commission Report -->
-            <a class="nav-link {{ request()->routeIs('reports.commission') ? 'active' : '' }}" href="{{ route('reports.commission') }}">
+            {{-- Commission Report --}}
+            {{-- <a class="nav-link {{ request()->routeIs('reports.commission') ? 'active' : '' }}" href="{{ route('reports.commission') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-hand-holding-usd"></i></div>
                 Commission
-            </a>
+            </a> --}}
 
             <!-- Product Performance -->
             <a class="nav-link {{ request()->routeIs('reports.product-performance') ? 'active' : '' }}" href="{{ route('reports.product-performance') }}">
@@ -77,11 +83,11 @@
                 Top Selling
             </a>
 
-            <!-- Popup Leads -->
-            <a class="nav-link {{ request()->routeIs('popup-leads.*') ? 'active' : '' }}" href="{{ route('popup-leads.index') }}">
+            {{-- Popup Leads --}}
+            {{-- <a class="nav-link {{ request()->routeIs('popup-leads.*') ? 'active' : '' }}" href="{{ route('popup-leads.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                 Popup Leads
-            </a>
+            </a> --}}
 
             <!-- Coupons -->
             <a class="nav-link {{ request()->routeIs('coupon.*') ? 'active' : '' }}" href="{{ route('coupon.index') }}">
@@ -153,11 +159,11 @@
                 @endif
             </a>
 
-            <!-- Search Keywords -->
-            <a class="nav-link {{ request()->routeIs('search-keywords.*') ? 'active' : '' }}" href="{{ route('search-keywords.index') }}">
+            {{-- Search Keywords --}}
+            {{-- <a class="nav-link {{ request()->routeIs('search-keywords.*') ? 'active' : '' }}" href="{{ route('search-keywords.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-search"></i></div>
                 Search Keywords
-            </a>
+            </a> --}}
 
             @if(auth()->user()?->hasAnyRole(['Super Admin', 'Admin']))
             <div class="sb-sidenav-menu-heading">Administration</div>
@@ -175,23 +181,23 @@
 
             <div class="sb-sidenav-menu-heading">Financial</div>
 
-            <!-- Accounts -->
-            <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}">
+            {{-- Accounts --}}
+            {{-- <a class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}" href="{{ route('accounts.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
                 Accounts
-            </a>
+            </a> --}}
 
-            <!-- Expenses -->
-            <a class="nav-link {{ request()->routeIs('expense.*') ? 'active' : '' }}" href="{{ route('expense.index') }}">
+            {{-- Expenses --}}
+            {{-- <a class="nav-link {{ request()->routeIs('expense.*') ? 'active' : '' }}" href="{{ route('expense.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-money-bill-wave"></i></div>
                 Expenses
-            </a>
+            </a> --}}
 
-            <!-- Balance Sheet -->
-            <a class="nav-link {{ request()->routeIs('reports.balance-sheet') ? 'active' : '' }}" href="{{ route('reports.balance-sheet') }}">
+            {{-- Balance Sheet --}}
+            {{-- <a class="nav-link {{ request()->routeIs('reports.balance-sheet') ? 'active' : '' }}" href="{{ route('reports.balance-sheet') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-balance-scale"></i></div>
                 Balance Sheet
-            </a>
+            </a> --}}
 
             <!-- Stock Value -->
             <a class="nav-link {{ request()->routeIs('reports.stock-value') ? 'active' : '' }}" href="{{ route('reports.stock-value') }}">

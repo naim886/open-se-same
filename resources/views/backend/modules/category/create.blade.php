@@ -22,6 +22,14 @@
                         <p class="validation-message">{{$message}}</p>
                         @enderror
                     </div>
+                    <div class="col-lg-6 mb-4 position-relative">
+                        {{html()->label('Parent Category', 'parent_id')}}
+                        {{html()->select('parent_id', $parentCategories ?? [])->placeholder('None (Top Level)')->class('form-select')}}
+                        <small class="text-muted">Leave empty to create a top level category.</small>
+                        @error('parent_id')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                    </div>
                     <div class="col-lg-12 mb-4 position-relative">
                         {{html()->label('Category short description', 'short_description')}}
                         <x-required/>

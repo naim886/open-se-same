@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -27,6 +28,10 @@ class UpdateCategoryRequest extends FormRequest
             'short_description' => ['required', 'string', 'max:255'],
             'status'            => ['required', 'string', 'in:' . implode(',', array_keys(\App\Models\Category::STATUS_LIST))],
             'sort_order'        => ['required', 'numeric'],
+            'parent_id'         => [
+                'nullable', 'integer', 'exists:categories,id',
+                Rule::notIn([$this->category->id]),
+            ],
             'icon'              => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'banner'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
@@ -43,6 +48,7 @@ class UpdateCategoryRequest extends FormRequest
             'short_description' => 'Short Description',
             'status'            => 'Status',
             'sort_order'        => 'Sort Order',
+            'parent_id'         => 'Parent Category',
             'icon'              => 'Category Icon',
             'banner'            => 'Category Banner',
         ];
@@ -62,6 +68,9 @@ class UpdateCategoryRequest extends FormRequest
             'status.in'                  => 'Please select a valid status.',
             'sort_order.required'        => 'The sort order is required.',
             'sort_order.numeric'         => 'The sort order must be a number.',
+            'parent_id.integer'          => 'Please select a valid parent category.',
+            'parent_id.exists'           => 'The selected parent category is invalid.',
+            'parent_id.not_in'           => 'A category cannot be its own parent category.',
             'icon.image'                 => 'The icon must be an image file.',
             'icon.mimes'                 => 'The icon must be a file of type: jpeg, png, jpg, webp.',
             'icon.max'                   => 'The icon may not be greater than 2MB.',

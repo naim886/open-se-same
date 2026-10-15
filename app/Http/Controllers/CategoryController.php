@@ -41,7 +41,9 @@ class CategoryController extends Controller
             'type' => 'list'
         ];
 
-        return view('backend.modules.category.create', compact('cms_content'));
+        $parentCategories = (new Category())->getParentOptions();
+
+        return view('backend.modules.category.create', compact('cms_content', 'parentCategories'));
     }
 
     /**
@@ -93,7 +95,9 @@ class CategoryController extends Controller
             'type' => 'list'
         ];
 
-        return view('backend.modules.category.edit', compact('cms_content', 'category'));
+        $parentCategories = (new Category())->getParentOptions($category->id);
+
+        return view('backend.modules.category.edit', compact('cms_content', 'category', 'parentCategories'));
     }
 
     /**

@@ -338,6 +338,113 @@
             color: #fff
         }
 
+        .category-nav-item {
+            position: relative;
+            display: flex;
+            align-items: stretch
+        }
+
+        .category-nav-caret {
+            font-size: 10px;
+            margin-left: 4px;
+            transition: transform .25s ease
+        }
+
+        .category-nav-item:hover .category-nav-caret,
+        .category-nav-item:focus-within .category-nav-caret {
+            transform: rotate(180deg)
+        }
+
+        .category-nav-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 210px;
+            padding: 6px 0;
+            background: #fff;
+            border-radius: 0 0 var(--radius, 10px) var(--radius, 10px);
+            box-shadow: 0 14px 30px rgba(1, 92, 60, .2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(6px);
+            transition: opacity .2s ease, transform .2s ease, visibility .2s;
+            z-index: 1200
+        }
+
+        /* Opens on hover (and on keyboard focus), never on click. */
+        .category-nav-item:hover .category-nav-dropdown,
+        .category-nav-item:focus-within .category-nav-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0)
+        }
+
+        .category-nav-dropdown-link {
+            display: block;
+            padding: 9px 18px;
+            color: #10211B;
+            font-size: 13.5px;
+            font-weight: 500;
+            white-space: nowrap
+        }
+
+        .category-nav-dropdown-link:hover,
+        .category-nav-dropdown-link.active {
+            background: var(--bg-light, #F3FAF6);
+            color: var(--primary-dark, #015C3C)
+        }
+
+        .category-nav-dropdown-link:visited {
+            color: #10211B
+        }
+
+        /* An absolutely positioned dropdown is clipped by a scrolling parent,
+           so on the desktop strip the categories wrap instead of scrolling. */
+        @media (min-width: 768px) {
+            .category-nav-inner {
+                overflow: visible;
+                flex-wrap: wrap
+            }
+        }
+
+        /* Touch layouts cannot hover: the sub categories are always shown. */
+        @media (max-width: 767px) {
+            .category-nav-item {
+                display: block
+            }
+
+            .category-nav-dropdown {
+                position: static;
+                min-width: 0;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+                background: rgba(255, 255, 255, .07);
+                opacity: 1;
+                visibility: visible;
+                transform: none
+            }
+
+            .category-nav-dropdown-link {
+                color: #fff;
+                padding: 10px 20px 10px 36px
+            }
+
+            .category-nav-dropdown-link:hover,
+            .category-nav-dropdown-link.active {
+                background: rgba(255, 255, 255, .14);
+                color: #fff
+            }
+
+            .category-nav-dropdown-link:visited {
+                color: #fff
+            }
+
+            .category-nav-item:last-child .category-nav-link {
+                border-bottom: none
+            }
+        }
+
         .hero-swiper {
             width: 100%;
             background: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%)
@@ -536,10 +643,33 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                     <i class="fas fa-home"></i> Home
                 </a>
                 @foreach($navCategories as $cat)
-                    <a href="{{ route('shop.category', $cat->slug) }}"
-                       class="category-nav-link {{ (request()->route('slug') == $cat->slug) ? 'active' : '' }}">
-                        {{ $cat->name }}
-                    </a>
+                    @php
+                        $currentSlug = request()->route('slug');
+                        $hasChildren = $cat->children->isNotEmpty();
+                        $isActive    = $currentSlug == $cat->slug
+                                    || ($hasChildren && $cat->children->contains('slug', $currentSlug));
+                    @endphp
+                    @if($hasChildren)
+                        <div class="category-nav-item has-dropdown">
+                            <a href="{{ route('shop.category', $cat->slug) }}"
+                               class="category-nav-link {{ $isActive ? 'active' : '' }}">
+                                {{ $cat->name }}<i class="fas fa-chevron-down category-nav-caret"></i>
+                            </a>
+                            <div class="category-nav-dropdown">
+                                @foreach($cat->children as $child)
+                                    <a href="{{ route('shop.category', $child->slug) }}"
+                                       class="category-nav-dropdown-link {{ $currentSlug == $child->slug ? 'active' : '' }}">
+                                        {{ $child->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('shop.category', $cat->slug) }}"
+                           class="category-nav-link {{ $isActive ? 'active' : '' }}">
+                            {{ $cat->name }}
+                        </a>
+                    @endif
                 @endforeach
                 <a href="{{ route('shop.products') }}" class="category-nav-link">
                     <i class="fas fa-th"></i> All Products
@@ -690,7 +820,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             }
         });
         // close nav when a link is tapped
-        categoryNav.querySelectorAll('.category-nav-link').forEach(function (link) {
+        categoryNav.querySelectorAll('.category-nav-link, .category-nav-dropdown-link').forEach(function (link) {
             link.addEventListener('click', function () {
                 categoryNav.classList.remove('mobile-open');
                 var icon = mobileMenuBtn.querySelector('i');
@@ -775,156 +905,6 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 
 @yield('extra_js')
 
-<!-- ===== Popup Lead Capture ===== -->
-<div id="leadPopupOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:16px;padding:32px 28px 24px;max-width:420px;width:90%;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.25);">
-        <!-- Close button -->
-        <button onclick="closeLeadPopup()" aria-label="Close"
-                style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;line-height:1;color:#888;">&times;</button>
-
-        <!-- Heading -->
-        <div style="text-align:center;margin-bottom:18px;">
-            <div style="font-size:32px;margin-bottom:6px;">🚀</div>
-            <h5 style="margin:0;font-weight:700;color:var(--primary-dark,#015C3C);font-size:1.1rem;">
-                দ্রুত ডেলিভারির জন্য ফর্মটি পূরণ করুন
-            </h5>
-            <p style="margin:6px 0 0;font-size:.85rem;color:#666;">
-                For faster delivery, please enter your name, phone &amp; address.
-            </p>
-        </div>
-
-        <!-- Form -->
-        <form id="leadPopupForm">
-            @csrf
-            <div style="margin-bottom:12px;">
-                <input type="text" id="lpName" name="name" placeholder="Your Name *" required
-                       style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box;">
-            </div>
-            <div style="margin-bottom:12px;">
-                <input type="tel" id="lpPhone" name="phone" placeholder="Phone Number *" required
-                       style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;box-sizing:border-box;">
-            </div>
-            <div style="margin-bottom:16px;">
-                <textarea id="lpAddress" name="address" placeholder="Delivery Address *" required rows="2"
-                          style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;resize:vertical;box-sizing:border-box;"></textarea>
-            </div>
-            <div id="lpMsg" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:8px;font-size:.88rem;"></div>
-            <button type="submit" id="lpBtn"
-                    style="width:100%;padding:11px;background:var(--primary-gradient,linear-gradient(135deg,#015C3C,#027B50));color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;letter-spacing:.3px;">
-                Submit &rarr;
-            </button>
-        </form>
-        <p style="text-align:center;margin:12px 0 0;font-size:.8rem;color:#aaa;">
-            <a href="#" onclick="closeLeadPopup();return false;" style="color:#aaa;">No thanks, skip</a>
-        </p>
-    </div>
-</div>
-
-<script>
-(function () {
-    var POPUP_KEY   = 'lead_popup_shown';
-    var DELAY_MS    = 3000; // 3 seconds
-
-    function showLeadPopup() {
-        var overlay = document.getElementById('leadPopupOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function closeLeadPopup() {
-        var overlay = document.getElementById('leadPopupOverlay');
-        if (overlay) overlay.style.display = 'none';
-        document.body.style.overflow = '';
-        sessionStorage.setItem(POPUP_KEY, '1');
-    }
-    window.closeLeadPopup = closeLeadPopup;
-
-    // Show only once per browser session
-    if (!sessionStorage.getItem(POPUP_KEY)) {
-        setTimeout(showLeadPopup, DELAY_MS);
-    }
-
-    // Close on overlay click
-    document.getElementById('leadPopupOverlay').addEventListener('click', function (e) {
-        if (e.target === this) closeLeadPopup();
-    });
-
-    // Form submit
-    document.getElementById('leadPopupForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var btn = document.getElementById('lpBtn');
-        var msg = document.getElementById('lpMsg');
-        btn.disabled = true;
-        btn.textContent = 'Sending…';
-
-        var formData = new FormData(this);
-
-        fetch('{{ route("shop.popup-lead.store") }}', {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_token]').value,
-                       'Accept': 'application/json' },
-            body: formData
-        })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (data.success) {
-                msg.style.background = '#d4edda';
-                msg.style.color      = '#155724';
-                msg.style.border     = '1px solid #c3e6cb';
-                msg.textContent      = data.message || 'Thank you!';
-                msg.style.display    = 'block';
-                sessionStorage.setItem(POPUP_KEY, '1');
-                // Save lead data so order forms can be pre-filled
-                try {
-                    localStorage.setItem('mc_lead', JSON.stringify({
-                        name:    document.getElementById('lpName').value.trim(),
-                        phone:   document.getElementById('lpPhone').value.trim(),
-                        address: document.getElementById('lpAddress').value.trim()
-                    }));
-                } catch(e) {}
-                fillLeadData();
-                closeLeadPopup();
-            } else {
-                msg.style.background = '#f8d7da';
-                msg.style.color      = '#721c24';
-                msg.style.border     = '1px solid #f5c6cb';
-                msg.textContent      = data.message || 'Something went wrong.';
-                msg.style.display    = 'block';
-                btn.disabled         = false;
-                btn.textContent      = 'Submit →';
-            }
-        })
-        .catch(function () {
-            msg.style.background = '#f8d7da';
-            msg.style.color      = '#721c24';
-            msg.style.border     = '1px solid #f5c6cb';
-            msg.textContent      = 'Something went wrong. Please try again.';
-            msg.style.display    = 'block';
-            btn.disabled         = false;
-            btn.textContent      = 'Submit →';
-        });
-    });
-})();
-
-// ── Auto-fill order forms from popup lead data ──────────────────────
-function fillLeadData() {
-    try {
-        var lead = JSON.parse(localStorage.getItem('mc_lead') || 'null');
-        if (!lead) return;
-        function fill(selector, value) {
-            var el = document.querySelector(selector);
-            if (el && !el.value.trim() && value) el.value = value;
-        }
-        fill('[name="customer_name"]',    lead.name);
-        fill('[name="customer_phone"]',   lead.phone);
-        fill('[name="customer_address"]', lead.address);
-    } catch(e) {}
-}
-document.addEventListener('DOMContentLoaded', fillLeadData);
-window.fillLeadData = fillLeadData;
-</script>
 @stack('scripts')
 </body>
 </html>

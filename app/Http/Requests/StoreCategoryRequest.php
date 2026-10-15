@@ -29,6 +29,7 @@ class StoreCategoryRequest extends FormRequest
             'short_description' => ['required', 'string', 'max:255'],
             'status'            => ['required', 'string', 'in:' . implode(',', array_keys(Category::STATUS_LIST))],
             'sort_order'        => ['required', 'numeric'],
+            'parent_id'         => ['nullable', 'integer', 'exists:categories,id'],
             'icon'              => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'banner'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
