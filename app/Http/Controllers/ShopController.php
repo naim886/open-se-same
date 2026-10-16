@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttributeName;
+use App\Models\AttributeValue;
 use App\Models\Banner;
 use App\Models\Blog;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\ContactMessage;
 use App\Models\FlashSale;
+use App\Models\HomepageSection;
 use App\Models\Order;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\ProductVariation;
+use App\Models\ProductVariationAttribute;
 use App\Models\SiteContent;
 use App\Models\TopSellingProduct;
 use App\Http\Requests\StoreContactRequest;
@@ -20,6 +25,7 @@ use App\Services\OrderNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -30,65 +36,132 @@ class ShopController extends Controller
     // ============================================================
     public function home(): View
     {
-        $banners = Banner::where('status', Banner::STATUS_ACTIVE)
-            ->orderBy('sort_order', 'asc')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $sections = HomepageSection::ordered()->load('category');
+        $blocks   = [];
 
-        // "Shop by Category" tiles: top level categories only, in sort order.
-        $categories = Category::where('status', Category::STATUS_ACTIVE)
-            ->whereNull('category_id')
-            ->withCount(['products' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)])
-            ->orderBy('sort_order', 'asc')
-            ->limit(16)
-            ->get();
-
-        $featuredProducts = Product::where('status', Product::STATUS_ACTIVE)
-            ->with(['category', 'photos'])
-            ->inRandomOrder()
-            ->limit(10)
-            ->get();
-
-        $newProducts = Product::where('status', Product::STATUS_ACTIVE)
-            ->with(['category', 'photos'])
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        $categoryWiseProducts = [];
-        foreach ($categories->take(4) as $category) {
-            $products = Product::where('status', Product::STATUS_ACTIVE)
-                ->where('category_id', $category->id)
-                ->with(['photos'])
-                ->limit(5)
+        if ($sections->isEmpty()) {
+            // Nothing configured yet: fall back to the hero slider plus the
+            // "Shop by Category" tiles.
+            $banners = Banner::where('status', Banner::STATUS_ACTIVE)
+                ->orderBy('sort_order', 'asc')
+                ->orderBy('created_at', 'desc')
                 ->get();
-            if ($products->count() > 0) {
-                $categoryWiseProducts[$category->id] = [
-                    'category' => $category,
-                    'products' => $products,
-                ];
+
+            if ($banners->isNotEmpty()) {
+                $blocks[] = ['type' => HomepageSection::TYPE_BANNER, 'title' => null, 'banners' => $banners];
+            }
+
+            $tiles = $this->categoryTiles();
+
+            if ($tiles->isNotEmpty()) {
+                $blocks[] = ['type' => 'category_tiles', 'title' => null, 'categories' => $tiles];
+            }
+        } else {
+            foreach ($sections as $section) {
+                $block = $this->resolveHomeBlock($section);
+
+                if ($block !== null) {
+                    $blocks[] = $block;
+                }
             }
         }
 
         $homePageContent = SiteContent::get('home_page');
 
-        $flashSale = FlashSale::running()
-            ->with(['products' => fn($q) => $q->with(['photos'])->orderBy('flash_sale_products.id')])
-            ->first();
+        return view('frontend.pages.home', compact('blocks', 'homePageContent'));
+    }
 
-        // Top Selling — from manual backend list; fall back to random featured
-        $topSellingEntries = TopSellingProduct::active()
-            ->with(['product' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)->with(['category', 'photos'])])
-            ->orderBy('sort_order')
-            ->get()
-            ->pluck('product')
-            ->filter();
+    /**
+     * Turn one configured homepage block into the data its view partial needs.
+     * Blocks with nothing to show return null so the homepage never renders an
+     * empty section.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function resolveHomeBlock(HomepageSection $section): ?array
+    {
+        switch ($section->type) {
+            case HomepageSection::TYPE_BANNER:
+                $banners = Banner::where('status', Banner::STATUS_ACTIVE)
+                    ->orderBy('sort_order', 'asc')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
-        $topSellingProducts = $topSellingEntries->isNotEmpty() ? $topSellingEntries : $featuredProducts;
+                return $banners->isEmpty()
+                    ? null
+                    : ['type' => $section->type, 'title' => $section->title, 'banners' => $banners];
 
-        return view('frontend.pages.home', compact(
-            'banners', 'categories', 'featuredProducts', 'newProducts', 'categoryWiseProducts', 'homePageContent', 'flashSale', 'topSellingProducts'
-        ));
+            case HomepageSection::TYPE_FLASH_SALE:
+                $flashSale = FlashSale::running()
+                    ->with(['products' => fn ($q) => $q->with(['photos'])->orderBy('flash_sale_products.id')])
+                    ->first();
+
+                return $flashSale
+                    ? ['type' => $section->type, 'title' => $section->title, 'flashSale' => $flashSale]
+                    : null;
+
+            case HomepageSection::TYPE_TOP_SELLING:
+                $products = TopSellingProduct::active()
+                    ->with(['product' => fn ($q) => $q->where('status', Product::STATUS_ACTIVE)->with(['category', 'photos'])])
+                    ->orderBy('sort_order')
+                    ->get()
+                    ->pluck('product')
+                    ->filter()
+                    ->take(10)
+                    ->values();
+
+                return $products->isEmpty()
+                    ? null
+                    : ['type' => $section->type, 'title' => $section->title, 'products' => $products];
+
+            case HomepageSection::TYPE_NEW_PRODUCTS:
+                $products = Product::where('status', Product::STATUS_ACTIVE)
+                    ->with(['category', 'photos'])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(10)
+                    ->get();
+
+                return $products->isEmpty()
+                    ? null
+                    : ['type' => $section->type, 'title' => $section->title, 'products' => $products];
+
+            case HomepageSection::TYPE_CATEGORY:
+                $category = $section->category;
+
+                if (!$category || (int) $category->status !== Category::STATUS_ACTIVE) {
+                    return null;
+                }
+
+                $products = Product::where('status', Product::STATUS_ACTIVE)
+                    ->whereIn('category_id', $this->categoryScopeIds($category))
+                    ->with(['category', 'photos'])
+                    ->limit(10)
+                    ->get();
+
+                return $products->isEmpty()
+                    ? null
+                    : [
+                        'type'     => $section->type,
+                        'title'    => $section->title,
+                        'category' => $category,
+                        'products' => $products,
+                    ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Top level categories shown as the homepage "Shop by Category" tiles.
+     */
+    private function categoryTiles(): Collection
+    {
+        return Category::where('status', Category::STATUS_ACTIVE)
+            ->whereNull('category_id')
+            ->withCount(['products' => fn ($q) => $q->where('status', Product::STATUS_ACTIVE)])
+            ->orderBy('sort_order', 'asc')
+            ->limit(16)
+            ->get();
     }
 
     // ============================================================
@@ -136,15 +209,13 @@ class ShopController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $products = $query->paginate(20);
+        $products = $query->paginate(20)->withQueryString();
 
-        $allCategories = Category::where('status', Category::STATUS_ACTIVE)
-            ->withCount(['products' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)])
-            ->orderBy('sort_order')
-            ->get();
-
-        return view('frontend.pages.products', compact('products', 'allCategories'))
-            ->with('category', null);
+        return view('frontend.pages.products', $this->listingData([
+            'products' => $products,
+            'category' => null,
+            'brand'    => null,
+        ]));
     }
 
     // ============================================================
@@ -157,19 +228,42 @@ class ShopController extends Controller
             ->firstOrFail();
 
         $query = Product::where('status', Product::STATUS_ACTIVE)
-            ->where('category_id', $category->id)
+            ->whereIn('category_id', $this->categoryScopeIds($category))
             ->with(['category', 'photos']);
 
         $this->applyFilters($query, $request);
 
-        $products = $query->paginate(20);
+        $products = $query->paginate(20)->withQueryString();
 
-        $allCategories = Category::where('status', Category::STATUS_ACTIVE)
-            ->withCount(['products' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)])
-            ->orderBy('sort_order')
-            ->get();
+        return view('frontend.pages.products', $this->listingData([
+            'products' => $products,
+            'category' => $category,
+            'brand'    => null,
+        ]));
+    }
 
-        return view('frontend.pages.products', compact('products', 'category', 'allCategories'));
+    // ============================================================
+    // BRAND PAGE
+    // ============================================================
+    public function brand(Request $request, string $slug): View
+    {
+        $brand = Brand::where('slug', $slug)
+            ->where('status', Brand::STATUS_ACTIVE)
+            ->firstOrFail();
+
+        $query = Product::where('status', Product::STATUS_ACTIVE)
+            ->where('brand_id', $brand->id)
+            ->with(['category', 'photos']);
+
+        $this->applyFilters($query, $request);
+
+        $products = $query->paginate(20)->withQueryString();
+
+        return view('frontend.pages.brand', $this->listingData([
+            'products' => $products,
+            'category' => null,
+            'brand'    => $brand,
+        ]));
     }
 
     // ============================================================
@@ -188,19 +282,121 @@ class ShopController extends Controller
             ->where(function ($query) use ($q) {
                 $query->where('name', 'like', "%$q%")
                     ->orWhere('short_description', 'like', "%$q%")
-                    ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%$q%"));
+                    ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%$q%"))
+                    ->orWhereHas('brand', fn($bq) => $bq->where('name', 'like', "%$q%"));
             });
 
         $this->applyFilters($query, $request);
-        $products = $query->paginate(20);
+        $products = $query->paginate(20)->withQueryString();
 
-        $allCategories = Category::where('status', Category::STATUS_ACTIVE)
-            ->withCount(['products' => fn($q) => $q->where('status', Product::STATUS_ACTIVE)])
+        return view('frontend.pages.products', $this->listingData([
+            'products' => $products,
+            'category' => null,
+            'brand'    => null,
+        ]));
+    }
+
+    /**
+     * Shared payload for the product listing pages (all products, category,
+     * brand and search) — the filter sidebar is identical on all of them.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function listingData(array $data): array
+    {
+        $categoryIds = $data['category'] ? $this->categoryScopeIds($data['category']) : [];
+        $brandId     = $data['brand']?->id;
+
+        $data['categoryTree']     = $this->categoryTree();
+        $data['variationFilters'] = $this->variationFilterOptions($categoryIds, $brandId);
+        $data['filterAction']     = $data['brand']
+            ? route('shop.brand', $data['brand']->slug)
+            : ($data['category'] ? route('shop.category', $data['category']->slug) : route('shop.products'));
+
+        return $data;
+    }
+
+    /**
+     * A category plus its descendants — parent categories list the products of
+     * their sub categories, matching the collapsible tree in the sidebar.
+     *
+     * @return array<int, int>
+     */
+    private function categoryScopeIds(Category $category): array
+    {
+        return array_merge([$category->id], $category->descendantIds());
+    }
+
+    /**
+     * Top level categories with their active children, for the collapsible
+     * category accordion in the filter sidebar / mobile filter drawer.
+     */
+    private function categoryTree(): Collection
+    {
+        return Category::where('status', Category::STATUS_ACTIVE)
+            ->whereNull('category_id')
+            ->with([
+                'children' => fn ($query) => $query
+                    ->where('status', Category::STATUS_ACTIVE)
+                    ->withCount(['products' => fn ($q) => $q->where('status', Product::STATUS_ACTIVE)])
+                    ->orderBy('sort_order'),
+            ])
+            ->withCount(['products' => fn ($q) => $q->where('status', Product::STATUS_ACTIVE)])
             ->orderBy('sort_order')
             ->get();
+    }
 
-        return view('frontend.pages.products', compact('products', 'allCategories'))
-            ->with('category', null);
+    /**
+     * Attribute name/value pairs actually used by variations of the products in
+     * scope, so the sidebar only offers filters that can return results.
+     *
+     * @param  array<int, int>  $categoryIds
+     */
+    private function variationFilterOptions(array $categoryIds = [], ?int $brandId = null): Collection
+    {
+        $pairs = ProductVariationAttribute::query()
+            ->join('product_variations', 'product_variations.id', '=', 'product_variation_attributes.product_variation_id')
+            ->join('products', 'products.id', '=', 'product_variations.product_id')
+            ->whereNull('product_variations.deleted_at')
+            ->whereNull('products.deleted_at')
+            ->where('product_variations.status', 1)
+            ->where('products.status', Product::STATUS_ACTIVE)
+            ->when($categoryIds !== [], fn ($query) => $query->whereIn('products.category_id', $categoryIds))
+            ->when($brandId, fn ($query) => $query->where('products.brand_id', $brandId))
+            ->distinct()
+            ->get([
+                'product_variation_attributes.attribute_name_id',
+                'product_variation_attributes.attribute_value_id',
+            ]);
+
+        if ($pairs->isEmpty()) {
+            return collect();
+        }
+
+        $names = AttributeName::whereIn('id', $pairs->pluck('attribute_name_id')->unique())
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        $values = AttributeValue::whereIn('id', $pairs->pluck('attribute_value_id')->unique())
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        return $pairs
+            ->groupBy('attribute_name_id')
+            ->map(static fn ($group, $nameId) => [
+                'id'     => (int) $nameId,
+                'name'   => $names[$nameId] ?? 'Attribute',
+                'values' => $group->pluck('attribute_value_id')
+                    ->unique()
+                    ->map(static fn ($valueId) => [
+                        'id'   => (int) $valueId,
+                        'name' => $values[$valueId] ?? 'Unnamed',
+                    ])
+                    ->values(),
+            ])
+            ->sortBy('name')
+            ->values();
     }
 
     // ============================================================
@@ -208,7 +404,7 @@ class ShopController extends Controller
     // ============================================================
     public function product(string $slug): View
     {
-        $product = Product::with(['photos', 'category', 'specifications.specification', 'qas', 'activeVariations'])
+        $product = Product::with(['photos', 'category', 'brand', 'specifications.specification', 'qas', 'activeVariations'])
             ->where('slug', $slug)
             ->where('status', Product::STATUS_ACTIVE)
             ->firstOrFail();
@@ -846,6 +1042,22 @@ class ShopController extends Controller
     // ============================================================
     private function applyFilters($query, Request $request): void
     {
+        // Variation filters. Selected values are ANDed across attributes and
+        // ORed within one attribute, so "Color: Red or Blue" plus "Size: M"
+        // matches products having an M in either colour.
+        foreach ((array) $request->input('variation', []) as $valueIds) {
+            $valueIds = array_values(array_filter((array) $valueIds, static fn ($id) => $id !== '' && $id !== null));
+
+            if ($valueIds === []) {
+                continue;
+            }
+
+            $query->whereHas('variations', fn ($variationQuery) => $variationQuery
+                ->where('status', 1)
+                ->whereHas('variationAttributes', fn ($attributeQuery) => $attributeQuery
+                    ->whereIn('attribute_value_id', $valueIds)));
+        }
+
         if ($request->filled('min_price')) {
             $query->where(fn($q) => $q
                 ->where('sale_price', '>=', $request->min_price)

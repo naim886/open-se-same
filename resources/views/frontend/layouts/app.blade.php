@@ -459,6 +459,340 @@
             height: auto;
             display: block
         }
+
+        /* ── Mobile navigation drawer ─────────────────────────────── */
+        .mobile-nav-offcanvas {
+            max-width: 320px
+        }
+
+        .mobile-nav-header {
+            background: var(--primary-gradient);
+            color: #fff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .mobile-nav-header .offcanvas-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            color: #fff
+        }
+
+        .mobile-nav-body {
+            padding: 0;
+            display: flex;
+            flex-direction: column
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #10211B;
+            border-bottom: 1px solid #EEF3F0
+        }
+
+        .mobile-nav-link:visited {
+            color: #10211B
+        }
+
+        .mobile-nav-link:hover, .mobile-nav-link.active {
+            background: var(--bg-light, #F3FAF6);
+            color: var(--primary-dark, #015C3C)
+        }
+
+        .mobile-nav-link i {
+            width: 18px;
+            color: var(--primary, #027B50)
+        }
+
+        .mobile-nav-group-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #10211B;
+            background: none;
+            border: none;
+            border-bottom: 1px solid #EEF3F0;
+            text-align: left;
+            cursor: pointer
+        }
+
+        .mobile-nav-group-title i.mobile-nav-icon {
+            width: 18px;
+            color: var(--primary, #027B50)
+        }
+
+        .mobile-nav-group-label {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .mobile-nav-sub {
+            background: #F7FBF9
+        }
+
+        .mobile-nav-sub a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 20px 11px 38px;
+            font-size: 14px;
+            color: #33443E;
+            border-bottom: 1px solid #EDF4F0
+        }
+
+        .mobile-nav-sub a:visited {
+            color: #33443E
+        }
+
+        .mobile-nav-sub a:hover, .mobile-nav-sub a.active {
+            color: var(--primary-dark, #015C3C);
+            background: #EDF7F1
+        }
+
+        .mobile-nav-caret {
+            font-size: 11px;
+            color: #7A8B85;
+            transition: transform .25s ease
+        }
+
+        .mobile-nav-group-title.open .mobile-nav-caret {
+            transform: rotate(180deg)
+        }
+
+        /* ── Filter accordion + variation filters ─────────────────── */
+        .filter-accordion {
+            margin-bottom: 6px
+        }
+
+        .filter-category {
+            border-bottom: 1px solid #F0F4F2
+        }
+
+        .filter-category-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px
+        }
+
+        .filter-category-link {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 9px 0;
+            font-size: 14px;
+            color: #10211B;
+            text-decoration: none
+        }
+
+        .filter-category-link:visited {
+            color: #10211B
+        }
+
+        .filter-category-link small, .filter-subcategory-link small {
+            color: #94A3A0;
+            font-size: 12px
+        }
+
+        .filter-category-link.active {
+            color: var(--primary-dark, #015C3C);
+            font-weight: 700
+        }
+
+        .filter-category-toggle {
+            background: none;
+            border: none;
+            padding: 6px 4px;
+            color: #7A8B85;
+            cursor: pointer
+        }
+
+        .filter-category-toggle i {
+            transition: transform .25s ease
+        }
+
+        .filter-category-toggle.open i {
+            transform: rotate(180deg)
+        }
+
+        .filter-subcategory-list {
+            padding: 2px 0 8px
+        }
+
+        .filter-subcategory-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 7px 0 7px 14px;
+            font-size: 13.5px;
+            color: #4A5A55;
+            text-decoration: none;
+            border-left: 2px solid #E4EEE9
+        }
+
+        .filter-subcategory-link:hover, .filter-subcategory-link.active {
+            color: var(--primary-dark, #015C3C);
+            border-left-color: var(--primary, #027B50)
+        }
+
+        .filter-subcategory-link.active {
+            font-weight: 700
+        }
+
+        .filter-variation-group {
+            border-bottom: 1px solid #F0F4F2
+        }
+
+        .filter-variation-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #10211B;
+            cursor: pointer
+        }
+
+        .filter-variation-toggle i {
+            font-size: 11px;
+            color: #7A8B85;
+            transition: transform .25s ease
+        }
+
+        .filter-variation-toggle.open i {
+            transform: rotate(180deg)
+        }
+
+        .filter-variation-values {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 0 0 8px
+        }
+
+        .filter-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 4px 0;
+            font-size: 13.5px;
+            color: #37474F;
+            cursor: pointer
+        }
+
+        .filter-check input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: var(--primary-dark, #015C3C)
+        }
+
+        /* ── Category / brand page header ─────────────────────────── */
+        .shop-page-header {
+            background: #fff;
+            padding-bottom: 18px
+        }
+
+        .shop-page-banner {
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 18px
+        }
+
+        .shop-page-banner img {
+            width: 100%;
+            height: auto;
+            display: block
+        }
+
+        .shop-page-header-inner {
+            display: flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .shop-page-logo {
+            width: 74px;
+            height: 74px;
+            padding: 6px;
+            object-fit: contain;
+            background: #fff;
+            border: 1px solid #E7EFEA;
+            border-radius: 10px
+        }
+
+        .shop-page-title {
+            margin: 0;
+            font-size: clamp(20px, 2.6vw, 26px);
+            font-weight: 800;
+            color: var(--primary-dark, #015C3C)
+        }
+
+        .shop-page-desc {
+            margin: 4px 0 0;
+            font-size: 14px;
+            color: #6B7C76
+        }
+
+        /* ── Homepage category block banner ───────────────────────── */
+        .home-category-banner {
+            display: block;
+            margin-bottom: 20px;
+            border-radius: var(--radius, 10px);
+            overflow: hidden
+        }
+
+        .home-category-banner img {
+            width: 100%;
+            height: auto;
+            display: block
+        }
+
+        /* ── Product detail brand chip ────────────────────────────── */
+        .product-brand-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 5px 12px 5px 5px;
+            background: #fff;
+            border: 1px solid #E7EFEA;
+            border-radius: 30px;
+            text-decoration: none
+        }
+
+        .product-brand-chip img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain
+        }
+
+        .product-brand-chip span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-dark, #015C3C)
+        }
     </style>
 
     @yield('extra_css')
@@ -617,7 +951,9 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         <!-- Mobile Search + Menu Toggle -->
         <div class="row d-md-none pb-2 align-items-center g-2">
             <div class="col-auto">
-                <button class="mobile-menu-btn" id="mobileMenuToggle" aria-label="Menu">
+                <button class="mobile-menu-btn" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileNavOffcanvas" aria-controls="mobileNavOffcanvas"
+                        aria-label="Open menu">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
@@ -678,6 +1014,84 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         </div>
     </nav>
 </header>
+
+{{-- ===== Mobile navigation drawer ===== --}}
+<div class="offcanvas offcanvas-start mobile-nav-offcanvas" tabindex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
+    <div class="mobile-nav-header">
+        <h5 class="offcanvas-title" id="mobileNavOffcanvasLabel">
+            <i class="fas fa-bars me-2"></i>Menu
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body mobile-nav-body">
+        <a href="{{ route('shop.home') }}" class="mobile-nav-link {{ request()->routeIs('shop.home') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Home
+        </a>
+
+        @if($navCategories->isNotEmpty())
+            <button class="mobile-nav-group-title" type="button">
+                <span class="mobile-nav-group-label"><i class="fas fa-th-large mobile-nav-icon"></i> Categories</span>
+                <i class="fas fa-chevron-down mobile-nav-caret" aria-hidden="true"></i>
+            </button>
+            <div class="mobile-nav-sub" style="display:none;">
+                @foreach($navCategories as $navCat)
+                    <a href="{{ route('shop.category', $navCat->slug) }}"
+                       class="{{ request()->route('slug') === $navCat->slug ? 'active' : '' }}">
+                        <span>{{ $navCat->name }}</span>
+                    </a>
+                    @foreach($navCat->children as $navChild)
+                        <a href="{{ route('shop.category', $navChild->slug) }}" style="padding-left:54px;"
+                           class="{{ request()->route('slug') === $navChild->slug ? 'active' : '' }}">
+                            <span>{{ $navChild->name }}</span>
+                        </a>
+                    @endforeach
+                @endforeach
+            </div>
+        @endif
+
+        @if(isset($navBrands) && $navBrands->isNotEmpty())
+            <button class="mobile-nav-group-title" type="button">
+                <span class="mobile-nav-group-label"><i class="fas fa-copyright mobile-nav-icon"></i> Shop by Brand</span>
+                <i class="fas fa-chevron-down mobile-nav-caret" aria-hidden="true"></i>
+            </button>
+            <div class="mobile-nav-sub" style="display:none;">
+                @foreach($navBrands as $navBrand)
+                    <a href="{{ route('shop.brand', $navBrand->slug) }}"
+                       class="{{ request()->routeIs('shop.brand') && request()->route('slug') === $navBrand->slug ? 'active' : '' }}">
+                        <span>{{ $navBrand->name }}</span>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
+        <a href="{{ route('shop.products') }}" class="mobile-nav-link {{ request()->routeIs('shop.products') ? 'active' : '' }}">
+            <i class="fas fa-th"></i> All Products
+        </a>
+        <a href="{{ route('shop.offer') }}" class="mobile-nav-link {{ request()->routeIs('shop.offer') ? 'active' : '' }}">
+            <i class="fas fa-tags"></i> Offers
+        </a>
+        <a href="{{ route('shop.track-order') }}" class="mobile-nav-link {{ request()->routeIs('shop.track-order') ? 'active' : '' }}">
+            <i class="fas fa-truck"></i> Track Order
+        </a>
+        <a href="{{ route('shop.blogs') }}" class="mobile-nav-link {{ request()->routeIs('shop.blogs') ? 'active' : '' }}">
+            <i class="fas fa-blog"></i> Blog
+        </a>
+        <a href="{{ route('shop.contact') }}" class="mobile-nav-link {{ request()->routeIs('shop.contact') ? 'active' : '' }}">
+            <i class="fas fa-envelope"></i> Contact Us
+        </a>
+
+        @auth
+            @if(auth()->user()->hasRole('Registered Customer'))
+                <a href="{{ route('customer.dashboard') }}" class="mobile-nav-link">
+                    <i class="fas fa-user-circle"></i> My Account
+                </a>
+            @endif
+        @else
+            <a href="{{ route('login') }}" class="mobile-nav-link"><i class="fas fa-user"></i> Login</a>
+            <a href="{{ route('register') }}" class="mobile-nav-link"><i class="fas fa-user-plus"></i> Register</a>
+        @endauth
+    </div>
+</div>
 
 <!-- Flash Messages -->
 @if(session('success'))
@@ -807,30 +1221,36 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         });
     }, 4000);
 
-    // ─── Mobile menu toggle ─────────────────────────────────────────
-    var mobileMenuBtn = document.getElementById('mobileMenuToggle');
-    var categoryNav = document.querySelector('.category-nav');
-    if (mobileMenuBtn && categoryNav) {
-        mobileMenuBtn.addEventListener('click', function () {
-            categoryNav.classList.toggle('mobile-open');
-            var icon = this.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
-            }
-        });
-        // close nav when a link is tapped
-        categoryNav.querySelectorAll('.category-nav-link, .category-nav-dropdown-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                categoryNav.classList.remove('mobile-open');
-                var icon = mobileMenuBtn.querySelector('i');
-                if (icon) {
-                    icon.classList.add('fa-bars');
-                    icon.classList.remove('fa-times');
-                }
-            });
-        });
-    }
+    // ─── Mobile navigation drawer ───────────────────────────────────
+    // The drawer itself is a Bootstrap offcanvas; these handlers only expand
+    // its collapsible category / brand groups.
+    $(document).on('click', '.mobile-nav-group-title', function () {
+        var sub = $(this).next('.mobile-nav-sub');
+        sub.slideToggle(150);
+        $(this).toggleClass('open', sub.is(':visible'));
+    });
+
+    // ─── Shop filter accordions (sidebar + mobile drawer) ───────────
+    $(document).on('click', '.filter-category-toggle', function () {
+        var list = $(this).closest('.filter-category').find('.filter-subcategory-list');
+        list.slideToggle(150);
+        $(this).toggleClass('open', list.is(':visible'))
+            .attr('aria-expanded', list.is(':visible') ? 'true' : 'false');
+    });
+
+    $(document).on('click', '.filter-variation-toggle', function () {
+        var values = $(this).siblings('.filter-variation-values');
+        values.slideToggle(150);
+        $(this).toggleClass('open', values.is(':visible'))
+            .attr('aria-expanded', values.is(':visible') ? 'true' : 'false');
+    });
+
+    // Ticking a variation checkbox re-runs the filter immediately.
+    $(document).on('change', '.filter-variation-input', function () {
+        if (this.form) {
+            this.form.submit();
+        }
+    });
 
     // ─── Scroll to top ──────────────────────────────────────────────
     var scrollTopBtn = document.getElementById('scrollTop');

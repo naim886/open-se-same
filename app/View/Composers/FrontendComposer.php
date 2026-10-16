@@ -2,6 +2,7 @@
 
 namespace App\View\Composers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Page;
 use Illuminate\View\View;
@@ -28,6 +29,14 @@ class FrontendComposer
                 ->orderBy('sort_order')])
             ->orderBy('sort_order')
             ->limit(8)
+            ->get()
+        );
+
+        // Short brand list for the mobile navigation drawer.
+        $view->with('navBrands', Brand::where('status', Brand::STATUS_ACTIVE)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(12)
             ->get()
         );
     }

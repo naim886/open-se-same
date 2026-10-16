@@ -152,7 +152,13 @@
             <!-- Site Contents -->
             <a class="nav-link {{ request()->routeIs('site-content.*') ? 'active' : '' }}" href="{{ route('site-content.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
-                Site Contents
+                Site Content
+            </a>
+
+            <!-- Homepage Settings -->
+            <a class="nav-link {{ request()->routeIs('homepage-settings.*') ? 'active' : '' }}" href="{{ route('homepage-settings.index') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-th-large"></i></div>
+                Homepage Settingss
             </a>
 
             <!-- Contact Messages -->

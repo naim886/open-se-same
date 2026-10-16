@@ -19,6 +19,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\SiteContentController;
 use App\Http\Controllers\FlashSaleController;
+use App\Http\Controllers\HomepageSettingController;
 use App\Http\Controllers\TopSellingProductController;
 use App\Http\Controllers\PopupLeadController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,7 @@ Route::prefix('/')->name('shop.')->group(function () {
     Route::get('/offer',           [ShopController::class, 'offer'])->name('offer');
     Route::get('/search',          [ShopController::class, 'search'])->name('search');
     Route::get('/category/{slug}', [ShopController::class, 'category'])->name('category');
+    Route::get('/brand/{slug}',    [ShopController::class, 'brand'])->name('brand');
     Route::get('/product/{slug}',  [ShopController::class, 'product'])->name('product');
     Route::get('/quick-order/{slug}', [ShopController::class, 'quickOrder'])->name('quick-order');
     Route::get('/cart',            [ShopController::class, 'cart'])->name('cart');
@@ -161,6 +163,9 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::resource('page', PageController::class);
     Route::resource('blog', BlogController::class);
     Route::resource('site-content', SiteContentController::class)->except(['show']);
+    // Homepage Settings (block builder)
+    Route::get('homepage-settings', [HomepageSettingController::class, 'index'])->name('homepage-settings.index');
+    Route::put('homepage-settings', [HomepageSettingController::class, 'update'])->name('homepage-settings.update');
     // Flash Sales
     Route::get('flash-sale/search-products', [FlashSaleController::class, 'searchProducts'])->name('flash-sale.search-products');
     Route::get('flash-sale/products-by-category', [FlashSaleController::class, 'productsByCategory'])->name('flash-sale.products-by-category');

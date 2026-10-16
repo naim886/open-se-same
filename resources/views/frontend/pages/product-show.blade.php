@@ -209,6 +209,9 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 @if($product->category)
                     <li class="breadcrumb-item"><a href="{{ route('shop.category', $product->category->slug) }}">{{ $product->category->name }}</a></li>
                 @endif
+                @if($product->brand)
+                    <li class="breadcrumb-item"><a href="{{ route('shop.brand', $product->brand->slug) }}">{{ $product->brand->name }}</a></li>
+                @endif
                 <li class="breadcrumb-item active">{{ Str::limit($product->name, 40) }}</li>
             </ol>
         </nav>
@@ -266,6 +269,18 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
             <div class="col-lg-7 col-md-6">
                 @if($product->category)
                     {{-- category badge hidden on detail page --}}
+                @endif
+
+                @if($product->brand)
+                    <a href="{{ route('shop.brand', $product->brand->slug) }}" class="product-brand-chip">
+                        @if($product->brand->logo_url)
+                            <img src="{{ $product->brand->logo_url }}" alt="{{ $product->brand->name }} logo" loading="lazy"
+                                 onerror="this.style.display='none';">
+                        @else
+                            <i class="fas fa-copyright" style="padding:0 6px;color:var(--primary-dark);"></i>
+                        @endif
+                        <span>{{ $product->brand->name }}</span>
+                    </a>
                 @endif
 
                 <h1 class="product-detail-title">{{ $product->name }}</h1>
