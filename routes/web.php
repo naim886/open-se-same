@@ -5,6 +5,7 @@ use App\Http\Controllers\AttributeValueController;
 use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Backend\SearchKeywordController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
@@ -107,6 +108,7 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('banner', BannerController::class);
     Route::resource('category', CategoryController::class);
+    Route::resource('brand', BrandController::class);
     Route::resource('product', ProductController::class);
     Route::resource('expense', ExpenseController::class);
     Route::resource('attribute-name', AttributeNameController::class);

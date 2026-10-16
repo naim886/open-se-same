@@ -101,6 +101,12 @@
                 Categories
             </a>
 
+            <!-- Brand Management -->
+            <a class="nav-link {{ request()->routeIs('brand.*') ? 'active' : '' }}" href="{{ route('brand.index') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-copyright"></i></div>
+                Brands
+            </a>
+
             <!-- Product Management -->
             <a class="nav-link {{ request()->routeIs('product.*') ? 'active' : '' }}" href="{{ route('product.index') }}">
                 <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>

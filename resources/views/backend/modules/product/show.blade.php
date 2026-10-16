@@ -37,6 +37,28 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>Brand</th>
+                            <td>
+                                @if($product->brand)
+                                    <span class="badge bg-primary">{{$product->brand->name}}</span>
+                                @else
+                                    <span class="badge bg-secondary">No Brand</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>SKU</th>
+                            <td>
+                                @if($product->sku)
+                                    <code>{{ $product->sku }}</code>
+                                @elseif($product->isVariantProduct())
+                                    <span class="text-muted">Each variation has its own SKU</span>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
                             <th>Product Type</th>
                             <td>
                                 @if($product->product_type === 'simple')

@@ -82,10 +82,25 @@
                                 @enderror
                             </div>
                             <div class="col-lg-6 mb-4 position-relative">
+                                {{html()->label('Product Brand', 'brand_id')}}
+                                {{html()->select('brand_id', $brands ?? [])->placeholder('Select Brand')->class('form-select')}}
+                                @error('brand_id')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                            </div>
+                            <div class="col-lg-6 mb-4 position-relative">
                                 {{html()->label('Product Slug', 'slug')}}
                                 <x-required/>
                                 {{html()->text('slug')->placeholder('Ex. saree')->class('form-control')}}
                                 @error('slug')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                            </div>
+                            <div class="col-lg-6 mb-4 position-relative">
+                                {{html()->label('Product SKU', 'sku')}}
+                                {{html()->text('sku')->placeholder('Ex. SAREE-001')->class('form-control')}}
+                                <small class="text-muted">Leave empty for variant products, each variation keeps its own SKU.</small>
+                                @error('sku')
                                 <p class="validation-message">{{$message}}</p>
                                 @enderror
                             </div>
@@ -776,19 +791,23 @@
                         </div>
                         ${attrInputs}
                         <div class="row">
-                            <div class="col-lg-3 mb-3">
+                            <div class="col-lg-4 mb-3">
+                                <label class="form-label">SKU</label>
+                                <input type="text" name="variants[${index}][sku]" placeholder="Ex. SAREE-RED-L" class="form-control">
+                            </div>
+                            <div class="col-lg-4 mb-3">
                                 <label class="form-label">Cost</label>
                                 <input type="number" name="variants[${index}][cost]" placeholder="0.00" step="0.01" class="form-control">
                             </div>
-                            <div class="col-lg-3 mb-3">
+                            <div class="col-lg-4 mb-3">
                                 <label class="form-label">Price <span class="text-danger">*</span></label>
                                 <input type="number" name="variants[${index}][price]" placeholder="0.00" step="0.01" class="form-control" required>
                             </div>
-                            <div class="col-lg-3 mb-3">
+                            <div class="col-lg-6 mb-3">
                                 <label class="form-label">Sale Price</label>
                                 <input type="number" name="variants[${index}][sale_price]" placeholder="0.00" step="0.01" class="form-control">
                             </div>
-                            <div class="col-lg-3 mb-3">
+                            <div class="col-lg-6 mb-3">
                                 <label class="form-label">Stock <span class="text-danger">*</span></label>
                                 <input type="number" name="variants[${index}][stock]" placeholder="0" class="form-control" required>
                             </div>

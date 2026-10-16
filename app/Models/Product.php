@@ -98,7 +98,7 @@ class Product extends Model
     final public function getProducts()
     {
         return self::query()
-            ->with(['category', 'photos', 'activeVariations'])
+            ->with(['category', 'brand', 'photos', 'activeVariations'])
             ->orderBy('created_at', 'desc')
             ->paginate(GlobalConstants::DEFAULT_PAGINATION);
     }
@@ -363,6 +363,7 @@ class Product extends Model
             }
 
             $variationData = [
+                'sku'        => self::normalizeSku($variant['sku'] ?? null),
                 'price'      => $variant['price'] ?? null,
                 'sale_price' => !empty($variant['sale_price']) ? $variant['sale_price'] : null,
                 'cost'       => !empty($variant['cost']) ? $variant['cost'] : null,
@@ -429,6 +430,7 @@ class Product extends Model
             $existingId = !empty($variant['id']) ? (int) $variant['id'] : null;
 
             $variationData = [
+                'sku'        => self::normalizeSku($variant['sku'] ?? null),
                 'price'      => $variant['price'] ?? null,
                 'sale_price' => !empty($variant['sale_price']) ? $variant['sale_price'] : null,
                 'cost'       => !empty($variant['cost']) ? $variant['cost'] : null,
@@ -504,6 +506,8 @@ class Product extends Model
         return [
             'product_type'      => $request->input('product_type'),
             'category_id'       => $request->input('category_id'),
+            'brand_id'          => $request->input('brand_id') ?: null,
+            'sku'               => self::normalizeSku($request->input('sku')),
             'name'              => $request->input('name'),
             'slug'              => Str::slug($request->input('slug')),
             'short_description' => $request->input('short_description'),
@@ -592,6 +596,22 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    /**
+     * Trim a SKU and turn blank input into null so the unique index is never
+     * tripped by empty strings.
+     */
+    public static function normalizeSku(?string $sku): ?string
+    {
+        $sku = trim((string) $sku);
+
+        return $sku === '' ? null : $sku;
     }
 
     public function specifications()

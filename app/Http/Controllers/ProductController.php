@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttributeName;
 use App\Models\AttributeValue;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Specification;
@@ -49,6 +50,7 @@ class ProductController extends Controller
         ];
 
         $categories = (new Category())->getCategoryAssoc();
+        $brands = (new Brand())->getBrandAssoc();
         $specifications = (new Specification())->getSpecificationAssoc();
         $attributeNames = (new AttributeName())->getAttributeNameAssoc();
         $attributeValues = AttributeValue::with('attributeName')
@@ -59,7 +61,7 @@ class ProductController extends Controller
                 return $values->pluck('name', 'id');
             });
 
-        return view('backend.modules.product.create', compact('cms_content', 'categories', 'specifications', 'attributeNames', 'attributeValues'));
+        return view('backend.modules.product.create', compact('cms_content', 'categories', 'brands', 'specifications', 'attributeNames', 'attributeValues'));
     }
 
     /**
@@ -114,6 +116,7 @@ class ProductController extends Controller
         ];
 
         $categories = (new Category())->getCategoryAssoc();
+        $brands = (new Brand())->getBrandAssoc();
         $specifications = (new Specification())->getSpecificationAssoc();
         $attributeNames = (new AttributeName())->getAttributeNameAssoc();
         $product->load(['photos', 'specifications.specification', 'variations.variationAttributes.attributeName', 'variations.variationAttributes.attributeValue']);
@@ -126,7 +129,7 @@ class ProductController extends Controller
                 return $values->pluck('name', 'id');
             });
 
-        return view('backend.modules.product.edit', compact('cms_content', 'product', 'categories', 'specifications', 'attributeNames', 'attributeValues'));
+        return view('backend.modules.product.edit', compact('cms_content', 'product', 'categories', 'brands', 'specifications', 'attributeNames', 'attributeValues'));
     }
 
     /**

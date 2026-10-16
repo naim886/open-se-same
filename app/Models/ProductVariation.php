@@ -78,6 +78,7 @@ class ProductVariation extends Model
     {
         return [
             'id'         => $this->id,
+            'sku'        => $this->sku,
             'price'      => (float) $this->price,
             'sale_price' => $this->sale_price ? (float) $this->sale_price : null,
             'stock'      => (int) $this->stock,

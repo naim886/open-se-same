@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesProductSkus;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
 {
+    use ValidatesProductSkus;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,6 +27,8 @@ class StoreProductRequest extends FormRequest
         return [
             'product_type'        => 'required|in:simple,group_with_variant',
             'category_id'         => 'required|exists:categories,id',
+            'brand_id'            => 'nullable|integer|exists:brands,id',
+            'sku'                 => 'nullable|string|max:191|unique:products,sku',
             'name'                => 'required|string|max:255',
             'slug'                => 'required|string|max:255|unique:products,slug',
             'short_description'   => 'required|string|max:500',
@@ -43,6 +48,7 @@ class StoreProductRequest extends FormRequest
             'specifications.*.specification_id' => 'required_with:specifications|exists:specifications,id',
             'specifications.*.value' => 'required_with:specifications|string|max:255',
             'variants'            => 'required_if:product_type,group_with_variant|array',
+            'variants.*.sku'      => 'nullable|string|max:191|distinct',
             'variants.*.price'    => 'required_with:variants|numeric|min:0',
             'variants.*.stock'    => 'required_with:variants|integer|min:0',
             'variants.*.cost'     => 'nullable|numeric|min:0',
@@ -61,6 +67,8 @@ class StoreProductRequest extends FormRequest
             'product_type.required'      => 'The product type field is required.',
             'category_id.required'       => 'The category field is required.',
             'category_id.exists'         => 'The selected category is invalid.',
+            'brand_id.exists'            => 'The selected brand is invalid.',
+            'sku.unique'                 => 'This SKU has already been taken.',
             'name.required'              => 'The product name field is required.',
             'slug.required'              => 'The product slug field is required.',
             'slug.unique'                => 'The product slug has already been taken.',
@@ -73,8 +81,17 @@ class StoreProductRequest extends FormRequest
             'primary_photo.required'     => 'The primary photo field is required.',
             'primary_photo.image'        => 'The primary photo must be an image.',
             'variants.required_if'       => 'Variants are required for variant products.',
+            'variants.*.sku.distinct'    => 'Each variation must have its own unique SKU.',
             'variants.*.price.required_with' => 'Price is required for all variants.',
             'variants.*.stock.required_with' => 'Stock is required for all variants.',
         ];
+    }
+
+    /**
+     * New products have no id yet, so no SKU rows need to be excluded.
+     */
+    protected function currentProductId(): ?int
+    {
+        return null;
     }
 }

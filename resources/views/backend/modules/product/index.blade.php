@@ -10,6 +10,8 @@
                         <th>Image</th>
                         <th>Product Name</th>
                         <th>Category</th>
+                        <th>Brand</th>
+                        <th>SKU</th>
                         <th>Type</th>
                         <th>Price</th>
                         <th>Stock</th>
@@ -43,6 +45,22 @@
                                     <span class="badge bg-info">{{$product->category->name}}</span>
                                 @else
                                     <span class="badge bg-secondary">No Category</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($product->brand)
+                                    <span class="badge bg-primary">{{$product->brand->name}}</span>
+                                @else
+                                    <span class="badge bg-secondary">No Brand</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($product->sku)
+                                    <code>{{ $product->sku }}</code>
+                                @elseif($product->isVariantProduct())
+                                    <span class="text-muted">Per variant</span>
+                                @else
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
                             <td>
@@ -84,6 +102,9 @@
                                                         <span class="badge bg-success">{{ $variation->stock }}</span>
                                                     @else
                                                         <span class="badge bg-danger">0</span>
+                                                    @endif
+                                                    @if($variation->sku)
+                                                        <code style="font-size:11px;">{{ $variation->sku }}</code>
                                                     @endif
                                                 </div>
                                             @endforeach
