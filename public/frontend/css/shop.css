@@ -1785,8 +1785,52 @@ img { max-width: 100%; }
     color: var(--text-dark);
     margin: 6px 0 12px;
 }
+
+/* Similar products: one swipeable row on phones/tablets, 4-up on desktop.
+   This avoids squeezing four cards into the narrow 500px modal at tablet
+   widths (which made each card only ~100px wide). */
+#cartAddedSimilar {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 46%;
+    gap: 12px;
+    margin: 0;
+    padding-bottom: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+#cartAddedSimilar > .col {
+    width: auto;
+    max-width: none;
+    margin-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+    scroll-snap-align: start;
+}
+#cartAddedSimilar::-webkit-scrollbar {
+    height: 6px;
+}
+#cartAddedSimilar::-webkit-scrollbar-track {
+    background: transparent;
+}
+#cartAddedSimilar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+@media (min-width: 992px) {
+    #cartAddedSimilar {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        overflow-x: visible;
+        padding-bottom: 0;
+        scroll-snap-type: none;
+    }
+}
 .cart-added-actions {
     display: flex;
+    align-items: stretch;
     gap: 10px;
     padding: 4px 20px 20px;
 }
@@ -2000,6 +2044,7 @@ img { max-width: 100%; }
 }
 @media (max-width: 575.98px) {
     .cart-added-actions { flex-direction: column-reverse; }
+    .cart-added-actions > * { width: 100%; }
     .cart-added-modal .modal-body { padding: 8px 14px; }
 }
 

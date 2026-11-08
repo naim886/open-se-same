@@ -1216,7 +1216,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                 </div>
                 <div id="cartAddedSimilarWrap">
                     <h6 class="cart-added-subtitle">You may also like</h6>
-                    <div class="row row-cols-2 row-cols-md-4 g-3" id="cartAddedSimilar"></div>
+                    <div class="row row-cols-2 row-cols-lg-4 g-3" id="cartAddedSimilar"></div>
                 </div>
             </div>
             <div class="modal-footer cart-added-actions border-0">
