@@ -1202,6 +1202,20 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 </button>
 
 <!-- Add-to-cart success popup -->
+<style>
+    /* Guarantee the popup card actions stay fully visible even if an older
+       cached shop.min.css is still being served. */
+    #cartAddedSimilar .product-card-footer-btns {
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+    #cartAddedSimilar .btn-add-to-cart,
+    #cartAddedSimilar .btn-card-buy-now {
+        width: 100% !important;
+        min-width: 0 !important;
+        white-space: normal !important;
+    }
+</style>
 <div class="modal fade" id="cartAddedModal" tabindex="-1" aria-labelledby="cartAddedModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content cart-added-modal">
