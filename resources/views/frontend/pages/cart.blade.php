@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Shopping Cart - Open Se Same')
-@section('meta_description', 'Review your shopping cart at Open Se Same. Fast checkout with COD and delivery across Bangladesh.')
-@section('og_title', 'Shopping Cart - Open Se Same')
-@section('og_description', 'Review your shopping cart at Open Se Same. Fast checkout with COD and delivery across Bangladesh.')
+@section('title', 'Shopping Cart - OpenSesame BD')
+@section('meta_description', 'Review your shopping cart at OpenSesame BD. Fast checkout with COD and delivery across Bangladesh.')
+@section('og_title', 'Shopping Cart - OpenSesame BD')
+@section('og_description', 'Review your shopping cart at OpenSesame BD. Fast checkout with COD and delivery across Bangladesh.')
 @section('robots', 'noindex, nofollow')
 
 @section('content')
@@ -172,7 +172,7 @@
                         <a href="{{ route('shop.checkout') }}" class="btn-checkout mt-3" id="checkoutBtn">
                             <i class="fas fa-lock me-2"></i>Proceed to Checkout
                         </a>
-                        <a href="https://wa.me/+8801886870406?text={{ urlencode('I want to place an order') }}" target="_blank"
+                        <a href="https://wa.me/+8801826339988?text={{ urlencode('I want to place an order') }}" target="_blank"
                            class="d-block text-center mt-2" style="font-size:13px; color:#25d366; font-weight:600;">
                             <i class="fab fa-whatsapp me-1"></i>Order via WhatsApp
                         </a>

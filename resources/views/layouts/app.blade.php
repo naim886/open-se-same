@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="Open Se Same Customer Registraion"/>
-    <meta property="og:description" content="Open Se Same Customer Registraion page"/>
+    <meta property="og:title" content="OpenSesame BD Customer Registraion"/>
+    <meta property="og:description" content="OpenSesame BD Customer Registraion page"/>
     <meta property="og:image" content="{{asset('images/og.png')}}"/>
     <title>{{$cms_content['page_title'] ?? null }} | {{env('APP_NAME')}}</title>
     <link rel="icon" type="image/x-icon" href="{{asset('images/favicon.png')}}">

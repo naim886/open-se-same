@@ -1,10 +1,10 @@
 @extends('frontend.layouts.app')
 
-@section('title',          $blog->meta_title ?? $blog->title . ' - Open Se Same')
+@section('title',          $blog->meta_title ?? $blog->title . ' - OpenSesame BD')
 @if($blog->meta_description)
 @section('meta_description', $blog->meta_description)
 @endif
-@section('og_title',       $blog->meta_title ?? $blog->title . ' - Open Se Same')
+@section('og_title',       $blog->meta_title ?? $blog->title . ' - OpenSesame BD')
 @section('og_description', $blog->meta_description ?? $blog->excerpt ?? '')
 @section('og_type',        'article')
 @section('og_image',       $blog->thumbnail ? asset('storage/'.$blog->thumbnail) : asset('images/og.webp'))
@@ -24,11 +24,11 @@ $articleSchema = Schema::blogPosting()
     ->author(
         $blog->author
             ? Schema::person()->name($blog->author)
-            : Schema::organization()->name('Open Se Same')
+            : Schema::organization()->name('OpenSesame BD')
     )
     ->publisher(
         Schema::organization()
-            ->name('Open Se Same')
+            ->name('OpenSesame BD')
             ->logo(Schema::imageObject()->url(asset('images/logo-web.png')))
     );
 echo $articleSchema->toScript();

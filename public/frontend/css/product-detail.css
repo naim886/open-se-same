@@ -48,7 +48,7 @@ body {
 }
 
 .thumbnail-container .img-thumbnail.active {
-    border-color: #015C3C; /* Dark border for active thumbnail */
+    border-color: #005138; /* Dark border for active thumbnail */
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -67,7 +67,7 @@ body {
 
 .product-price {
     font-weight: 700;
-    color: #027B50; /* Brand's primary color */
+    color: #007d50; /* Brand's primary color */
 }
 
 .product-description {
@@ -92,7 +92,7 @@ body {
 }
 
 .color-swatch.active {
-    border-color: #015C3C;
+    border-color: #005138;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -103,7 +103,7 @@ body {
 }
 
 .size-option.active {
-    background-color: #015C3C;
+    background-color: #005138;
     color: #fff;
     font-weight: 500;
 }
@@ -131,13 +131,13 @@ body {
 
 /* Action Buttons */
 .btn-add-to-cart {
-    background-color: #015C3C;
-    border-color: #015C3C;
+    background-color: #005138;
+    border-color: #005138;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .btn-add-to-cart:hover {
-    background-color: #012B1C; /* Slightly darker version of #015C3C for hover */
+    background-color: #005138; /* Slightly darker version of #005138 for hover */
     transform: translateY(-1px);
 }
 
@@ -173,7 +173,7 @@ body {
 }
 
 .accordion-button:not(.collapsed) {
-    color: #027B50; /* Accent color when open */
+    color: #007d50; /* Accent color when open */
     background-color: #f8f9fa; /* Slightly different background when open */
 }
 

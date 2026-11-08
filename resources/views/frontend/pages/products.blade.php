@@ -1,19 +1,19 @@
 @extends('frontend.layouts.app')
 
-@section('title', ($category ? $category->name.' - ' : 'All Products - ').'Open Se Same')
-@section('meta_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
-@section('og_title', ($category ? $category->name.' - ' : 'All Products - ').'Open Se Same')
-@section('og_description', $category ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
+@section('title', ($category ? $category->name.' - ' : 'All Products - ').'OpenSesame BD')
+@section('meta_description', $category ? 'Shop '.$category->name.' at OpenSesame BD. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at OpenSesame BD. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
+@section('og_title', ($category ? $category->name.' - ' : 'All Products - ').'OpenSesame BD')
+@section('og_description', $category ? 'Shop '.$category->name.' at OpenSesame BD. Best quality products with fast delivery across Bangladesh.' : 'Shop all products at OpenSesame BD. treasures s, miniature car & fashion with fast delivery across Bangladesh.')
 @section('robots', 'index, follow')
 
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
 use Illuminate\Support\Str;
-$schemaPageTitle = $category ? $category->name.' - Open Se Same' : 'All Products - Open Se Same';
+$schemaPageTitle = $category ? $category->name.' - OpenSesame BD' : 'All Products - OpenSesame BD';
 $schemaPageDesc  = $category
-    ? 'Shop '.$category->name.' at Open Se Same. Best quality products with fast delivery across Bangladesh.'
-    : 'Shop all products at Open Se Same. treasures s, miniature car & fashion with fast delivery across Bangladesh.';
+    ? 'Shop '.$category->name.' at OpenSesame BD. Best quality products with fast delivery across Bangladesh.'
+    : 'Shop all products at OpenSesame BD. treasures s, miniature car & fashion with fast delivery across Bangladesh.';
 $schemaPageUrl   = $category ? route('shop.category', $category->slug) : route('shop.products');
 echo Schema::collectionPage()
     ->name($schemaPageTitle)

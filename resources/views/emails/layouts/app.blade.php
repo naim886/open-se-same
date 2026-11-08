@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Open Se Same Newsletter</title>
+    <title>OpenSesame BD Newsletter</title>
     <style type="text/css">
         /* Reset */
         body, table, td, a {
@@ -170,7 +170,7 @@
                             <tr>
                                 <td align="center" class="header"
                                     style="padding: 30px 20px; text-align: center; background-color: #ffffff; border-bottom: 1px solid #eeeeee;">
-                                    <img src="{{asset('images/logo-web.png')}}" alt="Open Se Same Logo" width="180"
+                                    <img src="{{asset('images/logo-web.png')}}" alt="OpenSesame BD Logo" width="180"
                                          style="max-width: 180px; height: auto; -ms-interpolation-mode: bicubic; border: 0; line-height: 100%; outline: none; text-decoration: none;">
                                 </td>
                             </tr>
@@ -195,7 +195,7 @@
                             <tr>
                                 <td align="center" class="footer"
                                     style="padding: 30px 20px; text-align: center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #888888; background-color: #f8f8f8; border-top: 1px solid #eeeeee;">
-                                    <p style="margin: 5px 0;">Open Se Same </p>
+                                    <p style="margin: 5px 0;">OpenSesame BD </p>
                                     <p style="margin: 5px 0;">You're receiving this email because you opted in at our website.</p>
                                 </td>
                             </tr>

@@ -18,7 +18,7 @@ class GenerateSitemap extends Command
     public function handle(): int
     {
         $this->info('');
-        $this->info('  <fg=magenta>Open Se Same — Sitemap Generator</>');
+        $this->info('  <fg=magenta>OpenSesame BD — Sitemap Generator</>');
         $this->info('  ─────────────────────────────────────');
 
         $sitemap = Sitemap::create();

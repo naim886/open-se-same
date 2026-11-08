@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $product->name }} - Open Se Same</title>
+    <title>{{ $product->name }} - OpenSesame BD</title>
     <!-- Bootstrap CSS -->
     <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Google Fonts -->
@@ -149,7 +149,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('frontend.index') }}">
-                <i class="fas fa-home me-2"></i>Open Se Same
+                <i class="fas fa-home me-2"></i>OpenSesame BD
             </a>
 
             <div class="navbar-nav ms-auto">
@@ -322,8 +322,8 @@
                             <div class="accordion-body">
                                 <p>Need help? Contact our customer support team:</p>
                                 <ul>
-                                    <li><i class="fas fa-phone me-2"></i> 01886870406</li>
-                                    <li><i class="fas fa-envelope me-2"></i> info@opensesame.com</li>
+                                    <li><i class="fas fa-phone me-2"></i> 01826339988</li>
+                                    <li><i class="fas fa-envelope me-2"></i> opensesamebd@gmail.com</li>
                                     <li><i class="fas fa-clock me-2"></i> Mon-Fri: 9AM-6PM</li>
                                 </ul>
                             </div>

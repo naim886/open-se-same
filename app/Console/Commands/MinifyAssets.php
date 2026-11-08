@@ -34,7 +34,7 @@ class MinifyAssets extends Command
     public function handle(): int
     {
         $this->info('');
-        $this->info('  <fg=magenta>Open Se Same — Asset Minifier</>');
+        $this->info('  <fg=magenta>OpenSesame BD — Asset Minifier</>');
         $this->info('  ─────────────────────────────────────');
 
         $totalSaved = 0;

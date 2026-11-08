@@ -7,28 +7,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Open Se Same - Your Online Fashion Store')</title>
-    <meta name="title" content="@yield('title', 'Open Se Same - Your Online Fashion Store')">
+    <title>@yield('title', 'OpenSesame BD - Your Online Fashion Store')</title>
+    <meta name="title" content="@yield('title', 'OpenSesame BD - Your Online Fashion Store')">
     <meta name="description"
-          content="@yield('meta_description', 'Shop the latest fashion, accessories & more at Open Se Same. Fast delivery across Bangladesh.')">
+          content="@yield('meta_description', 'Shop the latest fashion, accessories & more at OpenSesame BD. Fast delivery across Bangladesh.')">
     <meta name="robots" content="@yield('robots', 'index, follow')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     {{-- Open Graph --}}
-    <meta property="og:site_name" content="Open Se Same">
+    <meta property="og:site_name" content="OpenSesame BD">
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('og_title', 'Open Se Same - Your Online Fashion Store')">
+    <meta property="og:title" content="@yield('og_title', 'OpenSesame BD - Your Online Fashion Store')">
     <meta property="og:description"
-          content="@yield('og_description', 'Shop the latest fashion, accessories & more at Open Se Same. Fast delivery across Bangladesh.')">
+          content="@yield('og_description', 'Shop the latest fashion, accessories & more at OpenSesame BD. Fast delivery across Bangladesh.')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="@yield('og_image', asset('images/og.webp'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('og_title', 'Open Se Same - Your Online Fashion Store')">
+    <meta name="twitter:title" content="@yield('og_title', 'OpenSesame BD - Your Online Fashion Store')">
     <meta name="twitter:description"
-          content="@yield('og_description', 'Shop the latest fashion, accessories & more at Open Se Same. Fast delivery across Bangladesh.')">
+          content="@yield('og_description', 'Shop the latest fashion, accessories & more at OpenSesame BD. Fast delivery across Bangladesh.')">
     <meta name="twitter:image" content="@yield('og_image', asset('images/og.webp'))">
 
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
@@ -78,21 +78,21 @@
     ══════════════════════════════════════════════════════════════════════ --}}
     <style>
         :root {
-            --primary: #027B50;
-            --primary-dark: #015C3C;
-            --primary-mid: #039C63;
-            --primary-light: #04A871;
-            --primary-gradient: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
-            --primary-gradient-rev: linear-gradient(135deg, #04A871 0%, #027B50 55%, #015C3C 100%);
-            --hero-gradient: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%);
-            --secondary: #FFCF2F;
+            --primary: #007d50;
+            --primary-dark: #005138;
+            --primary-mid: #007d50;
+            --primary-light: #007d50;
+            --primary-gradient: linear-gradient(135deg, #005138 0%, #007d50 55%, #007d50 100%);
+            --primary-gradient-rev: linear-gradient(135deg, #007d50 0%, #007d50 55%, #005138 100%);
+            --hero-gradient: linear-gradient(135deg, #005138 0%, #005138 40%, #007d50 75%, #007d50 100%);
+            --secondary: #ffd032;
             --text-dark: #10211B;
             --text-body: #33413C;
             --text-muted: #767676;
             --bg-light: #F3FAF6;
             --bg-white: #fff;
             --border: #D8EDE3;
-            --shadow: 0 2px 14px rgba(1, 92, 60, .08);
+            --shadow: 0 2px 14px rgba(0, 81, 56, .08);
             --radius: 10px;
             --transition: all .25s ease
         }
@@ -125,7 +125,7 @@
         }
 
         .top-notice-bar {
-            background: #015C3C;
+            background: #005138;
             color: rgba(255, 255, 255, .9);
             padding: 7px 0;
             font-size: 12.5px;
@@ -151,11 +151,11 @@
         }
 
         .top-notice-bar a:hover {
-            color: #FFCF2F
+            color: #ffd032
         }
 
         .top-notice-bar i {
-            color: #FFCF2F;
+            color: #ffd032;
             margin-right: 3px
         }
 
@@ -186,19 +186,19 @@
         }
 
         .top-bar-social a:hover {
-            background: #FFCF2F
+            background: #ffd032
         }
 
         .top-bar-social a:hover i {
-            color: #015C3C
+            color: #005138
         }
 
         .main-header {
             background: #fff;
-            box-shadow: 0 3px 24px rgba(1, 92, 60, .12);
+            box-shadow: 0 3px 24px rgba(0, 81, 56, .12);
             z-index: 1000;
             border-bottom: 3px solid transparent;
-            border-image: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%) 1
+            border-image: linear-gradient(135deg, #005138 0%, #007d50 55%, #007d50 100%) 1
         }
 
         .header-logo {
@@ -215,7 +215,7 @@
         }
 
         .search-form .form-control.search-input {
-            border: 2px solid #027B50;
+            border: 2px solid #007d50;
             border-right: none;
             border-radius: 10px 0 0 10px;
             padding: 10px 16px;
@@ -225,14 +225,14 @@
         }
 
         .search-form .form-control.search-input:focus {
-            border-color: #015C3C;
+            border-color: #005138;
             box-shadow: none
         }
 
         .search-form .btn-search {
-            background: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
+            background: linear-gradient(135deg, #005138 0%, #007d50 55%, #007d50 100%);
             color: #fff;
-            border: 2px solid #027B50;
+            border: 2px solid #007d50;
             border-left: none;
             border-radius: 0 10px 10px 0;
             padding: 10px 20px;
@@ -252,7 +252,7 @@
             position: relative;
             display: inline-flex;
             align-items: center;
-            background: linear-gradient(135deg, #015C3C 0%, #027B50 55%, #04A871 100%);
+            background: linear-gradient(135deg, #005138 0%, #007d50 55%, #007d50 100%);
             color: #fff!important;
             padding: 8px 16px;
             border-radius: 25px;
@@ -263,7 +263,7 @@
 
         .cart-badge {
             background: #fff;
-            color: #015C3C;
+            color: #005138;
             border-radius: 50%;
             width: 20px;
             height: 20px;
@@ -290,14 +290,14 @@
         .mobile-menu-btn {
             background: none;
             border: none;
-            color: #015C3C;
+            color: #005138;
             font-size: 20px;
             cursor: pointer;
             padding: 4px 6px
         }
 
         .category-nav {
-            background: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%);
+            background: linear-gradient(135deg, #005138 0%, #005138 40%, #007d50 75%, #007d50 100%);
             border-top: 1px solid rgba(255, 255, 255, .12)
         }
 
@@ -327,7 +327,7 @@
         .category-nav-link:hover, .category-nav-link.active {
             color: #fff;
             background: rgba(255, 255, 255, .15);
-            border-bottom-color: #FFCF2F
+            border-bottom-color: #ffd032
         }
 
         /* Browsers give :visited links extra specificity over the base
@@ -363,7 +363,7 @@
             padding: 6px 0;
             background: #fff;
             border-radius: 0 0 var(--radius, 10px) var(--radius, 10px);
-            box-shadow: 0 14px 30px rgba(1, 92, 60, .2);
+            box-shadow: 0 14px 30px rgba(0, 81, 56, .2);
             opacity: 0;
             visibility: hidden;
             transform: translateY(6px);
@@ -391,7 +391,7 @@
         .category-nav-dropdown-link:hover,
         .category-nav-dropdown-link.active {
             background: var(--bg-light, #F3FAF6);
-            color: var(--primary-dark, #015C3C)
+            color: var(--primary-dark, #005138)
         }
 
         .category-nav-dropdown-link:visited {
@@ -447,7 +447,7 @@
 
         .hero-swiper {
             width: 100%;
-            background: linear-gradient(135deg, #012B1C 0%, #015C3C 40%, #027B50 75%, #2ECC87 100%)
+            background: linear-gradient(135deg, #005138 0%, #005138 40%, #007d50 75%, #007d50 100%)
         }
 
         .hero-swiper .swiper-slide {
@@ -504,12 +504,12 @@
 
         .mobile-nav-link:hover, .mobile-nav-link.active {
             background: var(--bg-light, #F3FAF6);
-            color: var(--primary-dark, #015C3C)
+            color: var(--primary-dark, #005138)
         }
 
         .mobile-nav-link i {
             width: 18px;
-            color: var(--primary, #027B50)
+            color: var(--primary, #007d50)
         }
 
         .mobile-nav-group-title {
@@ -530,7 +530,7 @@
 
         .mobile-nav-group-title i.mobile-nav-icon {
             width: 18px;
-            color: var(--primary, #027B50)
+            color: var(--primary, #007d50)
         }
 
         .mobile-nav-group-label {
@@ -558,7 +558,7 @@
         }
 
         .mobile-nav-sub a:hover, .mobile-nav-sub a.active {
-            color: var(--primary-dark, #015C3C);
+            color: var(--primary-dark, #005138);
             background: #EDF7F1
         }
 
@@ -610,7 +610,7 @@
         }
 
         .filter-category-link.active {
-            color: var(--primary-dark, #015C3C);
+            color: var(--primary-dark, #005138);
             font-weight: 700
         }
 
@@ -647,8 +647,8 @@
         }
 
         .filter-subcategory-link:hover, .filter-subcategory-link.active {
-            color: var(--primary-dark, #015C3C);
-            border-left-color: var(--primary, #027B50)
+            color: var(--primary-dark, #005138);
+            border-left-color: var(--primary, #007d50)
         }
 
         .filter-subcategory-link.active {
@@ -705,7 +705,7 @@
             width: 15px;
             height: 15px;
             margin: 0;
-            accent-color: var(--primary-dark, #015C3C)
+            accent-color: var(--primary-dark, #005138)
         }
 
         /* ── Category / brand page header ─────────────────────────── */
@@ -746,7 +746,7 @@
             margin: 0;
             font-size: clamp(20px, 2.6vw, 26px);
             font-weight: 800;
-            color: var(--primary-dark, #015C3C)
+            color: var(--primary-dark, #005138)
         }
 
         .shop-page-desc {
@@ -791,7 +791,7 @@
         .product-brand-chip span {
             font-size: 13px;
             font-weight: 600;
-            color: var(--primary-dark, #015C3C)
+            color: var(--primary-dark, #005138)
         }
     </style>
 
@@ -801,20 +801,20 @@
     @php
         use Spatie\SchemaOrg\Schema;
         echo Schema::organization()
-            ->name('Open Se Same')
+            ->name('OpenSesame BD')
             ->url(url('/'))
             ->logo(Schema::imageObject()->url(asset('images/logo-web.png'))->width(175)->height(78))
-            ->telephone('+8801886870406')
+            ->telephone('+8801826339988')
             ->contactPoint(
                 Schema::contactPoint()
-                    ->telephone('+8801886870406')
+                    ->telephone('+8801826339988')
                     ->contactType('customer service')
                     ->availableLanguage(['Bengali', 'English'])
                     ->areaServed('BD')
             )
             ->toScript();
         echo Schema::webSite()
-            ->name('Open Se Same')
+            ->name('OpenSesame BD')
             ->url(url('/'))
             ->potentialAction(
                 Schema::searchAction()
@@ -877,14 +877,16 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 <div class="top-notice-bar d-none d-lg-block">
     <div class="container">
         <div class="top-bar-left">
-            <a href="tel:+8801886870406"><i class="fas fa-phone-alt" aria-hidden="true"></i> 01886870406</a>
+            <a href="tel:+8801826339988"><i class="fas fa-phone-alt" aria-hidden="true"></i> 01826339988</a>
+            <span class="top-bar-sep">|</span>
+            <a href="tel:+8801826339933"><i class="fas fa-phone-alt" aria-hidden="true"></i> 01826339933</a>
             <span class="top-bar-sep">|</span>
             <span><i class="fas fa-truck" aria-hidden="true"></i> Islandwide Delivery Across Bangladesh</span>
         </div>
         <div class="top-bar-right">
             <div class="top-bar-social">
                 <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
-                <a href="https://wa.me/+8801886870406" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                <a href="https://wa.me/+8801826339988" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
                 <a href="https://m.me/opensesame1" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
             </div>
             <span class="top-bar-sep">|</span>
@@ -919,7 +921,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             <!-- Logo -->
             <div class="col-4 col-md-2 col-lg-2">
                 <a href="{{ route('shop.home') }}" class="logo-link">
-                    <img src="{{ asset('images/logo-web.png') }}" alt="Open Se Same" class="header-logo" width="175" height="78">
+                    <img src="{{ asset('images/logo-web.png') }}" alt="OpenSesame BD" class="header-logo" width="175" height="78">
                 </a>
             </div>
 
@@ -1116,19 +1118,19 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         <div class="row g-4 footer-top">
             <!-- Brand & Contact -->
             <div class="col-lg-4 col-md-12">
-                <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="footer-logo mb-3" width="175" height="71"
+                <img src="{{ asset('images/logo-web-white.png') }}" alt="OpenSesame BD" class="footer-logo mb-3" width="175" height="71"
                      loading="lazy" onerror="this.style.display='none'">
                 <p class="footer-desc">Shop your favourite products at the best prices. Quality products & fast delivery is our promise.</p>
                 <ul class="footer-contact-block">
                     <li><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span>Dhaka, Bangladesh</span></li>
-                    <li><i class="fas fa-headset" aria-hidden="true"></i> <a href="tel:+8801886870406">01886870406</a></li>
-                    <li><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:info@opensesame.com">info@opensesame.com</a></li>
+                    <li><i class="fas fa-headset" aria-hidden="true"></i> <a href="tel:+8801826339988">01826339988</a> <span style="opacity:.5;margin:0 4px;">/</span> <a href="tel:+8801826339933">01826339933</a></li>
+                    <li><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:opensesamebd@gmail.com">opensesamebd@gmail.com</a></li>
                     <li><i class="fas fa-clock" aria-hidden="true"></i> <span>Open: 24/7, 365 Days</span></li>
                 </ul>
                 <div class="footer-social">
                     <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i
                             class="fab fa-facebook-f" aria-hidden="true"></i></a>
-                    <a href="https://wa.me/+8801886870406" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i
+                    <a href="https://wa.me/+8801826339988" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i
                             class="fab fa-whatsapp" aria-hidden="true"></i></a>
                     <a href="https://m.me/opensesame1" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i
                             class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
@@ -1189,7 +1191,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright">© {{ date('Y') }} <strong>Open Se Same</strong>. All rights reserved.</p>
+            <p class="footer-copyright">© {{ date('Y') }} <strong>OPEN SESAME.COM LIMITED</strong>. All rights reserved.</p>
         </div>
     </div>
 </footer>
@@ -1198,6 +1200,36 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 <button class="scroll-top-btn" id="scrollTop" aria-label="Scroll to top">
     <i class="fas fa-chevron-up" aria-hidden="true"></i>
 </button>
+
+<!-- Add-to-cart success popup -->
+<div class="modal fade" id="cartAddedModal" tabindex="-1" aria-labelledby="cartAddedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content cart-added-modal">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="cart-added-head">
+                    <div class="cart-added-check"><i class="fas fa-check" aria-hidden="true"></i></div>
+                    <h5 id="cartAddedModalLabel">Added to cart!</h5>
+                    <p id="cartAddedProductName">Your item has been added to your cart.</p>
+                </div>
+                <div id="cartAddedSimilarWrap">
+                    <h6 class="cart-added-subtitle">You may also like</h6>
+                    <div class="row row-cols-2 row-cols-md-4 g-3" id="cartAddedSimilar"></div>
+                </div>
+            </div>
+            <div class="modal-footer cart-added-actions border-0">
+                <button type="button" class="btn-continue-shopping" data-bs-dismiss="modal">
+                    Continue Shopping
+                </button>
+                <a href="{{ route('shop.checkout') }}" class="btn-go-checkout">
+                    Go to Checkout <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Scripts (self-hosted — no CDN round-trip) -->
 <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
@@ -1279,6 +1311,35 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         }, 3000);
     }
 
+    // ─── Add-to-cart success popup ──────────────────────────────────
+    function showCartAddedPopup(data) {
+        data = data || {};
+
+        var nameEl = document.getElementById('cartAddedProductName');
+        if (nameEl) {
+            nameEl.textContent = data.product_name
+                ? data.product_name + ' has been added to your cart.'
+                : 'Your item has been added to your cart.';
+        }
+
+        var grid = document.getElementById('cartAddedSimilar');
+        var wrap = document.getElementById('cartAddedSimilarWrap');
+        if (grid && wrap) {
+            if (data.similar_products_html) {
+                grid.innerHTML = data.similar_products_html;
+                wrap.style.display = '';
+            } else {
+                grid.innerHTML = '';
+                wrap.style.display = 'none';
+            }
+        }
+
+        var modalEl = document.getElementById('cartAddedModal');
+        if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
+    }
+
     // ─── Add to cart via AJAX ────────────────────────────────────────
     function addToCart(productId, qty) {
         qty = qty || 1;
@@ -1301,7 +1362,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             .then(function (data) {
                 if (data.success) {
                     if (cartCountEl) cartCountEl.textContent = data.cart_count;
-                    showToast('Item added to cart! 🛒', 'success');
+                    showCartAddedPopup(data);
                     // ── Meta Pixel: AddToCart ────────────────────────────
                     if (typeof fbq === 'function') {
                         fbq('track', 'AddToCart', {

@@ -27,9 +27,6 @@
                 @endif
             @endif
 
-            <div class="product-overlay">
-                <button class="product-overlay-btn"><i class="fas fa-eye me-1"></i> Quick View</button>
-            </div>
         </a>
 
         <!-- Body -->

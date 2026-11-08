@@ -18,8 +18,10 @@
 
                 <p class="text-muted">
                     The homepage renders these blocks from top to bottom. Add a <strong>Category Products</strong>
-                    block to feature a category's products with its banner above the list. If no block is active, the
-                    homepage falls back to the banner slider and Shop by Category tiles.
+                    block to feature a category's products with its banner above the list. The
+                    <strong>Unlock Hidden Treasures</strong> block controls the icon strip that always appears
+                    directly below the homepage H1. If no block is active, the homepage falls back to the banner
+                    slider and Shop by Category tiles.
                 </p>
 
                 <div class="mb-4 d-flex flex-wrap gap-2">
@@ -68,6 +70,7 @@
         var nextIndex = {{ $sections->count() }};
 
         var CATEGORY_TYPES = @json(\App\Models\HomepageSection::CATEGORY_TYPES);
+        var TREASURES_TYPE = @json(\App\Models\HomepageSection::TYPE_TREASURES);
 
         function refreshEmptyState() {
             if (!emptyState) return;
@@ -75,9 +78,15 @@
         }
 
         function toggleCategoryField(block) {
+            var type = block.querySelector('.block-type').value;
             var wrap = block.querySelector('.block-category-wrap');
-            if (!wrap) return;
-            wrap.style.display = CATEGORY_TYPES.indexOf(block.querySelector('.block-type').value) !== -1 ? '' : 'none';
+            if (wrap) {
+                wrap.style.display = CATEGORY_TYPES.indexOf(type) !== -1 ? '' : 'none';
+            }
+            var treasureWrap = block.querySelector('.block-treasures-wrap');
+            if (treasureWrap) {
+                treasureWrap.style.display = type === TREASURES_TYPE ? '' : 'none';
+            }
         }
 
         $('.add-block').on('click', function () {

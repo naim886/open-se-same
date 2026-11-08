@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Order Placed Successfully – Open Se Same</title>
-    <meta name="title" content="Order Placed Successfully – Open Se Same">
-    <meta name="description" content="Your order has been placed successfully at Open Se Same. Our team will contact you shortly to confirm.">
+    <title>Order Placed Successfully – OpenSesame BD</title>
+    <meta name="title" content="Order Placed Successfully – OpenSesame BD">
+    <meta name="description" content="Your order has been placed successfully at OpenSesame BD. Our team will contact you shortly to confirm.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:site_name" content="Open Se Same">
-    <meta property="og:title" content="Order Placed Successfully – Open Se Same">
-    <meta property="og:description" content="Your order has been placed successfully at Open Se Same.">
+    <meta property="og:site_name" content="OpenSesame BD">
+    <meta property="og:title" content="Order Placed Successfully – OpenSesame BD">
+    <meta property="og:description" content="Your order has been placed successfully at OpenSesame BD.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="{{ asset('images/og.webp') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
@@ -186,7 +186,7 @@
                 <i class="fas fa-home"></i>
                 Continue Shopping
             </a>
-            <a href="tel:01886870406" class="btn-secondary-custom">
+            <a href="tel:01826339988" class="btn-secondary-custom">
                 <i class="fas fa-phone"></i>
                 Call Us Now
             </a>

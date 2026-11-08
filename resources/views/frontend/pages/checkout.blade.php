@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Checkout - Open Se Same')
-@section('meta_description', 'Complete your order at Open Se Same. Secure checkout with cash on delivery across Bangladesh.')
-@section('og_title', 'Checkout - Open Se Same')
-@section('og_description', 'Complete your order at Open Se Same. Secure checkout with cash on delivery across Bangladesh.')
+@section('title', 'Checkout - OpenSesame BD')
+@section('meta_description', 'Complete your order at OpenSesame BD. Secure checkout with cash on delivery across Bangladesh.')
+@section('og_title', 'Checkout - OpenSesame BD')
+@section('og_description', 'Complete your order at OpenSesame BD. Secure checkout with cash on delivery across Bangladesh.')
 @section('robots', 'noindex, nofollow')
 
 @section('content')
@@ -71,7 +71,7 @@
                             $savedAddresses = auth()->user()->addresses()->get();
                         @endphp
                         @if($savedAddresses->isNotEmpty())
-                        <div class="mb-3 p-3 rounded" style="background:rgba(2,123,80,.05); border:1.5px solid rgba(2,123,80,.2);">
+                        <div class="mb-3 p-3 rounded" style="background:rgba(0,125,80,.05); border:1.5px solid rgba(0,125,80,.2);">
                             <label class="form-label" style="font-size:13px; font-weight:600; color:var(--primary);">
                                 <i class="fas fa-address-book me-1"></i> Use Saved Address
                             </label>

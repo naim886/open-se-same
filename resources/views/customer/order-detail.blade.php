@@ -1,6 +1,6 @@
 @extends('customer.layouts.panel')
 
-@section('title', 'Order M-{{ $order->order_number }} — Open Se Same')
+@section('title', 'Order M-{{ $order->order_number }} — OpenSesame BD')
 
 @section('panel_content')
 

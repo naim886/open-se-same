@@ -1,6 +1,6 @@
 @extends('customer.layouts.panel')
 
-@section('title', 'Profile Settings — Open Se Same')
+@section('title', 'Profile Settings — OpenSesame BD')
 
 @section('panel_content')
 

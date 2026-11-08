@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Celebrate love with our exclusive Valentine's Day rose collection. Express your feelings with beautiful roses from Open Se Same.">
-    <meta property="og:title" content="Valentine's Day Rose Collection - Open Se Same"/>
+          content="Celebrate love with our exclusive Valentine's Day rose collection. Express your feelings with beautiful roses from OpenSesame BD.">
+    <meta property="og:title" content="Valentine's Day Rose Collection - OpenSesame BD"/>
     <meta property="og:description"
           content="Celebrate love with our exclusive Valentine's Day rose collection. Express your feelings with beautiful roses."/>
     <meta property="og:image" content="{{asset('images/og.png')}}"/>
     <link rel="icon" type="image/x-icon" href="{{asset('images/favicon.png')}}">
-    <title>Valentine's Day Rose Collection 💝 - Open Se Same</title>
+    <title>Valentine's Day Rose Collection 💝 - OpenSesame BD</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,7 +48,7 @@
 <nav class="navbar navbar-expand-lg valentine-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ route('valentine.landing') }}">
-            <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="valentine-logo">
+            <img src="{{ asset('images/logo-web-white.png') }}" alt="OpenSesame BD" class="valentine-logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#valentineNav">
             <span class="navbar-toggler-icon"></span>
@@ -191,14 +191,14 @@
                         <div class="p-4">
                             <i class="fas fa-phone fa-2x mb-3" style="color: #C41E3A;"></i>
                             <h6 class="valentine-heading">Call Us</h6>
-                            <p class="text-muted mb-0"><a class="text-dark" href="tel:+8801886870406">+8801886870406</a></p>
+                            <p class="text-muted mb-0"><a class="text-dark" href="tel:+8801826339988">+8801826339988</a></p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="p-4">
                             <i class="fas fa-envelope fa-2x mb-3" style="color: #C41E3A;"></i>
                             <h6 class="valentine-heading">Email Us</h6>
-                            <p class="text-muted mb-0">info@opensesame.com</p>
+                            <p class="text-muted mb-0">opensesamebd@gmail.com</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -219,7 +219,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
-                <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="valentine-footer-logo mb-3">
+                <img src="{{ asset('images/logo-web-white.png') }}" alt="OpenSesame BD" class="valentine-footer-logo mb-3">
                 <p class="text-white">At our heart, we don't just sell flowers we preserve the emotions that words often fail to capture. We
                     believe that true love, like a beautiful memory, should never have an expiration date. That is why we dedicated ourselves to
                     the art of treasures s the ultimate symbol of a love that stands the test of time.</p>
@@ -241,7 +241,7 @@
             </div>
         </div>
         <div class="valentine-footer-bottom">
-            <p class="mb-0">💝 Made with love by Open Se Same © {{ date('Y') }} | Happy Valentine's Day!</p>
+            <p class="mb-0">💝 Made with love by OpenSesame BD © {{ date('Y') }} | Happy Valentine's Day!</p>
         </div>
     </div>
 </footer>

@@ -34,6 +34,10 @@ class UpdateHomepageSettingsRequest extends FormRequest
                 'required_if:sections.*.type,' . HomepageSection::TYPE_CATEGORY,
             ],
             'sections.*.title'       => ['nullable', 'string', 'max:255'],
+            'sections.*.settings'    => ['nullable', 'array'],
+            'sections.*.settings.items'          => ['nullable', 'array'],
+            'sections.*.settings.items.*.label'  => ['nullable', 'string', 'max:100'],
+            'sections.*.settings.items.*.link'   => ['nullable', 'string', 'max:2048'],
             'sections.*.status'      => ['required', 'in:0,1'],
         ];
     }
@@ -47,6 +51,9 @@ class UpdateHomepageSettingsRequest extends FormRequest
             'sections.*.type'        => 'block type',
             'sections.*.category_id' => 'block category',
             'sections.*.title'       => 'block title',
+            'sections.*.settings'    => 'block settings',
+            'sections.*.settings.items.*.label' => 'treasure label',
+            'sections.*.settings.items.*.link'  => 'treasure link',
             'sections.*.status'      => 'block status',
         ];
     }

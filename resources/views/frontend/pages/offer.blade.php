@@ -1,17 +1,17 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Special Offers & Discounts — Open Se Same')
-@section('meta_description', 'Shop the best discounted products at Open Se Same. Huge savings on treasures s, miniature car & fashion. Limited time offers with fast delivery across Bangladesh.')
-@section('og_title', 'Special Offers & Discounts — Open Se Same')
-@section('og_description', 'Shop the best discounted products at Open Se Same. Huge savings on treasures s, miniature car & fashion.')
+@section('title', 'Special Offers & Discounts — OpenSesame BD')
+@section('meta_description', 'Shop the best discounted products at OpenSesame BD. Huge savings on treasures s, miniature car & fashion. Limited time offers with fast delivery across Bangladesh.')
+@section('og_title', 'Special Offers & Discounts — OpenSesame BD')
+@section('og_description', 'Shop the best discounted products at OpenSesame BD. Huge savings on treasures s, miniature car & fashion.')
 @section('robots', 'index, follow')
 
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
 echo Schema::collectionPage()
-    ->name('Special Offers & Discounts — Open Se Same')
-    ->description('Shop the best discounted products at Open Se Same.')
+    ->name('Special Offers & Discounts — OpenSesame BD')
+    ->description('Shop the best discounted products at OpenSesame BD.')
     ->url(route('shop.offer'))
     ->toScript();
 echo Schema::breadcrumbList()->itemListElement([
@@ -76,7 +76,7 @@ echo Schema::breadcrumbList()->itemListElement([
                     </span>
                 </div>
                 <h1 style="color:#fff;font-size:2rem;font-weight:800;margin:0 0 6px;letter-spacing:-0.5px;">
-                    Special Offers & <span style="color:#FFE066;">Discounts</span>
+                    Special Offers & <span style="color:#ffd032;">Discounts</span>
                 </h1>
                 <p style="color:rgba(255,255,255,0.7);margin:0;font-size:14px;">
                     All products with active sale prices — grab them before they're gone!
@@ -94,17 +94,17 @@ echo Schema::breadcrumbList()->itemListElement([
                         <span style="display:block;font-size:1.5rem;font-weight:800;color:#fff;line-height:1;" id="ocd-d">00</span>
                         <span style="display:block;font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;">DAY</span>
                     </div>
-                    <span style="font-size:1.5rem;font-weight:800;color:#FFE066;margin-bottom:14px;">:</span>
+                    <span style="font-size:1.5rem;font-weight:800;color:#ffd032;margin-bottom:14px;">:</span>
                     <div style="text-align:center;">
                         <span style="display:block;font-size:1.5rem;font-weight:800;color:#fff;line-height:1;" id="ocd-h">00</span>
                         <span style="display:block;font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;">HRS</span>
                     </div>
-                    <span style="font-size:1.5rem;font-weight:800;color:#FFE066;margin-bottom:14px;">:</span>
+                    <span style="font-size:1.5rem;font-weight:800;color:#ffd032;margin-bottom:14px;">:</span>
                     <div style="text-align:center;">
                         <span style="display:block;font-size:1.5rem;font-weight:800;color:#fff;line-height:1;" id="ocd-m">00</span>
                         <span style="display:block;font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;">MIN</span>
                     </div>
-                    <span style="font-size:1.5rem;font-weight:800;color:#FFE066;margin-bottom:14px;">:</span>
+                    <span style="font-size:1.5rem;font-weight:800;color:#ffd032;margin-bottom:14px;">:</span>
                     <div style="text-align:center;">
                         <span style="display:block;font-size:1.5rem;font-weight:800;color:#fff;line-height:1;" id="ocd-s">00</span>
                         <span style="display:block;font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;">SEC</span>

@@ -1,6 +1,6 @@
 :root {
     /* ══ Brand palette ═══════════════════════════════════════════
-       Open Se Same brand colours (green + yellow) applied to a
+       OpenSesame BD brand colours (green + yellow) applied to a
        dark admin UI. Values mirror the storefront palette so the
        admin panel reads as the same product. */
     --brand: #027B50;
@@ -16,8 +16,8 @@
 
     /* Brand gradient — topbar and call-to-action surfaces */
     --brand-gradient: linear-gradient(135deg, #027B50 0%, #015C3C 62%, #014A30 100%);
-    /* Deep near-black green — sidebar & footer, so page content pops */
-    --chrome-gradient: linear-gradient(180deg, #062A1E 0%, #041710 100%);
+    /* Deep near-black — sidebar & footer, so page content pops */
+    --chrome-gradient: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
 
     /* Legacy alias: still referenced by .theme-bg and older markup */
     --backgound-color: var(--chrome-gradient);
@@ -30,16 +30,16 @@
     --placeholder-color: rgba(143, 199, 175, 0.55);
 
     /* ══ Layered surfaces: page < surface < elevated ════════════ */
-    --bg-page: #04120C;
-    --bg-surface: #0A2419;
-    --bg-surface-alt: #071C13;
-    --bg-surface-header: #061710;
-    --bg-elevated: #0C2C1F;
-    --theme-color: #071C13;
+    --bg-page: #0b0b0b;
+    --bg-surface: #171717;
+    --bg-surface-alt: #121212;
+    --bg-surface-header: #101010;
+    --bg-elevated: #1f1f1f;
+    --theme-color: #121212;
 
     /* ══ Borders ════════════════════════════════════════════════ */
-    --border-subtle: rgba(143, 199, 175, 0.16);
-    --border-strong: rgba(143, 199, 175, 0.30);
+    --border-subtle: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
     --border-brand: rgba(2, 123, 80, 0.55);
 
     /* ══ Accent (primary interactive colour) ════════════════════ */
@@ -354,7 +354,7 @@ legend {
 .theme-table tbody tr, .theme-table thead tr{
     border-radius: 8px !important;
     border: none;
-    background: linear-gradient(135deg, var(--accent-strong) 0%, var(--bg-surface-alt) 80%);
+    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
 }
 .theme-table th{
     text-align: center;
@@ -558,7 +558,7 @@ legend {
 
 
 /* ══════════════════════════════════════════════════════════════
-   ══ Open Se Same brand theme integration ══════════════════════
+   ══ OpenSesame BD brand theme integration ══════════════════════
    Declared last so it reliably wins the cascade against the base
    rules above (and the Bootstrap defaults they were patching).
 ══════════════════════════════════════════════════════════════ */
@@ -848,13 +848,13 @@ hr {
     --bs-table-striped-color: var(--theme-text-color);
     --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
     --bs-table-hover-color: var(--theme-text-color);
-    --bs-table-hover-bg: rgba(var(--brand-rgb), 0.14);
-    --bs-table-active-bg: rgba(var(--brand-rgb), 0.18);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-active-bg: rgba(255, 255, 255, 0.07);
 }
 .card .table {
     --bs-table-border-color: var(--border-subtle);
     --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
-    --bs-table-hover-bg: rgba(var(--brand-rgb), 0.14);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.05);
 }
 .table > :not(caption) > * > * {
     border-color: var(--border-subtle);
@@ -867,7 +867,7 @@ hr {
     background-color: var(--bg-surface-header) !important;
 }
 .thead-dm > tr > th {
-    background-color: rgba(var(--brand-rgb), 0.22) !important;
+    background-color: var(--bg-surface-header) !important;
     color: #fff !important;
     border-color: var(--border-subtle) !important;
     font-weight: 600;
@@ -875,7 +875,7 @@ hr {
 .table-light,
 .table-light > * > tr > th,
 .table-light > * > tr > td {
-    background-color: rgba(var(--brand-rgb), 0.22) !important;
+    background-color: var(--bg-surface-header) !important;
     color: #fff !important;
     border-color: var(--border-subtle) !important;
 }

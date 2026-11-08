@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Track Your Order – Open Se Same')
-@section('meta_description', 'Track your Open Se Same order in real-time. Enter your phone number or order number to see live status updates.')
-@section('og_title', 'Track Your Order – Open Se Same')
-@section('og_description', 'Track your Open Se Same order in real-time. Enter your phone number or order number to see live status updates.')
+@section('title', 'Track Your Order – OpenSesame BD')
+@section('meta_description', 'Track your OpenSesame BD order in real-time. Enter your phone number or order number to see live status updates.')
+@section('og_title', 'Track Your Order – OpenSesame BD')
+@section('og_description', 'Track your OpenSesame BD order in real-time. Enter your phone number or order number to see live status updates.')
 @section('og_image', asset('images/track-og.webp'))
 @section('robots', 'noindex, follow')
 

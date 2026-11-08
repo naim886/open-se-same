@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Open Se Same - Coming Soon">
+    <meta name="description" content="OpenSesame BD - Coming Soon">
     <link rel="icon" type="image/x-icon" href="{{asset('images/favicon.png')}}">
-    <meta property="og:title" content="Open Se Same"/>
-    <meta property="og:description" content="Open Se Same - Coming Soon"/>
+    <meta property="og:title" content="OpenSesame BD"/>
+    <meta property="og:description" content="OpenSesame BD - Coming Soon"/>
     <meta property="og:image" content="{{asset('images/og.png')}}"/>
-    <title>Open Se Same | Home</title>
+    <title>OpenSesame BD | Home</title>
     <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
 <nav class="navbar navbar-expand-lg brand-navbar">
     <div class="container">
         <a class="navbar-brand" href="#">
-            <img src="{{asset('images/logo-white.png')}}" alt="Open Se Same Logo" class="logo">
+            <img src="{{asset('images/logo-white.png')}}" alt="OpenSesame BD Logo" class="logo">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

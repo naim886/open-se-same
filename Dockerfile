@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/php:8.2-fpm as php82
+FROM php:8.4-fpm-alpine AS runtime
 # Set working directory
 WORKDIR /var/www
 

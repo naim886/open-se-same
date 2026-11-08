@@ -8,10 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <!-- SEO Meta Tags -->
-    <title>Open Se Same - Premium Custom Closets & Storage Solutions</title>
+    <title>OpenSesame BD - Premium Custom Closets & Storage Solutions</title>
     <meta name="description" content="Discover premium custom closets and storage solutions. Transform your space with our luxury closet designs, organization systems, and expert installation services.">
     <meta name="keywords" content="custom closets, storage solutions, closet organization, luxury closets, home storage">
-    <meta name="author" content="Open Se Same">
+    <meta name="author" content="OpenSesame BD">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{asset('images/favicon.png')}}">
@@ -586,7 +586,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{{ route('frontend.index') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Open Se Same Logo" loading="eager">
+                <img src="{{ asset('images/logo.png') }}" alt="OpenSesame BD Logo" loading="eager">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -967,7 +967,7 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4">
-                    <h5>Open Se Same</h5>
+                    <h5>OpenSesame BD</h5>
                     <p class="mb-4">Transform your space with our premium custom closets and storage solutions. Quality craftsmanship meets innovative design.</p>
                     <div class="social-links">
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -997,13 +997,13 @@
                 <div class="col-lg-3 col-md-6">
                     <h5>Contact Info</h5>
                     <ul>
-                        <li><i class="fas fa-phone me-2"></i> 01886870406</li>
-                        <li><i class="fas fa-envelope me-2"></i> info@opensesame.com</li>
+                        <li><i class="fas fa-phone me-2"></i> 01826339988</li>
+                        <li><i class="fas fa-envelope me-2"></i> opensesamebd@gmail.com</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Open Se Same. All rights reserved.</p>
+                <p>&copy; 2025 OpenSesame BD. All rights reserved.</p>
             </div>
         </div>
     </footer>

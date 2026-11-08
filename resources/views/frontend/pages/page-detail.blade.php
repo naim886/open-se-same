@@ -1,21 +1,21 @@
 @extends('frontend.layouts.app')
 
-@section('title', $page->meta_title ?? $page->title . ' - Open Se Same')
+@section('title', $page->meta_title ?? $page->title . ' - OpenSesame BD')
 @if($page->meta_description)
 @section('meta_description', $page->meta_description)
 @else
-@section('meta_description', $page->title . ' - Read more on Open Se Same.')
+@section('meta_description', $page->title . ' - Read more on OpenSesame BD.')
 @endif
-@section('og_title', $page->meta_title ?? $page->title . ' - Open Se Same')
-@section('og_description', $page->meta_description ?? $page->title . ' - Read more on Open Se Same.')
+@section('og_title', $page->meta_title ?? $page->title . ' - OpenSesame BD')
+@section('og_description', $page->meta_description ?? $page->title . ' - Read more on OpenSesame BD.')
 @section('robots', 'index, follow')
 
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
 echo Schema::webPage()
-    ->name($page->meta_title ?? $page->title.' - Open Se Same')
-    ->description($page->meta_description ?? $page->title.' - Read more on Open Se Same.')
+    ->name($page->meta_title ?? $page->title.' - OpenSesame BD')
+    ->description($page->meta_description ?? $page->title.' - Read more on OpenSesame BD.')
     ->url(route('shop.page', $page->slug))
     ->toScript();
 echo Schema::breadcrumbList()->itemListElement([

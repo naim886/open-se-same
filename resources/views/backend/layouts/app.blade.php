@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     @include('backend.layouts.partials._head')
-    <title>{{$cms_content['page_title'] ?? 'Dashboard' }} | Open Se Same</title>
+    <title>{{$cms_content['page_title'] ?? 'Dashboard' }} | OpenSesame BD</title>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand theme-bg shadow-bottom">

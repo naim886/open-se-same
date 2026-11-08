@@ -1,6 +1,6 @@
 @extends('customer.layouts.panel')
 
-@section('title', 'My Orders — Open Se Same')
+@section('title', 'My Orders — OpenSesame BD')
 
 @section('panel_content')
 

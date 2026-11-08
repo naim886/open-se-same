@@ -41,7 +41,7 @@ class GoogleMerchantFeedController extends Controller
 
     private function brand(): string
     {
-        return config('services.google_merchant.brand', config('app.name', 'Open Se Same'));
+        return config('services.google_merchant.brand', config('app.name', 'OpenSesame BD'));
     }
 
     private function defaultGoogleProductCategory(): string
@@ -370,7 +370,7 @@ class GoogleMerchantFeedController extends Controller
     /** Build the RSS 2.0 XML string. */
     private function renderXml(Collection $items): string
     {
-        $appName = htmlspecialchars(config('app.name', 'Open Se Same'), ENT_QUOTES, 'UTF-8');
+        $appName = htmlspecialchars(config('app.name', 'OpenSesame BD'), ENT_QUOTES, 'UTF-8');
         $appUrl  = htmlspecialchars(config('app.url', url('/')), ENT_QUOTES, 'UTF-8');
         $now     = htmlspecialchars(now()->format('r'), ENT_QUOTES, 'UTF-8');
 

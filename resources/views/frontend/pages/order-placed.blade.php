@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Order Placed Successfully! - Open Se Same')
-@section('meta_description', 'Your order has been placed successfully at Open Se Same. We will contact you shortly to confirm your order.')
-@section('og_title', 'Order Placed Successfully! - Open Se Same')
-@section('og_description', 'Your order has been placed successfully at Open Se Same.')
+@section('title', 'Order Placed Successfully! - OpenSesame BD')
+@section('meta_description', 'Your order has been placed successfully at OpenSesame BD. We will contact you shortly to confirm your order.')
+@section('og_title', 'Order Placed Successfully! - OpenSesame BD')
+@section('og_description', 'Your order has been placed successfully at OpenSesame BD.')
 @section('robots', 'noindex, nofollow')
 
 @section('content')
@@ -48,11 +48,11 @@
             </div>
             @endif
 
-            <div class="p-3 rounded mb-4" style="background:rgba(1,92,60,0.05); border:1px dashed rgba(1,92,60,0.25);">
+            <div class="p-3 rounded mb-4" style="background:rgba(0,81,56,0.05); border:1px dashed rgba(0,81,56,0.25);">
                 <p class="mb-0" style="font-size:13.5px; line-height:1.7; color:var(--text-dark);">
                     <i class="fas fa-info-circle" style="color:var(--primary-dark);"></i>
                     For any queries, <strong>WhatsApp</strong> us at:
-                    <a href="https://wa.me/+8801886870406" class="fw-bold" style="color:var(--primary-dark);">01886870406</a>
+                    <a href="https://wa.me/+8801826339988" class="fw-bold" style="color:var(--primary-dark);">01826339988</a>
                 </p>
             </div>
 
@@ -66,7 +66,7 @@
             </div>
 
             <div class="mt-4">
-                <a href="https://wa.me/+8801886870406" target="_blank" style="color:#25d366; font-weight:600; font-size:14px;">
+                <a href="https://wa.me/+8801826339988" target="_blank" style="color:#25d366; font-weight:600; font-size:14px;">
                     <i class="fab fa-whatsapp" style="font-size:18px;"></i> Track your order on WhatsApp
                 </a>
             </div>

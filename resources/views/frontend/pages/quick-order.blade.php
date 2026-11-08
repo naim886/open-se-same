@@ -18,10 +18,10 @@
 </style>
 @endsection
 
-@section('title', 'Quick Order - '.$product->name.' - Open Se Same')
-@section('meta_description', 'Quick order '.$product->name.' at Open Se Same. Fast checkout with same-day delivery in Dhaka. COD available.')
-@section('og_title', 'Quick Order - '.$product->name.' - Open Se Same')
-@section('og_description', 'Quick order '.$product->name.' at Open Se Same. Fast checkout with same-day delivery in Dhaka.')
+@section('title', 'Quick Order - '.$product->name.' - OpenSesame BD')
+@section('meta_description', 'Quick order '.$product->name.' at OpenSesame BD. Fast checkout with same-day delivery in Dhaka. COD available.')
+@section('og_title', 'Quick Order - '.$product->name.' - OpenSesame BD')
+@section('og_description', 'Quick order '.$product->name.' at OpenSesame BD. Fast checkout with same-day delivery in Dhaka.')
 @section('og_image', $product->primary_photo ? asset('storage/'.$product->primary_photo) : asset('images/og.webp'))
 @section('robots', 'noindex, nofollow')
 
@@ -35,14 +35,14 @@ echo Schema::product()
     ->image($product->primary_photo ? asset('storage/'.$product->primary_photo) : asset('images/og.webp'))
     ->url(route('shop.product', $product->slug))
     ->sku($product->sku ?: (string) $product->id)
-    ->brand(Schema::brand()->name($product->brand?->name ?? 'Open Se Same'))
+    ->brand(Schema::brand()->name($product->brand?->name ?? 'OpenSesame BD'))
     ->offers(
         Schema::offer()
             ->price($schemaPrice)
             ->priceCurrency('BDT')
             ->availability($product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock')
             ->url(route('shop.quick-order', $product->slug))
-            ->seller(Schema::organization()->name('Open Se Same')->url(url('/')))
+            ->seller(Schema::organization()->name('OpenSesame BD')->url(url('/')))
             ->priceValidUntil(now()->addYear()->format('Y-m-d'))
     )
     ->toScript();
@@ -165,7 +165,7 @@ echo Schema::product()
                                     @php $qoAddresses = auth()->user()->addresses()->get(); @endphp
                                     @if($qoAddresses->isNotEmpty())
                                     <div class="col-12">
-                                        <div class="p-3 rounded mb-1" style="background:rgba(2,123,80,.05); border:1.5px solid rgba(2,123,80,.2);">
+                                        <div class="p-3 rounded mb-1" style="background:rgba(0,125,80,.05); border:1.5px solid rgba(0,125,80,.2);">
                                             <label class="form-label mb-1" style="font-size:13px; font-weight:600; color:var(--primary);">
                                                 <i class="fas fa-address-book me-1"></i> Use Saved Address
                                             </label>

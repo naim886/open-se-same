@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', $brand->name . ' Products - Open Se Same')
-@section('meta_description', 'Shop ' . $brand->name . ' products at Open Se Same. Best quality products with fast delivery across Bangladesh.')
-@section('og_title', $brand->name . ' Products - Open Se Same')
-@section('og_description', 'Shop ' . $brand->name . ' products at Open Se Same. Best quality products with fast delivery across Bangladesh.')
+@section('title', $brand->name . ' Products - OpenSesame BD')
+@section('meta_description', 'Shop ' . $brand->name . ' products at OpenSesame BD. Best quality products with fast delivery across Bangladesh.')
+@section('og_title', $brand->name . ' Products - OpenSesame BD')
+@section('og_description', 'Shop ' . $brand->name . ' products at OpenSesame BD. Best quality products with fast delivery across Bangladesh.')
 @section('robots', 'index, follow')
 @section('og_image', $brand->banner_url ?? $brand->logo_url ?? asset('images/og.webp'))
 
@@ -11,9 +11,9 @@
 @php
 use Spatie\SchemaOrg\Schema;
 
-$schemaTitle = $brand->name . ' Products - Open Se Same';
+$schemaTitle = $brand->name . ' Products - OpenSesame BD';
 $schemaDesc  = $brand->short_description
-    ?: 'Shop ' . $brand->name . ' products at Open Se Same with fast delivery across Bangladesh.';
+    ?: 'Shop ' . $brand->name . ' products at OpenSesame BD with fast delivery across Bangladesh.';
 
 echo Schema::collectionPage()
     ->name($schemaTitle)

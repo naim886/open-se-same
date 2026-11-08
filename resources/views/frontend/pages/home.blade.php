@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Open Se Same | Best treasures  & miniature car in Bangladesh')
-@section('meta_description', 'Shop the Unlock hidden treasures& hot miniature car at Open Se Same. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
-@section('og_title', 'Open Se Same | Best treasures  & miniature car in Bangladesh')
-@section('og_description', 'Shop the Unlock hidden treasures & hot miniature car at Open Se Same. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
+@section('title', 'OpenSesame BD | Best treasures  & miniature car in Bangladesh')
+@section('meta_description', 'Shop the Unlock hidden treasures& hot miniature car at OpenSesame BD. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
+@section('og_title', 'OpenSesame BD | Best treasures  & miniature car in Bangladesh')
+@section('og_description', 'Shop the Unlock hidden treasures & hot miniature car at OpenSesame BD. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
 @section('robots', 'index, follow')
 
 @php
@@ -20,8 +20,8 @@
 use Spatie\SchemaOrg\Schema;
 
 echo Schema::webPage()
-    ->name('Open Se Same | Best treasures  & miniature car in Bangladesh')
-    ->description('Shop the Unlock hidden treasures & hot miniature car at Open Se Same. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
+    ->name('OpenSesame BD | Best treasures  & miniature car in Bangladesh')
+    ->description('Shop the Unlock hidden treasures & hot miniature car at OpenSesame BD. Real roses from ৳499, sexy miniature car from ৳499. Fast delivery across Bangladesh.')
     ->url(route('shop.home'))
     ->breadcrumb(Schema::breadcrumbList()->itemListElement([
         Schema::listItem()->position(1)->name('Home')->item(route('shop.home')),
@@ -45,7 +45,7 @@ if ($schemaProducts->isNotEmpty()) {
             )
     )->toArray();
     echo Schema::itemList()
-        ->name('Top Selling Products at Open Se Same')
+        ->name('Top Selling Products at OpenSesame BD')
         ->itemListElement($schemaListItems)
         ->toScript();
 }
@@ -87,7 +87,7 @@ if ($schemaProducts->isNotEmpty()) {
             @else
                 <div class="hero-swiper" style="background: var(--primary-gradient); display:flex; align-items:center; justify-content:center; color:#fff; text-align:center;">
                     <div>
-                        <h1 style="font-size:32px; font-weight:800;">Welcome to Open Se Same</h1>
+                        <h1 style="font-size:32px; font-weight:800;">Welcome to OpenSesame BD</h1>
                         <p style="font-size:16px; opacity:0.85; margin-top:10px;">Quality products at the best prices</p>
                         <a href="{{ route('shop.products') }}" class="btn-buy-now mt-4 d-inline-block">Shop Now</a>
                     </div>
@@ -155,13 +155,13 @@ if ($schemaProducts->isNotEmpty()) {
             <style>
                 .flash-sale-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
                 .flash-sale-title { color:#fff; font-size:1.6rem; font-weight:800; margin:0 0 4px; letter-spacing:-0.5px; }
-                .flash-sale-title span { color:#FFE066; }
+                .flash-sale-title span { color:#ffd032; }
                 .flash-sale-sub { color:rgba(255,255,255,0.65); font-size:13px; margin:0; }
                 .flash-cd { display:flex; align-items:center; gap:6px; }
                 .flash-cd-box { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:6px 12px; text-align:center; min-width:54px; backdrop-filter:blur(6px); }
                 .flash-cd-val { display:block; font-size:1.4rem; font-weight:800; color:#fff; line-height:1; }
                 .flash-cd-lbl { display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:1px; margin-top:2px; }
-                .flash-cd-sep { font-size:1.4rem; font-weight:800; color:#FFE066; margin-bottom:14px; }
+                .flash-cd-sep { font-size:1.4rem; font-weight:800; color:#ffd032; margin-bottom:14px; }
                 .flash-sale-badge { display:inline-flex; align-items:center; gap:6px; background:var(--primary-dark); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:0.5px; border:1px solid rgba(255,255,255,0.3); animation:flashPulse 1.4s ease-in-out infinite; }
                 @keyframes flashPulse { 0%,100%{opacity:1} 50%{opacity:.7} }
                 .flash-view-all { color:#fff; font-size:13px; font-weight:600; text-decoration:none; border:1px solid rgba(255,255,255,0.45); padding:6px 16px; border-radius:20px; transition:all .2s; }

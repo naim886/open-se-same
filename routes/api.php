@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Mobile API Routes — Open Se Same
+| Mobile API Routes — OpenSesame BD
 |--------------------------------------------------------------------------
 |
 | All routes here are stateless JSON endpoints for the mobile app.

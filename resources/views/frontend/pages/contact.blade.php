@@ -1,17 +1,17 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Contact Us – Open Se Same')
-@section('meta_description', 'Get in touch with Open Se Same. We\'d love to hear from you — questions, feedback, or just a hello!')
-@section('og_title', 'Contact Us – Open Se Same')
-@section('og_description', 'Get in touch with Open Se Same. We\'d love to hear from you — questions, feedback, or just a hello!')
+@section('title', 'Contact Us – OpenSesame BD')
+@section('meta_description', 'Get in touch with OpenSesame BD. We\'d love to hear from you — questions, feedback, or just a hello!')
+@section('og_title', 'Contact Us – OpenSesame BD')
+@section('og_description', 'Get in touch with OpenSesame BD. We\'d love to hear from you — questions, feedback, or just a hello!')
 @section('robots', 'index, follow')
 
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
 echo Schema::contactPage()
-    ->name('Contact Us - Open Se Same')
-    ->description('Get in touch with Open Se Same. We\'d love to hear from you — questions, feedback, or just a hello!')
+    ->name('Contact Us - OpenSesame BD')
+    ->description('Get in touch with OpenSesame BD. We\'d love to hear from you — questions, feedback, or just a hello!')
     ->url(route('shop.contact'))
     ->toScript();
 echo Schema::breadcrumbList()->itemListElement([
@@ -71,10 +71,17 @@ echo Schema::breadcrumbList()->itemListElement([
                     </div>
                     <div>
                         <div style="font-weight:600; font-size:13px; color:var(--text-dark); margin-bottom:3px;">Phone / WhatsApp</div>
-                        <a href="tel:+8801886870406" style="color:var(--primary); font-size:14px; font-weight:500; text-decoration:none; display:block;">
-                            +880 1886-870406
+                        <a href="tel:+8801826339988" style="color:var(--primary); font-size:14px; font-weight:500; text-decoration:none; display:block;">
+                            01826339988 <span style="color:var(--text-muted); font-size:12px; font-weight:400;">(Primary)</span>
                         </a>
-                        <a href="https://wa.me/+8801886870406" target="_blank"
+                        <a href="tel:+8801826339933" style="color:var(--primary); font-size:14px; font-weight:500; text-decoration:none; display:block;">
+                            01826339933 <span style="color:var(--text-muted); font-size:12px; font-weight:400;">(Secondary)</span>
+                        </a>
+                        <a href="mailto:opensesamebd@gmail.com"
+                           style="color:var(--text-muted); font-size:13px; text-decoration:none; display:block; margin-top:3px;">
+                           <i class="fas fa-envelope me-1" style="color:var(--primary);"></i>opensesamebd@gmail.com
+                        </a>
+                        <a href="https://wa.me/+8801826339988" target="_blank"
                            style="color:var(--text-muted); font-size:13px; text-decoration:none;">
                            <i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>Chat on WhatsApp
                         </a>
@@ -226,7 +233,7 @@ echo Schema::breadcrumbList()->itemListElement([
                                            border-radius:50px; padding:14px 40px; font-size:15px;
                                            font-weight:600; cursor:pointer; transition:var(--transition);
                                            display:inline-flex; align-items:center; gap:8px;"
-                                    onmouseover="this.style.boxShadow='0 8px 28px rgba(1,92,60,0.35)'; this.style.transform='translateY(-1px)'"
+                                    onmouseover="this.style.boxShadow='0 8px 28px rgba(0,81,56,0.35)'; this.style.transform='translateY(-1px)'"
                                     onmouseout="this.style.boxShadow='none'; this.style.transform='none'">
                                 <i class="fas fa-paper-plane"></i>
                                 <span>Send Message</span>
@@ -273,7 +280,7 @@ echo Schema::breadcrumbList()->itemListElement([
     .contact-input:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(2,123,80,0.1);
+        box-shadow: 0 0 0 3px rgba(0,125,80,0.1);
         background: #fff;
     }
     .contact-input.is-invalid {

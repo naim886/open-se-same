@@ -1,6 +1,6 @@
 @extends('customer.layouts.panel')
 
-@section('title', 'Address Book — Open Se Same')
+@section('title', 'Address Book — OpenSesame BD')
 
 @section('extra_css')
 @parent

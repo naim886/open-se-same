@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Create Account — Open Se Same')
-@section('meta_description', 'Create your free Open Se Same account to track orders, save preferences and shop faster.')
+@section('title', 'Create Account — OpenSesame BD')
+@section('meta_description', 'Create your free OpenSesame BD account to track orders, save preferences and shop faster.')
 
 @section('extra_css')
 <style>
@@ -15,7 +15,7 @@
 .auth-card {
     background: #fff;
     border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(1,92,60,.10);
+    box-shadow: 0 4px 30px rgba(0,81,56,.10);
     padding: 40px 36px;
     max-width: 500px;
     margin: 0 auto;
@@ -35,7 +35,7 @@
 }
 .auth-card .form-control:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(2,123,80,.12);
+    box-shadow: 0 0 0 3px rgba(0,125,80,.12);
     background: #fff;
     outline: none;
 }
@@ -81,7 +81,7 @@
         <div class="auth-card">
             <div class="auth-logo">
                 <a href="{{ route('shop.home') }}">
-                    <img src="{{ asset('images/logo-web.png') }}" alt="Open Se Same" height="52" style="max-width:160px;object-fit:contain;">
+                    <img src="{{ asset('images/logo-web.png') }}" alt="OpenSesame BD" height="52" style="max-width:160px;object-fit:contain;">
                 </a>
             </div>
 

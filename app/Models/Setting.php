@@ -28,7 +28,7 @@ class Setting extends Model
         'delivery.free'          => '0',
 
         // Company identity used on invoices and delivery labels.
-        'invoice.company_name'    => 'Open Se Same',
+        'invoice.company_name'    => 'OpenSesame BD',
         'invoice.company_address' => '',
         'invoice.company_phone'   => '',
         'invoice.company_email'   => '',

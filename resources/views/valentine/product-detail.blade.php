@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="{{ $product->meta_description ?? $product->short_description ?? 'Preserved Mini Rose for Valentine\'s Day from Open Se Same' }}">
-    <meta property="og:title" content="{{ $product->meta_title ?? $product->name }} - Valentine's Day | Open Se Same"/>
+          content="{{ $product->meta_description ?? $product->short_description ?? 'Preserved Mini Rose for Valentine\'s Day from OpenSesame BD' }}">
+    <meta property="og:title" content="{{ $product->meta_title ?? $product->name }} - Valentine's Day | OpenSesame BD"/>
     <meta property="og:description" content="{{ $product->short_description ?? 'Express your love with preserved mini roses' }}"/>
     @if($product->og_image)
         <meta property="og:image" content="{{ asset('storage/' . $product->og_image) }}"/>
@@ -13,7 +13,7 @@
         <meta property="og:image" content="{{ asset('storage/' . $product->primary_photo) }}"/>
     @endif
     <link rel="icon" type="image/x-icon" href="{{asset('images/favicon.png')}}">
-    <title>{{ $product->name }} 💝 - Valentine's Day | Open Se Same</title>
+    <title>{{ $product->name }} 💝 - Valentine's Day | OpenSesame BD</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -298,7 +298,7 @@
 <nav class="navbar navbar-expand-lg valentine-navbar">
     <div class="container">
         <a class="navbar-brand" href="{{ route('valentine.landing') }}">
-            <img src="{{ asset('images/logo-web-white.png') }}" alt="Open Se Same" class="valentine-logo">
+            <img src="{{ asset('images/logo-web-white.png') }}" alt="OpenSesame BD" class="valentine-logo">
         </a>
         <div class="navbar-nav ms-auto">
             <a class="nav-link" href="{{ route('valentine.landing') }}">
@@ -475,7 +475,7 @@
                         <div class="help-box">
                             <p class="mb-1" style="font-size: 0.85rem;">
                                 <i class="fas fa-phone me-1 text-danger"></i>
-                                Call: <a href="tel:01886870406">01886870406</a>
+                                Call: <a href="tel:01826339988">01826339988</a>
                             </p>
                             <p class="mb-0 text-muted" style="font-size: 0.8rem;">Mon-Sat, 9AM-8PM</p>
                         </div>
@@ -492,7 +492,7 @@
 <footer class="valentine-footer">
     <div class="container">
         <div class="valentine-footer-bottom">
-            <p class="mb-0">💝 Made with love by Open Se Same © {{ date('Y') }} | Happy Valentine's Day!</p>
+            <p class="mb-0">💝 Made with love by OpenSesame BD © {{ date('Y') }} | Happy Valentine's Day!</p>
         </div>
     </div>
 </footer>

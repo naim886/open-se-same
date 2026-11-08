@@ -4,7 +4,7 @@
     {
       "@type": "Organization",
       "@id": "https://opensesame.com/#organization",
-      "name": "Open Se Same",
+      "name": "OpenSesame BD",
       "url": "https://opensesame.com/",
       "sameAs": [
         "https://www.facebook.com/opensesame",
@@ -20,7 +20,7 @@
         "contentUrl": "https://opensesame.com/images/logo.png",
         "width": 512,
         "height": 512,
-        "caption": "Open Se Same"
+        "caption": "OpenSesame BD"
       },
       "image": {"@id": "https://opensesame.com/#/schema/logo/image/"}
     },
@@ -28,7 +28,7 @@
       "@type": "WebSite",
       "@id": "https://opensesame.com/#website",
       "url": "https://opensesame.com/",
-      "name": "Open Se Same - Premium Custom Closets & Organization Systems",
+      "name": "OpenSesame BD - Premium Custom Closets & Organization Systems",
       "description": "Transform your space with luxury custom closets. Professional design, premium materials, lifetime warranty. Serving Los Angeles & surrounding areas.",
       "publisher": {"@id": "https://opensesame.com/#organization"},
       "potentialAction": [
@@ -46,7 +46,7 @@
     {
       "@type": "LocalBusiness",
       "@id": "https://opensesame.com/#localbusiness",
-      "name": "Open Se Same",
+      "name": "OpenSesame BD",
       "image": [
         "https://opensesame.com/images/hero-closet.jpg",
         "https://opensesame.com/images/gallery-1.jpg",
@@ -55,7 +55,7 @@
       "@id": "https://opensesame.com/",
       "url": "https://opensesame.com/",
       "telephone": "+1-123-456-7890",
-      "email": "info@opensesame.com",
+      "email": "opensesamebd@gmail.com",
       "priceRange": "$$$$",
       "address": {
         "@type": "PostalAddress",
@@ -108,7 +108,7 @@
             "@type": "Rating",
             "ratingValue": "5"
           },
-          "reviewBody": "Open Se Same transformed our master bedroom with an incredible walk-in closet. The attention to detail and quality of craftsmanship exceeded our expectations!"
+          "reviewBody": "OpenSesame BD transformed our master bedroom with an incredible walk-in closet. The attention to detail and quality of craftsmanship exceeded our expectations!"
         },
         {
           "@type": "Review",

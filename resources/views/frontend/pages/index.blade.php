@@ -32,14 +32,14 @@
                 <div class="col-lg-4">
                     <p class="contact-text">আমাদের যে কোন পণ্য অর্ডার করতে যোগাযোগ করুন</p>
                     <div class="right-area">
-                        <a href="https://wa.me/+8801886870406" target="_blank">
-                            <i class="fa-brands fa-whatsapp"></i> 01886870406
+                        <a href="https://wa.me/+8801826339988" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i> 01826339988
                         </a>
                         <a href="https://m.me/opensesame1" target="_blank">
-                            <i class="fa-brands fa-facebook-messenger"></i> Open Se Same
+                            <i class="fa-brands fa-facebook-messenger"></i> OpenSesame BD
                         </a>
                         <a href="https://www.facebook.com/opensesame1" target="_blank">
-                            <i class="fa-brands fa-facebook"></i> Open Se Same
+                            <i class="fa-brands fa-facebook"></i> OpenSesame BD
                         </a>
                     </div>
                 </div>

@@ -15,11 +15,16 @@ class HomepageSection extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'settings' => 'array',
+    ];
+
     public const TYPE_BANNER       = 'banner';
     public const TYPE_FLASH_SALE   = 'flash_sale';
     public const TYPE_TOP_SELLING  = 'top_selling';
     public const TYPE_NEW_PRODUCTS = 'new_products';
     public const TYPE_CATEGORY     = 'category';
+    public const TYPE_TREASURES    = 'treasures';
 
     public const TYPE_LIST = [
         self::TYPE_BANNER       => 'Banner Slider',
@@ -27,7 +32,21 @@ class HomepageSection extends Model
         self::TYPE_TOP_SELLING  => 'Top Selling Products',
         self::TYPE_NEW_PRODUCTS => 'Newly Added Products',
         self::TYPE_CATEGORY     => 'Category Products',
+        self::TYPE_TREASURES    => 'Unlock Hidden Treasures',
     ];
+
+    /**
+     * Fixed treasure icons, in the order they must appear on the homepage.
+     * Only the label and link of each item are editable in the admin panel.
+     */
+    public const TREASURE_ICONS = [
+        ['key' => 'pen',    'label' => 'Pen',    'icon' => 'images/pen.png'],
+        ['key' => 'car',    'label' => 'Car',    'icon' => 'images/car.png'],
+        ['key' => 'ramen',  'label' => 'Ramen',  'icon' => 'images/ramen.png'],
+        ['key' => 'gum',    'label' => 'Gum',    'icon' => 'images/gum.png'],
+        ['key' => 'others', 'label' => 'Others', 'icon' => 'images/others.png'],
+    ];
+
 
     public const STATUS_ACTIVE   = 1;
     public const STATUS_INACTIVE = 0;
@@ -87,6 +106,9 @@ class HomepageSection extends Model
                 'type'        => $type,
                 'category_id' => in_array($type, self::CATEGORY_TYPES, true) ? (($row['category_id'] ?? null) ?: null) : null,
                 'title'       => trim((string) ($row['title'] ?? '')) ?: null,
+                'settings'    => $type === self::TYPE_TREASURES
+                    ? ['items' => self::treasureItems($row['settings'] ?? null)]
+                    : null,
                 'status'      => (int) ($row['status'] ?? self::STATUS_INACTIVE),
                 'sort_order'  => $index,
             ];
@@ -94,8 +116,14 @@ class HomepageSection extends Model
             $id = !empty($row['id']) ? (int) $row['id'] : null;
 
             if ($id) {
-                self::query()->whereKey($id)->update($attributes);
-                $keptIds[] = $id;
+                $section = self::query()->find($id);
+
+                if ($section) {
+                    // Model update so the `settings` array cast is applied.
+                    $section->update($attributes);
+                    $keptIds[] = $id;
+                }
+
                 continue;
             }
 
@@ -109,6 +137,32 @@ class HomepageSection extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Return the five fixed treasure items with any admin overrides applied.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public static function treasureItems(?array $settings = null): array
+    {
+        $configured = $settings['items'] ?? [];
+        $items      = [];
+
+        foreach (self::TREASURE_ICONS as $index => $default) {
+            $row   = is_array($configured[$index] ?? null) ? $configured[$index] : [];
+            $label = trim((string) ($row['label'] ?? ''));
+            $link  = trim((string) ($row['link'] ?? ''));
+
+            $items[] = [
+                'key'   => $default['key'],
+                'label' => $label !== '' ? $label : $default['label'],
+                'link'  => $link,
+                'icon'  => $default['icon'],
+            ];
+        }
+
+        return $items;
     }
 
     public function requiresCategory(): bool

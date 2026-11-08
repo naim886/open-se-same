@@ -1,10 +1,10 @@
 :root{
-    --primary-color: #027B50;
-    --secondary-color: #FFCF2F;
+    --primary-color: #007d50;
+    --secondary-color: #ffd032;
     --color-white: #ffffff;
     --headling-font:  "Kanit", sans-serif;
     --body-font:"Josefin Sans", sans-serif;
-    --theme-bg: linear-gradient(to right, #015c3c, #027B50, #015c3c);
+    --theme-bg: linear-gradient(to right, #005138, #007d50, #005138);
 }
 body{
     font-family: "Josefin Sans", sans-serif;

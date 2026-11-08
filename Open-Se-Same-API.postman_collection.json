@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "open-se-same-mobile-api-v1",
-		"name": "Open Se Same — Mobile API",
-		"description": "Full REST API collection for the Open Se Same mobile app.\n\nBase URL: `{{base_url}}/api/v1`\n\nSet the **base_url** environment variable to your server URL, e.g. `http://localhost` or `https://yourdomain.com`.",
+		"name": "OpenSesame BD — Mobile API",
+		"description": "Full REST API collection for the OpenSesame BD mobile app.\n\nBase URL: `{{base_url}}/api/v1`\n\nSet the **base_url** environment variable to your server URL, e.g. `http://localhost` or `https://yourdomain.com`.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [

@@ -1,9 +1,9 @@
 @extends('frontend.layouts.app')
 
-@section('title', $product->name.' - Open Se Same')
+@section('title', $product->name.' - OpenSesame BD')
 @section('meta_description', $product->meta_description ?? $product->short_description)
-@section('og_title',       $product->name.' - Open Se Same')
-@section('og_description', $product->meta_description ?? $product->short_description ?? 'Shop '.$product->name.' at Open Se Same.')
+@section('og_title',       $product->name.' - OpenSesame BD')
+@section('og_description', $product->meta_description ?? $product->short_description ?? 'Shop '.$product->name.' at OpenSesame BD.')
 @section('og_type',        'product')
 @section('og_image',       $product->primary_photo ? asset('storage/'.$product->primary_photo) : asset('images/og.webp'))
 
@@ -90,8 +90,8 @@
 }
 /* ── Key Benefits ── */
 .key-benefits-section {
-    background: rgba(1,92,60,0.04);
-    border: 1px solid rgba(1,92,60,0.14);
+    background: rgba(0,81,56,0.04);
+    border: 1px solid rgba(0,81,56,0.14);
     border-radius: 12px;
     padding: 14px 16px;
 }
@@ -172,7 +172,7 @@ $productSchema = Schema::product()
     ->image($product->primary_photo ? asset('storage/'.$product->primary_photo) : asset('images/og.webp'))
     ->url(route('shop.product', $product->slug))
     ->sku($product->sku ?: (string) $product->id)
-    ->brand(Schema::brand()->name($product->brand?->name ?? 'Open Se Same'))
+    ->brand(Schema::brand()->name($product->brand?->name ?? 'OpenSesame BD'))
     ->category($product->category?->name ?? '')
     ->offers(
         Schema::offer()
@@ -180,7 +180,7 @@ $productSchema = Schema::product()
             ->priceCurrency('BDT')
             ->availability($product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock')
             ->url(route('shop.product', $product->slug))
-            ->seller(Schema::organization()->name('Open Se Same')->url(url('/')))
+            ->seller(Schema::organization()->name('OpenSesame BD')->url(url('/')))
             ->priceValidUntil(now()->addYear()->format('Y-m-d'))
     );
 echo $productSchema->toScript();
@@ -412,7 +412,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                        target="_blank" class="chat-mini-btn" style="background:linear-gradient(135deg,#00b2ff,#006aff);">
                         <i class="fab fa-facebook-messenger"></i> Messenger
                     </a>
-                    <a href="https://wa.me/+8801886870406?text={{ urlencode('Hi! I have a question about: '.$product->name.' '.url()->current()) }}"
+                    <a href="https://wa.me/+8801826339988?text={{ urlencode('Hi! I have a question about: '.$product->name.' '.url()->current()) }}"
                        target="_blank" class="chat-mini-btn" style="background:linear-gradient(135deg,#25d366,#128c7e);">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
@@ -438,7 +438,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                         <i class="fas fa-headset"></i>
                         <div>
                             <strong>Need help?</strong>
-                            <span><a href="tel:+8801886870406">01886870406</a></span>
+                            <span><a href="tel:+8801826339988">01826339988</a></span>
                         </div>
                     </div>
                 </div>
@@ -844,7 +844,7 @@ function addToCartWithQty(productId) {
             if (data.success) {
                 var cartCountEls = document.querySelectorAll('#cart-count, .cart-count, #cartCount, .nav-cart-count');
                 cartCountEls.forEach(function (el) { el.textContent = data.cart_qty || data.cart_count || 0; });
-                if (typeof showToast === 'function') showToast(data.message || 'Added to cart!', 'success');
+                if (typeof showCartAddedPopup === 'function') showCartAddedPopup(data);
                 // ── Meta Pixel: AddToCart (variant) ──────────────
                 if (typeof fbq === 'function') {
                     var contentId = data.variation_id ? String(data.variation_id) : String(productId);

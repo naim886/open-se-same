@@ -1,17 +1,17 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Blog - Open Se Same')
-@section('meta_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
-@section('og_title', 'Blog - Open Se Same')
-@section('og_description', 'Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
+@section('title', 'Blog - OpenSesame BD')
+@section('meta_description', 'Read the latest tips, guides & stories from OpenSesame BD. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
+@section('og_title', 'Blog - OpenSesame BD')
+@section('og_description', 'Read the latest tips, guides & stories from OpenSesame BD. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
 @section('robots', 'index, follow')
 
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
 echo Schema::collectionPage()
-    ->name('Blog - Open Se Same')
-    ->description('Read the latest tips, guides & stories from Open Se Same. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
+    ->name('Blog - OpenSesame BD')
+    ->description('Read the latest tips, guides & stories from OpenSesame BD. Learn about treasures s, miniature car care & fashion trends in Bangladesh.')
     ->url(route('shop.blogs'))
     ->toScript();
 echo Schema::breadcrumbList()->itemListElement([
@@ -34,7 +34,7 @@ echo Schema::breadcrumbList()->itemListElement([
             </ol>
         </nav>
         <h1 class="fw-bold mb-2" style="color:#fff; font-size:32px; letter-spacing:-0.5px;">Our Blog</h1>
-        <p style="color:rgba(255,255,255,0.78); font-size:15px; margin-bottom:28px;">Tips, guides &amp; stories from Open Se Same</p>
+        <p style="color:rgba(255,255,255,0.78); font-size:15px; margin-bottom:28px;">Tips, guides &amp; stories from OpenSesame BD</p>
         <!-- Search Box -->
         <form method="GET" action="{{ route('shop.blogs') }}" style="max-width:500px; margin:0 auto;">
             <div style="display:flex; background:#fff; border-radius:50px; box-shadow:0 4px 20px rgba(0,0,0,0.18); overflow:hidden;">
@@ -91,14 +91,14 @@ echo Schema::breadcrumbList()->itemListElement([
                             background:#fff;
                             border-radius:16px;
                             overflow:hidden;
-                            box-shadow:0 2px 14px rgba(1,92,60,0.07);
+                            box-shadow:0 2px 14px rgba(0,81,56,0.07);
                             transition:all 0.28s ease;
                             border:1px solid var(--border);
                             display:flex;
                             flex-direction:column;
                         "
-                        onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(1,92,60,0.16)';"
-                        onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 14px rgba(1,92,60,0.07)';">
+                        onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 16px 40px rgba(0,81,56,0.16)';"
+                        onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 14px rgba(0,81,56,0.07)';">
 
                             <!-- Thumbnail -->
                             <div style="position:relative; overflow:hidden;">
@@ -171,7 +171,7 @@ echo Schema::breadcrumbList()->itemListElement([
                                     </span>
                                     @if($blog->faqs_count > 0)
                                         <span style="
-                                            background:rgba(2,123,80,0.09);color:var(--primary);
+                                            background:rgba(0,125,80,0.09);color:var(--primary);
                                             font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">
                                             {{ $blog->faqs_count }} FAQ{{ $blog->faqs_count > 1 ? 's' : '' }}
                                         </span>

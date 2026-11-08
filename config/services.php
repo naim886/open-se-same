@@ -60,7 +60,7 @@ return [
     'google_merchant' => [
         'feed_key'                => env('GOOGLE_MERCHANT_FEED_KEY'),
         'currency'                => env('GOOGLE_MERCHANT_CURRENCY', 'BDT'),
-        'brand'                   => env('GOOGLE_MERCHANT_BRAND', env('APP_NAME', 'Open Se Same')),
+        'brand'                   => env('GOOGLE_MERCHANT_BRAND', env('APP_NAME', 'OpenSesame BD')),
         'condition'               => env('GOOGLE_MERCHANT_CONDITION', 'new'),
         'google_product_category' => env('GOOGLE_MERCHANT_CATEGORY', 'Apparel & Accessories'),
     ],

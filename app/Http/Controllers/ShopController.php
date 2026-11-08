@@ -37,9 +37,16 @@ class ShopController extends Controller
     public function home(): View
     {
         $sections = HomepageSection::ordered()->load('category');
-        $blocks   = [];
 
-        if ($sections->isEmpty()) {
+        // Treasure blocks only configure the H1 icon strip; they must not
+        // disable the fallback homepage layout or count as a content block.
+        $contentSections = $sections->reject(
+            static fn (HomepageSection $section) => $section->type === HomepageSection::TYPE_TREASURES
+        );
+
+        $blocks = [];
+
+        if ($contentSections->isEmpty()) {
             // Nothing configured yet: fall back to the hero slider plus the
             // "Shop by Category" tiles.
             $banners = Banner::where('status', Banner::STATUS_ACTIVE)
@@ -57,7 +64,7 @@ class ShopController extends Controller
                 $blocks[] = ['type' => 'category_tiles', 'title' => null, 'categories' => $tiles];
             }
         } else {
-            foreach ($sections as $section) {
+            foreach ($contentSections as $section) {
                 $block = $this->resolveHomeBlock($section);
 
                 if ($block !== null) {
@@ -66,9 +73,27 @@ class ShopController extends Controller
             }
         }
 
+        // ── "Unlock Hidden Treasures" strip ────────────────────────
+        // Shows sensible defaults until the admin configures it. An
+        // explicitly inactive block hides it.
+        $treasureSections = HomepageSection::where('type', HomepageSection::TYPE_TREASURES)
+            ->orderBy('sort_order')
+            ->get();
+
+        $activeTreasure = $treasureSections->firstWhere('status', HomepageSection::STATUS_ACTIVE);
+
+        $treasureBlock = null;
+        if ($activeTreasure || $treasureSections->isEmpty()) {
+            $treasureBlock = [
+                'type'  => HomepageSection::TYPE_TREASURES,
+                'title' => $activeTreasure?->title,
+                'items' => HomepageSection::treasureItems($activeTreasure?->settings),
+            ];
+        }
+
         $homePageContent = SiteContent::get('home_page');
 
-        return view('frontend.pages.home', compact('blocks', 'homePageContent'));
+        return view('frontend.pages.home', compact('blocks', 'homePageContent', 'treasureBlock'));
     }
 
     /**
@@ -907,6 +932,28 @@ class ShopController extends Controller
 
         session(['cart' => $cart]);
 
+        // ── Similar products for the add-to-cart success popup ────
+        $similarProducts = Product::where('status', Product::STATUS_ACTIVE)
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->with(['category', 'photos'])
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        if ($similarProducts->isEmpty()) {
+            $similarProducts = Product::where('status', Product::STATUS_ACTIVE)
+                ->where('id', '!=', $product->id)
+                ->with(['category', 'photos'])
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+        }
+
+        $similarProductsHtml = $similarProducts->isNotEmpty()
+            ? view('frontend.partials.cart-similar-products', ['products' => $similarProducts])->render()
+            : '';
+
         // ── CAPI: AddToCart ───────────────────────────────────────
         $atcEventId  = Str::uuid()->toString();
         $atcPrice    = (float) ($effectiveSalePrice ?? $effectivePrice ?? 0);
@@ -926,15 +973,16 @@ class ShopController extends Controller
         );
 
         return response()->json([
-            'success'        => true,
-            'cart_count'     => count($cart),
-            'cart_qty'       => array_sum(array_column($cart, 'quantity')),
-            'message'        => 'পণ্য কার্টে যোগ হয়েছে!',
-            'product_price'  => $atcPrice,
-            'product_name'   => $product->name,
-            'atc_event_id'   => $atcEventId,
-            'atc_content_id' => $atcContentId,
-            'variation_id'   => $variationId,
+            'success'               => true,
+            'cart_count'            => count($cart),
+            'cart_qty'              => array_sum(array_column($cart, 'quantity')),
+            'message'               => 'পণ্য কার্টে যোগ হয়েছে!',
+            'product_price'         => $atcPrice,
+            'product_name'          => $product->name,
+            'atc_event_id'          => $atcEventId,
+            'atc_content_id'        => $atcContentId,
+            'variation_id'          => $variationId,
+            'similar_products_html' => $similarProductsHtml,
         ]);
     }
 
