@@ -1232,6 +1232,31 @@ img { max-width: 100%; }
 }
 .footer-trust-item i { color: var(--secondary); }
 
+/* Payment / SSL strip above the copyright bar */
+.footer-ssl-wrap {
+    padding: 24px 0 18px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+.footer-ssl {
+    text-align: center;
+}
+.footer-ssl picture {
+    display: block;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    overflow: hidden;
+}
+.footer-ssl img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
 /* Bottom copyright bar */
 .footer-bottom {
     background: #005138;
@@ -1901,7 +1926,7 @@ img { max-width: 100%; }
 
 /* ====== UNLOCK HIDDEN TREASURES STRIP ====== */
 .treasure-section {
-    padding: 16px 0 8px;
+    padding: 18px 0 28px;
 }
 .treasure-title {
     text-align: center;
@@ -1959,7 +1984,7 @@ img { max-width: 100%; }
 
 @media (max-width: 767.98px) {
     .treasure-section {
-        padding: 12px 0 4px;
+        padding: 14px 0 22px;
     }
     .treasure-strip {
         gap: 9px;
@@ -2505,8 +2530,7 @@ img { max-width: 100%; }
 
 /* ====== FOOTER MOBILE CENTRE ALIGN ====== */
 @media (max-width: 767px) {
-    .main-footer .col-md-6,
-    .main-footer .col-lg-3 {
+    .main-footer .footer-top > div {
         text-align: center;
     }
     .footer-heading::after {
@@ -2521,7 +2545,12 @@ img { max-width: 100%; }
         margin-left: auto;
         margin-right: auto;
     }
-    .footer-contact li {
+    .footer-desc {
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .footer-contact-block li {
         justify-content: center;
     }
     .delivery-info p {
@@ -2529,5 +2558,18 @@ img { max-width: 100%; }
     }
     .footer-links a {
         display: inline-block;
+    }
+    .footer-trust-row {
+        gap: 10px;
+    }
+    .footer-trust-item {
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+    .footer-ssl-wrap {
+        padding: 20px 0 14px;
+    }
+    .footer-ssl picture {
+        max-width: 300px;
     }
 }

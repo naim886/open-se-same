@@ -1189,6 +1189,19 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
         </div>
     </div>
 
+    <!-- Payment methods / SSL -->
+    <div class="footer-ssl-wrap">
+        <div class="container">
+            <div class="footer-ssl">
+                <picture>
+                    <source media="(max-width: 767.98px)" srcset="{{ asset('images/ssl-mobile.jpg') }}">
+                    <img src="{{ asset('images/ssl.jpg') }}"
+                         alt="Accepted payment methods — verified by SSLCommerz">
+                </picture>
+            </div>
+        </div>
+    </div>
+
     <div class="footer-bottom">
         <div class="container">
             <p class="footer-copyright">© {{ date('Y') }} <strong>OPEN SESAME.COM LIMITED</strong>. All rights reserved.</p>
