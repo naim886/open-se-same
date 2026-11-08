@@ -97,8 +97,12 @@ Route::prefix('/')->name('shop.')->group(function () {
     Route::get('/page/{slug}', [ShopController::class, 'pageRedirect'])->name('page.legacy');
 
     // Contact
-    Route::get('/contact',            [ShopController::class, 'contact'])->name('contact');
-    Route::post('/contact',           [ShopController::class, 'submitContact'])->name('contact.submit');
+    Route::get('/contact-us-element', [ShopController::class, 'contact'])->name('contact');
+    Route::post('/contact-us-element', [ShopController::class, 'submitContact'])->name('contact.submit');
+
+    // Legacy contact URL
+    Route::get('/contact', [ShopController::class, 'contactRedirect'])->name('contact.legacy');
+    Route::post('/contact', [ShopController::class, 'submitContact'])->name('contact.submit.legacy');
 
     // Popup Lead capture
     Route::post('/popup-lead',        [PopupLeadController::class, 'store'])->name('popup-lead.store');

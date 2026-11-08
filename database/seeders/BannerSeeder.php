@@ -28,7 +28,7 @@ class BannerSeeder extends Seeder
                 'description' => 'Experience the ultimate in luxury with our handcrafted walk-in closet systems designed to fit your lifestyle.',
                 'image' => 'uploads/banners/hero-closet-2.jpg',
                 'button_text' => 'Schedule Consultation',
-                'button_url' => '/contact',
+                'button_url' => '/contact-us-element',
                 'sort_order' => 2,
                 'status' => Banner::STATUS_ACTIVE,
             ],

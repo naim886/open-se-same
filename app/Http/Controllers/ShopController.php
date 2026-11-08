@@ -1153,6 +1153,11 @@ class ShopController extends Controller
     // ============================================================
     // CONTACT US
     // ============================================================
+    public function contactRedirect(): RedirectResponse
+    {
+        return redirect()->route('shop.contact', [], 301);
+    }
+
     public function contact(): View
     {
         return view('frontend.pages.contact');
