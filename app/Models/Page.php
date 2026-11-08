@@ -31,7 +31,8 @@ class Page extends Model
     final public function getPages()
     {
         return self::query()
-            ->orderBy('created_at', 'desc')
+            ->orderBy('sort_order')
+            ->orderBy('title')
             ->paginate(GlobalConstants::DEFAULT_PAGINATION);
     }
 
@@ -85,6 +86,7 @@ class Page extends Model
             'meta_description' => $request->input('meta_description'),
             'description'      => $request->input('description'),
             'status'           => $request->input('status', self::STATUS_ACTIVE),
+            'sort_order'       => (int) $request->input('sort_order', 0),
         ];
     }
 

@@ -18,6 +18,7 @@ class UpdatePageRequest extends FormRequest
             'description'      => 'nullable|string',
             'cover_photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status'           => 'required|in:1,2',
+            'sort_order'       => 'nullable|integer|min:0|max:9999',
         ];
     }
 }

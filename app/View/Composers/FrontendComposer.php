@@ -16,6 +16,7 @@ class FrontendComposer
     {
         $view->with('footerPages', Page::where('status', Page::STATUS_ACTIVE)
             ->select('title', 'slug')
+            ->orderBy('sort_order')
             ->orderBy('title')
             ->get()
         );

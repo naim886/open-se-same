@@ -10,6 +10,14 @@
 @section('og_description', $page->meta_description ?? $page->title . ' - Read more on OpenSesame BD.')
 @section('robots', 'index, follow')
 
+@php
+    $lede = trim(strip_tags($page->meta_description ?? ''));
+    if ($lede === '') {
+        $lede = \Illuminate\Support\Str::limit(trim(strip_tags($page->description ?? '')), 170);
+    }
+    $quickPages = $relatedPages ?? collect();
+@endphp
+
 @section('schema')
 @php
 use Spatie\SchemaOrg\Schema;
@@ -27,50 +35,88 @@ echo Schema::breadcrumbList()->itemListElement([
 
 @section('content')
 
-<!-- Breadcrumb -->
-<div class="shop-breadcrumb">
+{{-- Hero --}}
+<section class="cms-page-hero">
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('shop.home') }}">Home</a></li>
-                <li class="breadcrumb-item active">{{ $page->title }}</li>
-            </ol>
+        <nav class="cms-hero-breadcrumb" aria-label="breadcrumb">
+            <a href="{{ route('shop.home') }}"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <span aria-current="page">{{ $page->title }}</span>
         </nav>
+
+        <span class="cms-page-eyebrow"><i class="far fa-file-lines" aria-hidden="true"></i> OpenSesame BD</span>
+        <h1 class="cms-page-title">{{ $page->title }}</h1>
+
+        @if($lede !== '')
+            <p class="cms-page-lede">{{ $lede }}</p>
+        @endif
+
+        @if($page->updated_at)
+            <span class="cms-page-updated">
+                <i class="far fa-calendar-check" aria-hidden="true"></i>
+                Last updated {{ $page->updated_at->format('d M Y') }}
+            </span>
+        @endif
     </div>
-</div>
+</section>
 
-<section class="py-5">
+{{-- Main content --}}
+<section class="cms-page-section">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
+        <div class="row g-4">
 
-                <!-- Cover Image -->
-                @if($page->cover_photo)
-                    <img src="{{ asset('storage/' . $page->cover_photo) }}" alt="{{ $page->title }}"
-                         class="w-100 rounded mb-4" style="max-height:320px; object-fit:cover;">
-                @endif
+            <div class="col-lg-8">
+                <article class="cms-page-card">
+                    @if($page->cover_photo)
+                        <img src="{{ asset('storage/' . $page->cover_photo) }}" alt="{{ $page->title }}" class="cms-page-cover">
+                    @endif
 
-                <!-- Title -->
-                <h1 class="fw-bold mb-4" style="
-                    color:var(--text-dark);
-                    font-size:28px;
-                    line-height:1.35;
-                    padding-bottom:16px;
-                    border-bottom:2px solid var(--border);
-                ">
-                    {{ $page->title }}
-                </h1>
+                    <div class="cms-page-body">
+                        @if($page->description)
+                            <div class="page-content">
+                                {!! $page->description !!}
+                            </div>
+                        @else
+                            <div class="cms-empty-content">
+                                <i class="far fa-file-lines" aria-hidden="true"></i>
+                                <h2>Content coming soon</h2>
+                                <p>We are preparing this page. Please check back shortly.</p>
+                            </div>
+                        @endif
+                    </div>
+                </article>
+            </div>
 
-                <!-- Content -->
-                <div class="page-content" style="
-                    font-size:15px;
-                    line-height:1.9;
-                    color:var(--text-body);
-                ">
-                    {!! $page->description !!}
+            <aside class="col-lg-4">
+                <div class="cms-side-card">
+                    <h3><i class="fas fa-compass" aria-hidden="true"></i> Quick Links</h3>
+                    <ul class="cms-page-links">
+                        <li>
+                            <a href="{{ route('shop.home') }}">
+                                <span>Home</span>
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        @foreach($quickPages as $quickPage)
+                            <li>
+                                <a href="{{ route('shop.page', $quickPage->slug) }}">
+                                    <span>{{ $quickPage->title }}</span>
+                                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
 
-            </div>
+                <div class="cms-side-card cms-support-card">
+                    <div class="cms-support-icon"><i class="fas fa-headset" aria-hidden="true"></i></div>
+                    <h3>Need help?</h3>
+                    <p>Our customer support team is available 24/7 for orders, delivery and product questions.</p>
+                    <a href="tel:+8801826339988"><i class="fas fa-phone" aria-hidden="true"></i> 01826339988</a>
+                    <a href="mailto:opensesamebd@gmail.com"><i class="fas fa-envelope" aria-hidden="true"></i> opensesamebd@gmail.com</a>
+                </div>
+            </aside>
+
         </div>
     </div>
 </section>

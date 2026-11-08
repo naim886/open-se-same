@@ -10,6 +10,7 @@
                     <th>SL</th>
                     <th>Cover</th>
                     <th>Title</th>
+                    <th>Sort</th>
                     <th>Slug</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -31,6 +32,7 @@
                             @endif
                         </td>
                         <td><strong>{{ $page->title }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ $page->sort_order }}</span></td>
                         <td><code>{{ $page->slug }}</code></td>
                         <td>
                             @if($page->isActive())
@@ -55,7 +57,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted">No pages found.</td>
+                        <td colspan="7" class="text-center text-muted">No pages found.</td>
                     </tr>
                 @endforelse
                 </tbody>

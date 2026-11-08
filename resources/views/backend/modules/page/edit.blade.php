@@ -22,13 +22,21 @@
                     @error('status') <p class="validation-message">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="col-lg-6 mb-4 position-relative">
+                <div class="col-lg-5 mb-4 position-relative">
                     {{ html()->label('Slug', 'slug') }}
                     {{ html()->text('slug')->class('form-control')->id('slug')->value($page->slug) }}
                     @error('slug') <p class="validation-message">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="col-lg-6 mb-4 position-relative">
+                <div class="col-lg-2 mb-4 position-relative">
+                    {{ html()->label('Sort Order', 'sort_order') }}
+                    <input type="number" name="sort_order" class="form-control" min="0" max="9999"
+                           value="{{ old('sort_order', $page->sort_order ?? 0) }}">
+                    @error('sort_order') <p class="validation-message">{{ $message }}</p> @enderror
+                    <small class="text-muted">Lower first.</small>
+                </div>
+
+                <div class="col-lg-5 mb-4 position-relative">
                     {{ html()->label('Meta Title', 'meta_title') }}
                     {{ html()->text('meta_title')->class('form-control')->value($page->meta_title) }}
                     @error('meta_title') <p class="validation-message">{{ $message }}</p> @enderror

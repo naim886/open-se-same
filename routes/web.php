@@ -93,7 +93,8 @@ Route::prefix('/')->name('shop.')->group(function () {
     // Blog & Pages (CMS)
     Route::get('/blogs',              [ShopController::class, 'blogs'])->name('blogs');
     Route::get('/blog/{slug}',        [ShopController::class, 'blogDetail'])->name('blog');
-    Route::get('/page/{slug}',        [ShopController::class, 'pageDetail'])->name('page');
+    // Legacy CMS page URL. Kept for backward compatibility and SEO redirects.
+    Route::get('/page/{slug}', [ShopController::class, 'pageRedirect'])->name('page.legacy');
 
     // Contact
     Route::get('/contact',            [ShopController::class, 'contact'])->name('contact');
@@ -224,3 +225,10 @@ use App\Http\Controllers\ValentineController;
 //});
 
 require __DIR__ . '/auth.php';
+
+// ============================================================
+// Short CMS page URLs (e.g. /about-us instead of /page/about-us).
+// Must stay last so it never shadows real routes such as /admin,
+// /login, /products, /cart, etc.
+// ============================================================
+Route::get('/{slug}', [ShopController::class, 'pageDetail'])->name('shop.page');

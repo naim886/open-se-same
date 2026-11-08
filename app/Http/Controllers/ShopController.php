@@ -1076,13 +1076,25 @@ class ShopController extends Controller
     // ============================================================
     // PAGE DETAIL
     // ============================================================
+    public function pageRedirect(string $slug): RedirectResponse
+    {
+        return redirect()->route('shop.page', ['slug' => $slug], 301);
+    }
+
     public function pageDetail(string $slug): View
     {
         $page = Page::where('slug', $slug)
             ->where('status', Page::STATUS_ACTIVE)
             ->firstOrFail();
 
-        return view('frontend.pages.page-detail', compact('page'));
+        $relatedPages = Page::where('status', Page::STATUS_ACTIVE)
+            ->where('id', '!=', $page->id)
+            ->select('title', 'slug')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
+
+        return view('frontend.pages.page-detail', compact('page', 'relatedPages'));
     }
 
     // ============================================================

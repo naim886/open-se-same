@@ -22,14 +22,22 @@
                     @error('status') <p class="validation-message">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="col-lg-6 mb-4 position-relative">
+                <div class="col-lg-5 mb-4 position-relative">
                     {{ html()->label('Slug (auto-generated)', 'slug') }}
                     {{ html()->text('slug')->placeholder('auto-generated-from-title')->class('form-control')->id('slug') }}
                     @error('slug') <p class="validation-message">{{ $message }}</p> @enderror
                     <small class="text-muted">Leave blank to auto-generate from title.</small>
                 </div>
 
-                <div class="col-lg-6 mb-4 position-relative">
+                <div class="col-lg-2 mb-4 position-relative">
+                    {{ html()->label('Sort Order', 'sort_order') }}
+                    <input type="number" name="sort_order" class="form-control" min="0" max="9999"
+                           value="{{ old('sort_order', 0) }}">
+                    @error('sort_order') <p class="validation-message">{{ $message }}</p> @enderror
+                    <small class="text-muted">Lower first.</small>
+                </div>
+
+                <div class="col-lg-5 mb-4 position-relative">
                     {{ html()->label('Meta Title (auto-generated)', 'meta_title') }}
                     {{ html()->text('meta_title')->placeholder('auto-generated from title')->class('form-control')->id('meta_title') }}
                     @error('meta_title') <p class="validation-message">{{ $message }}</p> @enderror
