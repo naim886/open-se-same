@@ -1828,6 +1828,19 @@ img { max-width: 100%; }
         scroll-snap-type: none;
     }
 }
+
+/* The popup cards are narrower than the main listing cards, so stack the
+   two card actions at every viewport size to keep them fully visible. */
+#cartAddedSimilar .product-card-footer-btns {
+    flex-direction: column;
+    gap: 4px;
+}
+#cartAddedSimilar .btn-add-to-cart,
+#cartAddedSimilar .btn-card-buy-now {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+}
 .cart-added-actions {
     display: flex;
     align-items: stretch;
