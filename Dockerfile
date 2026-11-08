@@ -1,51 +1,51 @@
 FROM php:8.4-fpm-alpine AS runtime
+
 # Set working directory
 WORKDIR /var/www
 
 # Add docker php ext repo
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
+# Install system packages needed by the application / runtime.
+# Alpine uses apk instead of apt-get. Laravel's required PHP build
+# dependencies (libpng, libjpeg, freetype, libicu, libmemcached,
+# imagemagick, etc.) are installed automatically by
+# install-php-extensions below.
+RUN apk add --no-cache \
+    curl \
+    git \
+    unzip \
+    zip \
+    nginx \
+    supervisor \
+    jpegoptim \
+    optipng \
+    pngquant \
+    gifsicle \
+    && mkdir -p /var/log/nginx /var/log/php \
+    && rm -rf /var/cache/apk/*
+
 # Install php extensions
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
-    install-php-extensions mbstring pdo_mysql zip exif pcntl gd memcached
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    unzip \
-    git \
-    curl \
-    lua-zlib-dev \
-    libmemcached-dev \
-    nginx \
-    libmagickwand-dev --no-install-recommends
-RUN pecl install imagick && docker-php-ext-enable imagick
-RUN docker-php-ext-install bcmath
-RUN apt-get install libicu-dev -y
-RUN docker-php-ext-install intl
-RUN docker-php-ext-enable intl
-# Install supervisor
-RUN apt-get install -y supervisor
-# RUN  apt update && sudo apt install -y software-properties-common
-# RUN  add-apt-repository ppa:ondrej/php
-# RUN  apt update
-# RUN apt-get install -y opcache
+    install-php-extensions \
+        bcmath \
+        exif \
+        gd \
+        imagick \
+        intl \
+        mbstring \
+        memcached \
+        opcache \
+        pcntl \
+        pdo_mysql \
+        zip
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Add user for laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+# Add user for laravel application (Alpine addgroup/adduser)
+RUN addgroup -g 1000 www && \
+    adduser -u 1000 -D -G www -s /sbin/nologin www
 
 # Copy code to /var/www
 COPY --chown=www:www-data . /var/www
@@ -61,14 +61,12 @@ RUN chmod -Rf 777 /var/www/storage/logs
 # Copy nginx/php/supervisor configs
 RUN cp docker/supervisor.conf /etc/supervisord.conf
 RUN cp docker/php.ini /usr/local/etc/php/conf.d/app.ini
-RUN cp docker/nginx.conf /etc/nginx/sites-enabled/default
+# Alpine nginx includes /etc/nginx/http.d/*.conf from its main config.
+RUN mkdir -p /etc/nginx/http.d && cp docker/nginx.conf /etc/nginx/http.d/default.conf
 
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-RUN docker-php-ext-install opcache
-
 # PHP Error Log Files
-RUN mkdir /var/log/php
 RUN touch /var/log/php/errors.log && chmod 777 /var/log/php/errors.log
 
 # Deployment steps
