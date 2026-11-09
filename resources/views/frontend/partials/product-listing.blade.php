@@ -6,6 +6,7 @@
     $pageTitle     = $category?->name ?? ($brand ? $brand->name : null);
     $pageDesc      = $category?->short_description ?? $brand?->short_description;
     $bannerUrl     = $category?->banner_url ?? $brand?->banner_url;
+    $bannerMobileUrl = $category?->mobile_banner_url ?? $brand?->mobile_banner_url;
     $sortBarTitle  = $pageTitle ?? (request('q') ? 'Results for "' . request('q') . '"' : 'All Products');
 @endphp
 
@@ -46,8 +47,13 @@
     <section class="shop-page-header">
         @if($bannerUrl)
             <div class="shop-page-banner">
-                <img src="{{ $bannerUrl }}" alt="{{ $pageTitle }}" loading="lazy"
-                     onerror="this.closest('.shop-page-banner').style.display='none';">
+                <picture>
+                    @if($bannerMobileUrl)
+                        <source media="(max-width: 767.98px)" srcset="{{ $bannerMobileUrl }}">
+                    @endif
+                    <img src="{{ $bannerUrl }}" alt="{{ $pageTitle }}" loading="lazy"
+                         onerror="this.closest('.shop-page-banner').style.display='none';">
+                </picture>
             </div>
         @endif
         <div class="container">

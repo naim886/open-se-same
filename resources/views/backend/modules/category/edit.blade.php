@@ -104,6 +104,32 @@
                             <img src="" alt="Banner Preview" class="img-thumbnail" style="max-width: 300px; height: auto;">
                         </div>
                     </div>
+                    <div class="col-lg-6 mb-4 position-relative">
+                        {{html()->label('Category mobile banner (770px X 430px)', 'mobile_banner')}}
+                        {{html()->file('mobile_banner')->class('form-control')}}
+                        @error('mobile_banner')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                        <small class="text-muted">Optional. Used on screens 767px and below.</small>
+                        @if($category->getRawOriginal('mobile_banner'))
+                            <div class="mt-2">
+                                <label class="form-label">Current Mobile Banner:</label>
+                                <div>
+                                    <img src="{{ $category->mobile_banner_url }}"
+                                         alt="{{ $category->name }} mobile banner"
+                                         class="img-thumbnail"
+                                         style="max-width: 300px; height: auto;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div style="display: none; padding: 10px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center;">
+                                        <i class="fa fa-exclamation-triangle text-warning"></i> Image not found
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="category-mobile-banner-display-area" style="display:none;">
+                            <img src="" alt="Mobile Banner Preview" class="img-thumbnail" style="max-width: 300px; height: auto;">
+                        </div>
+                    </div>
                 </div>
                 <div class="text-center">
                     {{html()->submit('Update Category')->class('btn btn-primary px-4')}}
@@ -150,6 +176,25 @@
                     reader.onload = function(e) {
                         bannerImg.src = e.target.result;
                         bannerPreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Mobile banner preview
+        const mobileBannerInput = document.querySelector('input[name="mobile_banner"]');
+        const mobileBannerPreview = document.querySelector('.category-mobile-banner-display-area');
+        const mobileBannerImg = mobileBannerPreview ? mobileBannerPreview.querySelector('img') : null;
+
+        if (mobileBannerInput && mobileBannerPreview && mobileBannerImg) {
+            mobileBannerInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        mobileBannerImg.src = e.target.result;
+                        mobileBannerPreview.style.display = 'block';
                     }
                     reader.readAsDataURL(file);
                 }

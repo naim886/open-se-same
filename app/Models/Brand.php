@@ -34,6 +34,9 @@ class Brand extends Model
     public const BANNER_WIDTH = 1920;
     public const BANNER_HEIGHT = 480;
 
+    public const MOBILE_BANNER_WIDTH = 770;
+    public const MOBILE_BANNER_HEIGHT = 430;
+
     public function getBrands()
     {
         return self::query()
@@ -82,6 +85,16 @@ class Brand extends Model
                 ->upload();
         }
 
+        if ($request->hasFile('mobile_banner')) {
+            $data['mobile_banner'] = (new ImageUploadManager())
+                ->file($request->file('mobile_banner'))
+                ->name(generateUniqueImageName($request->input('slug') . '-mobile-banner'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_BANNER_WIDTH)
+                ->height(self::MOBILE_BANNER_HEIGHT)
+                ->upload();
+        }
+
         return $data;
     }
 
@@ -114,6 +127,17 @@ class Brand extends Model
                 ->path(self::BANNER_PATH)
                 ->width(self::BANNER_WIDTH)
                 ->height(self::BANNER_HEIGHT)
+                ->upload();
+        }
+
+        if ($request->hasFile('mobile_banner')) {
+            $this->deleteImage($this->getRawOriginal('mobile_banner'), self::BANNER_PATH);
+            $data['mobile_banner'] = (new ImageUploadManager())
+                ->file($request->file('mobile_banner'))
+                ->name(generateUniqueImageName($request->input('slug') . '-mobile-banner'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_BANNER_WIDTH)
+                ->height(self::MOBILE_BANNER_HEIGHT)
                 ->upload();
         }
 
@@ -161,6 +185,11 @@ class Brand extends Model
     public function getBannerUrlAttribute(): ?string
     {
         return $this->resolveImageUrl($this->getRawOriginal('banner'), self::BANNER_PATH);
+    }
+
+    public function getMobileBannerUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->getRawOriginal('mobile_banner'), self::BANNER_PATH);
     }
 
     private function resolveImageUrl(?string $image, string $defaultPath): ?string

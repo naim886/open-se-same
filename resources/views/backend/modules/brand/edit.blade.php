@@ -96,6 +96,32 @@
                             <img src="" alt="Banner Preview" class="img-thumbnail" style="max-width: 100%; height: auto;">
                         </div>
                     </div>
+                    <div class="col-lg-6 mb-4 position-relative">
+                        {{html()->label('Brand mobile banner (770px X 430px)', 'mobile_banner')}}
+                        {{html()->file('mobile_banner')->class('form-control')}}
+                        @error('mobile_banner')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                        <small class="text-muted">Optional. Used on screens 767px and below.</small>
+                        @if($brand->getRawOriginal('mobile_banner'))
+                            <div class="mt-2">
+                                <label class="form-label">Current Mobile Banner:</label>
+                                <div>
+                                    <img src="{{ $brand->mobile_banner_url }}"
+                                         alt="{{ $brand->name }} mobile banner"
+                                         class="img-thumbnail"
+                                         style="max-width: 100%; height: auto;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div style="display: none; padding: 10px; background: var(--bg-surface-alt); border: 1px dashed var(--border-strong); text-align: center;">
+                                        <i class="fa fa-exclamation-triangle text-warning"></i> Image not found
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="brand-mobile-banner-display-area mt-2" style="display:none;">
+                            <img src="" alt="Mobile Banner Preview" class="img-thumbnail" style="max-width: 100%; height: auto;">
+                        </div>
+                    </div>
                 </div>
                 <div class="row mt-4 justify-content-center">
                     <div class="col-lg-4">
@@ -145,6 +171,7 @@
 
         bindPreview('logo', '.brand-logo-display-area');
         bindPreview('banner', '.brand-banner-display-area');
+        bindPreview('mobile_banner', '.brand-mobile-banner-display-area');
     });
 </script>
 @endpush

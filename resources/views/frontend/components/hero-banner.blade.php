@@ -24,10 +24,15 @@
                 <div class="banner-slide position-relative">
                     <!-- Banner Image -->
                     <div class="banner-image">
-                        <img src="{{ asset('storage/' . $banner->image) }}"
-                             class="d-block w-100"
-                             alt="{{ $banner->title }}"
-                             style="height: 600px; object-fit: cover;">
+                        <picture>
+                            @if($banner->mobile_image)
+                                <source media="(max-width: 767.98px)" srcset="{{ asset('storage/' . $banner->mobile_image) }}">
+                            @endif
+                            <img src="{{ asset('storage/' . $banner->image) }}"
+                                 class="d-block w-100"
+                                 alt="{{ $banner->title }}"
+                                 style="height: 600px; object-fit: cover;">
+                        </picture>
                     </div>
 
                     <!-- Banner Overlay -->

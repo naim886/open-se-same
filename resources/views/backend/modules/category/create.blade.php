@@ -74,6 +74,17 @@
                         <p class="validation-message">{{$message}}</p>
                         @enderror
                     </div>
+                    <div class="col-lg-6 mb-4 position-relative">
+                        {{html()->label('Category mobile banner (770px X 430px)', 'mobile_banner')}}
+                        {{html()->file('mobile_banner')->class('form-control')}}
+                        <div class="category-mobile-banner-display-area mt-4" style="display: none">
+                            <img src="" alt="" class="img-fluid">
+                        </div>
+                        <small class="text-muted">Optional. Used on screens 767px and below.</small>
+                        @error('mobile_banner')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                    </div>
                 </div>
                 <div class="row mt-4 justify-content-center">
                     <div class="col-lg-4">
@@ -139,6 +150,27 @@
                     reader.readAsDataURL(file);
                 } else {
                     bannerPreview.style.display = 'none';
+                }
+            });
+        }
+
+        // Mobile banner preview
+        const mobileBannerInput = document.querySelector('input[name="mobile_banner"]');
+        const mobileBannerPreview = document.querySelector('.category-mobile-banner-display-area');
+        const mobileBannerImg = mobileBannerPreview.querySelector('img');
+
+        if (mobileBannerInput) {
+            mobileBannerInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        mobileBannerImg.src = e.target.result;
+                        mobileBannerPreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    mobileBannerPreview.style.display = 'none';
                 }
             });
         }

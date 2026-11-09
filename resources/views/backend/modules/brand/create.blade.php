@@ -66,6 +66,17 @@
                         <p class="validation-message">{{$message}}</p>
                         @enderror
                     </div>
+                    <div class="col-lg-6 mb-4 position-relative">
+                        {{html()->label('Brand mobile banner (770px X 430px)', 'mobile_banner')}}
+                        {{html()->file('mobile_banner')->class('form-control')}}
+                        <div class="brand-mobile-banner-display-area mt-4" style="display: none">
+                            <img src="" alt="" class="img-fluid">
+                        </div>
+                        <small class="text-muted">Optional. Used on screens 767px and below.</small>
+                        @error('mobile_banner')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                    </div>
                 </div>
                 <div class="row mt-4 justify-content-center">
                     <div class="col-lg-4">
@@ -115,6 +126,7 @@
 
         bindPreview('logo', '.brand-logo-display-area');
         bindPreview('banner', '.brand-banner-display-area');
+        bindPreview('mobile_banner', '.brand-mobile-banner-display-area');
     });
 </script>
 @endpush

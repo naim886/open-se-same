@@ -68,6 +68,34 @@
                         </div>
                     </div>
 
+                    <div class="col-lg-12 mb-4 position-relative">
+                        {{html()->label('Mobile Banner Image (770x430px recommended)', 'mobile_image')}}
+                        {{html()->file('mobile_image')->class('form-control')->accept('image/*')}}
+                        @error('mobile_image')
+                        <p class="validation-message">{{$message}}</p>
+                        @enderror
+                        <small class="form-text text-muted">Optional. Used on screens 767px and below. Leave empty to keep the current mobile image.</small>
+
+                        @if($banner->mobile_image)
+                            <div class="mt-2">
+                                <label class="form-label">Current Mobile Image:</label>
+                                <div>
+                                    <img src="{{ asset('storage/' . $banner->mobile_image) }}"
+                                         alt="{{ $banner->title }} mobile"
+                                         class="img-thumbnail"
+                                         style="max-width: 200px; height: auto;">
+                                </div>
+                            </div>
+                        @endif
+
+                        <div id="mobile-image-preview" class="mt-2" style="display: none;">
+                            <label class="form-label">New Mobile Image Preview:</label>
+                            <div>
+                                <img id="mobile-preview-img" src="" alt="Mobile Preview" class="img-thumbnail" style="max-width: 200px; height: auto;">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-lg-6 mb-4 position-relative">
                         {{html()->label('Sort Order', 'sort_order')}}
                         <x-required/>
@@ -115,6 +143,26 @@
                     reader.readAsDataURL(file);
                 } else {
                     previewContainer.style.display = 'none';
+                }
+            });
+        }
+
+        const mobileInput = document.querySelector('input[name="mobile_image"]');
+        const mobilePreviewContainer = document.getElementById('mobile-image-preview');
+        const mobilePreviewImg = document.getElementById('mobile-preview-img');
+
+        if (mobileInput && mobilePreviewContainer && mobilePreviewImg) {
+            mobileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        mobilePreviewImg.src = e.target.result;
+                        mobilePreviewContainer.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    mobilePreviewContainer.style.display = 'none';
                 }
             });
         }

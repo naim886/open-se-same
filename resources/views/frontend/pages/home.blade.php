@@ -55,7 +55,10 @@ if ($schemaProducts->isNotEmpty()) {
 @section('extra_css')
 @php $firstBanner = collect($blocks)->firstWhere('type', 'banner')['banners'][0] ?? null; @endphp
 @if($firstBanner && $firstBanner->image)
-<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->image) }}" fetchpriority="high">
+<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->image) }}" media="(min-width: 768px)" fetchpriority="high">
+@endif
+@if($firstBanner && $firstBanner->mobile_image)
+<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->mobile_image) }}" media="(max-width: 767.98px)" fetchpriority="high">
 @endif
 @endsection
 
@@ -75,7 +78,12 @@ if ($schemaProducts->isNotEmpty()) {
                         @foreach($block['banners'] as $banner)
                             <div class="swiper-slide">
                                 @if($banner->button_url)<a href="{{ $banner->button_url }}">@endif
-                                <img src="{{ asset('storage/'.$banner->image) }}" alt="{{ $banner->title }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif>
+                                <picture>
+                                    @if($banner->mobile_image)
+                                        <source media="(max-width: 767.98px)" srcset="{{ asset('storage/'.$banner->mobile_image) }}">
+                                    @endif
+                                    <img src="{{ asset('storage/'.$banner->image) }}" alt="{{ $banner->title }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif>
+                                </picture>
                                 @if($banner->button_url)</a>@endif
                             </div>
                         @endforeach
@@ -224,8 +232,13 @@ if ($schemaProducts->isNotEmpty()) {
             <div class="container">
                 @if($block['category']->banner_url)
                     <a href="{{ route('shop.category', $block['category']->slug) }}" class="home-category-banner">
-                        <img src="{{ $block['category']->banner_url }}" alt="{{ $block['category']->name }}" loading="lazy"
-                             onerror="this.closest('.home-category-banner').style.display='none';">
+                        <picture>
+                            @if($block['category']->mobile_banner_url)
+                                <source media="(max-width: 767.98px)" srcset="{{ $block['category']->mobile_banner_url }}">
+                            @endif
+                            <img src="{{ $block['category']->banner_url }}" alt="{{ $block['category']->name }}" loading="lazy"
+                                 onerror="this.closest('.home-category-banner').style.display='none';">
+                        </picture>
                     </a>
                 @endif
                 <div class="section-title-row">

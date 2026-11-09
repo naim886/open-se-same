@@ -37,6 +37,9 @@ class Category extends Model
     public const BANNER_WIDTH = 1920;
     public const BANNER_HEIGHT = 480;
 
+    public const MOBILE_BANNER_WIDTH = 770;
+    public const MOBILE_BANNER_HEIGHT = 430;
+
 
     public function getCategories()
     {
@@ -79,6 +82,16 @@ class Category extends Model
                 ->path(self::BANNER_PATH)
                 ->width(self::BANNER_WIDTH)
                 ->height(self::BANNER_HEIGHT)
+                ->upload();
+        }
+
+        if ($request->hasFile('mobile_banner')) {
+            $data['mobile_banner'] = (new ImageUploadManager())
+                ->file($request->file('mobile_banner'))
+                ->name(generateUniqueImageName($request->input('slug') . '-mobile-banner'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_BANNER_WIDTH)
+                ->height(self::MOBILE_BANNER_HEIGHT)
                 ->upload();
         }
         return $data;
@@ -140,6 +153,22 @@ class Category extends Model
                 ->path(self::BANNER_PATH)
                 ->width(self::BANNER_WIDTH)
                 ->height(self::BANNER_HEIGHT)
+                ->upload();
+        }
+
+        // Handle mobile banner upload and delete old mobile banner if new one is uploaded
+        if ($request->hasFile('mobile_banner')) {
+            if ($this->mobile_banner) {
+                $oldMobileBannerPath = str_replace(asset('storage'), '', $this->getRawOriginal('mobile_banner'));
+                \Storage::disk('public')->delete($oldMobileBannerPath);
+            }
+
+            $data['mobile_banner'] = (new ImageUploadManager())
+                ->file($request->file('mobile_banner'))
+                ->name(generateUniqueImageName($request->input('slug') . '-mobile-banner'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_BANNER_WIDTH)
+                ->height(self::MOBILE_BANNER_HEIGHT)
                 ->upload();
         }
 
@@ -302,6 +331,19 @@ class Category extends Model
         }
 
         // Otherwise, construct the path using the constant
+        return asset('storage' . self::BANNER_PATH . $value);
+    }
+
+    // Get mobile banner URL
+    public function getMobileBannerUrlAttribute()
+    {
+        $value = $this->getRawOriginal('mobile_banner');
+        if (!$value) return null;
+
+        if (str_contains($value, '/')) {
+            return asset('storage' . $value);
+        }
+
         return asset('storage' . self::BANNER_PATH . $value);
     }
 }

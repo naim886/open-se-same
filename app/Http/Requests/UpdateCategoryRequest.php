@@ -34,6 +34,7 @@ class UpdateCategoryRequest extends FormRequest
             ],
             'icon'              => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'banner'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'mobile_banner'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 
@@ -51,6 +52,7 @@ class UpdateCategoryRequest extends FormRequest
             'parent_id'         => 'Parent Category',
             'icon'              => 'Category Icon',
             'banner'            => 'Category Banner',
+            'mobile_banner'     => 'Category Mobile Banner',
         ];
     }
 

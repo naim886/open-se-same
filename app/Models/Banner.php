@@ -28,6 +28,9 @@ class Banner extends Model
     public const BANNER_WIDTH  = 1920;
     public const BANNER_HEIGHT = 520;
 
+    public const MOBILE_IMAGE_WIDTH  = 770;
+    public const MOBILE_IMAGE_HEIGHT = 430;
+
     final public function getBanners()
     {
         return self::query()
@@ -51,6 +54,17 @@ class Banner extends Model
                 ->upload();
         }
 
+        // Handle mobile banner upload (770x430)
+        if ($request->hasFile('mobile_image')) {
+            $bannerData['mobile_image'] = ltrim(self::BANNER_PATH, '/') . (new ImageUploadManager())
+                ->file($request->file('mobile_image'))
+                ->name(generateUniqueImageName('banner-mobile'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_IMAGE_WIDTH)
+                ->height(self::MOBILE_IMAGE_HEIGHT)
+                ->upload();
+        }
+
         return self::query()->create($bannerData);
     }
 
@@ -70,6 +84,20 @@ class Banner extends Model
                 ->path(self::BANNER_PATH)
                 ->width(self::BANNER_WIDTH)
                 ->height(self::BANNER_HEIGHT)
+                ->upload();
+        }
+
+        // Handle mobile banner upload (770x430)
+        if ($request->hasFile('mobile_image')) {
+            if ($this->mobile_image) {
+                ImageUploadManager::deletePhoto($this->mobile_image);
+            }
+            $bannerData['mobile_image'] = ltrim(self::BANNER_PATH, '/') . (new ImageUploadManager())
+                ->file($request->file('mobile_image'))
+                ->name(generateUniqueImageName('banner-mobile'))
+                ->path(self::BANNER_PATH)
+                ->width(self::MOBILE_IMAGE_WIDTH)
+                ->height(self::MOBILE_IMAGE_HEIGHT)
                 ->upload();
         }
 

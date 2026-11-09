@@ -31,6 +31,7 @@ class StoreBrandRequest extends FormRequest
             'sort_order'        => ['required', 'integer', 'min:1'],
             'logo'              => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:2048'],
             'banner'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'mobile_banner'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 }

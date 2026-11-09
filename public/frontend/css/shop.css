@@ -297,6 +297,12 @@ img { max-width: 100%; }
     height: auto;
     display: block;
 }
+
+.hero-swiper .swiper-slide picture,
+.home-category-banner picture,
+.shop-page-banner picture {
+    display: block;
+}
 .swiper-pagination-bullet {
     padding: 18px !important;
     background-clip: content-box !important;
@@ -1984,23 +1990,25 @@ img { max-width: 100%; }
 
 @media (max-width: 767.98px) {
     .treasure-section {
-        padding: 14px 0 22px;
+        padding: 14px 0 24px;
     }
     .treasure-strip {
-        gap: 9px;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     .treasure-item {
-        width: calc(33.333% - 6px);
-        padding: 10px 5px 8px;
-        border-radius: 11px;
+        width: calc(33.333% - 7px);
+        padding: 10px 6px;
+        border-radius: 12px;
     }
     .treasure-icon {
-        width: 46px;
-        height: 46px;
-        padding: 7px;
+        width: 64px;
+        height: 64px;
+        padding: 8px;
     }
     .treasure-label {
-        font-size: 11.5px;
+        display: none;
     }
 }
 

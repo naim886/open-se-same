@@ -28,6 +28,7 @@ class UpdateBannerRequest extends FormRequest
             'button_text' => 'nullable|string|max:50',
             'button_url'  => 'nullable|string|max:255',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'mobile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'sort_order'  => 'required|integer|min:1',
             'status'      => 'required|integer|in:' . Banner::STATUS_ACTIVE . ',' . Banner::STATUS_INACTIVE,
         ];
@@ -46,6 +47,7 @@ class UpdateBannerRequest extends FormRequest
             'button_text' => 'Button Text',
             'button_url'  => 'Button URL',
             'image'       => 'Banner Image',
+            'mobile_image' => 'Mobile Banner Image',
             'sort_order'  => 'Sort Order',
             'status'      => 'Status',
         ];

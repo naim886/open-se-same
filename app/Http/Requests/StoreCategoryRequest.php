@@ -32,6 +32,7 @@ class StoreCategoryRequest extends FormRequest
             'parent_id'         => ['nullable', 'integer', 'exists:categories,id'],
             'icon'              => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'banner'            => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'mobile_banner'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 }
