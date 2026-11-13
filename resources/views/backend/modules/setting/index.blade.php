@@ -83,6 +83,26 @@
                             <input type="text" class="form-control" name="settings[invoice.footer_note]"
                                    value="{{ $val('invoice.footer_note') }}">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">BIN</label>
+                            <input type="text" class="form-control" name="settings[invoice.company_bin]"
+                                   value="{{ $val('invoice.company_bin') }}" placeholder="004261738-0208">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Mushak</label>
+                            <input type="text" class="form-control" name="settings[invoice.company_mushak]"
+                                   value="{{ $val('invoice.company_mushak') }}" placeholder="Mushak-6.3">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Website</label>
+                            <input type="text" class="form-control" name="settings[invoice.company_website]"
+                                   value="{{ $val('invoice.company_website') }}" placeholder="opensesame.com.bd">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">VAT Footer Note</label>
+                            <input type="text" class="form-control" name="settings[invoice.vat_note]"
+                                   value="{{ $val('invoice.vat_note') }}" placeholder="*** VAT INCLUDED IN THE PRODUCT PRICE ***">
+                        </div>
                         <div class="col-12">
                             <label class="form-label" style="font-size:13px; font-weight:600;">Company Address</label>
                             <textarea class="form-control" rows="2" name="settings[invoice.company_address]">{{ $val('invoice.company_address') }}</textarea>

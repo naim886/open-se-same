@@ -135,6 +135,8 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     // the PDF fonts bundled with dompdf do not include the Bengali glyph.
     Route::get('orders/{order}/invoice', [\App\Http\Controllers\Backend\InvoiceController::class, 'invoice'])->name('orders.invoice');
     Route::get('orders/{order}/label', [\App\Http\Controllers\Backend\InvoiceController::class, 'label'])->name('orders.label');
+    // Browser-printable Invoice + Packing Slip (matches the reference design).
+    Route::get('orders/{order}/documents', [\App\Http\Controllers\Backend\InvoiceController::class, 'documents'])->name('orders.documents');
     Route::get('orders-filter', [OrderController::class, 'filterByStatus'])->name('orders.filter');
     // Reports
     Route::get('reports/sales', [\App\Http\Controllers\Backend\SalesReportController::class, 'index'])->name('reports.sales');

@@ -21,6 +21,11 @@
                        title="Download 4x6in courier label PDF">
                         <i class="fas fa-tag me-1"></i> Label
                     </a>
+                    <a href="{{ route('orders.documents', $order->id) }}" target="_blank" rel="noopener"
+                       class="btn btn-sm btn-dark me-2"
+                       title="Print Invoice &amp; Packing Slip">
+                        <i class="fas fa-print me-1"></i> Print Invoice &amp; Packing Slip
+                    </a>
                     @if(!$order->consignment_id)
                     <button type="button" class="btn btn-sm btn-warning me-2"
                         onclick="openCourierModal(

@@ -28,10 +28,14 @@ class Setting extends Model
         'delivery.free'          => '0',
 
         // Company identity used on invoices and delivery labels.
-        'invoice.company_name'    => 'OpenSesame BD',
-        'invoice.company_address' => '',
-        'invoice.company_phone'   => '',
-        'invoice.company_email'   => '',
+        'invoice.company_name'    => 'OPEN SESAME.COM LIMITED',
+        'invoice.company_address' => 'Suite 2, Level 9, Rupayan Trade Center, 114 Nazrul Islam Avenue, Banglamotor, Ramna, Dhaka-1205',
+        'invoice.company_phone'   => '+8801826339988, +8801826339933',
+        'invoice.company_email'   => 'opensesamebd@gmail.com',
+        'invoice.company_bin'     => '004261738-0208',
+        'invoice.company_mushak'  => 'Mushak-6.3',
+        'invoice.company_website' => 'opensesame.com.bd',
+        'invoice.vat_note'        => '*** VAT INCLUDED IN THE PRODUCT PRICE ***',
         'invoice.footer_note'     => 'Thank you for shopping with us.',
         'invoice.terms'           => '',
 

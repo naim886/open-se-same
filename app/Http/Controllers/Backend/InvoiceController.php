@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
@@ -46,6 +47,19 @@ class InvoiceController extends Controller
     }
 
     /**
+     * Print-ready Invoice + Packing Slip in one browser-printable page.
+     */
+    public function documents(Order $order): View
+    {
+        $order->load(['orderItems.product']);
+
+        return view('backend.modules.order.print.documents', [
+            'order'   => $order,
+            'company' => $this->companyDetails(),
+        ]);
+    }
+
+    /**
      * Branding details used on printed documents.
      *
      * @return array<string, mixed>
@@ -57,6 +71,10 @@ class InvoiceController extends Controller
             'address' => Setting::get('invoice.company_address'),
             'phone'   => Setting::get('invoice.company_phone'),
             'email'   => Setting::get('invoice.company_email'),
+            'bin'     => Setting::get('invoice.company_bin'),
+            'mushak'  => Setting::get('invoice.company_mushak'),
+            'website' => Setting::get('invoice.company_website'),
+            'vat_note' => Setting::get('invoice.vat_note'),
             'footer'  => Setting::get('invoice.footer_note'),
             'terms'   => Setting::get('invoice.terms'),
         ];

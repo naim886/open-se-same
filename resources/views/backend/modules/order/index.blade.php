@@ -367,6 +367,11 @@
                                         <a href="{{ route('orders.edit', $order->id) }}" class="btn btn-secondary" style="font-size:13px;padding:5px 12px;">
                                             <i class="fas fa-edit me-1"></i> Edit
                                         </a>
+                                        <a href="{{ route('orders.documents', $order->id) }}" target="_blank" rel="noopener"
+                                           class="btn btn-dark" style="font-size:13px;padding:5px 12px;"
+                                           title="Print Invoice &amp; Packing Slip">
+                                            <i class="fas fa-print me-1"></i> Print
+                                        </a>
                                         @if($order->tracking_code)
                                         <a href="https://steadfast.com.bd/t/{{ $order->tracking_code }}" target="_blank"
                                            class="btn btn-outline-info" style="font-size:13px;padding:5px 12px;" title="Track in Steadfast">
