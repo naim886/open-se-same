@@ -753,6 +753,7 @@ class ProductCsvImporter
         $categoryIds       = [];
         $primaryCategoryId = null;
         $brandName         = null;
+        $ignoredNames      = ['uncategorized', 'uncategorised'];
 
         if (trim($categoriesCsv) === '') {
             return ['category_ids' => [], 'primary_category_id' => null, 'brand_name' => null];
@@ -773,6 +774,12 @@ class ProductCsvImporter
             $leafId   = null;
 
             foreach ($parts as $index => $name) {
+                // "Uncategorized" is a fallback label, not a real category.
+                // Skip it instead of creating/restoring it on every import.
+                if (in_array(Str::lower($name), $ignoredNames, true)) {
+                    continue;
+                }
+
                 if ($index === 0 && $brandName === null) {
                     $brandName = $name;
                 }

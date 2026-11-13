@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Product;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use Illuminate\Contracts\View\View;
@@ -117,10 +118,11 @@ class BrandController extends Controller
     public function destroy(Brand $brand): RedirectResponse
     {
         try {
-            if ($brand->products()->count() > 0) {
-                failed_alert('Cannot delete brand that has products assigned to it.');
-                return redirect()->back();
-            }
+            // Products keep their data but become unbranded when the brand is
+            // removed, so the brand can always be deleted from the admin.
+            Product::query()
+                ->where('brand_id', $brand->id)
+                ->update(['brand_id' => null]);
 
             $brand->deleteImage($brand->getRawOriginal('logo'), Brand::LOGO_PATH);
             $brand->deleteImage($brand->getRawOriginal('banner'), Brand::BANNER_PATH);

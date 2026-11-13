@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Contracts\View\View;
@@ -122,11 +123,23 @@ class CategoryController extends Controller
     public function destroy(Category $category): RedirectResponse
     {
         try {
-            // Check if category has products
-            if ($category->products()->count() > 0) {
-                failed_alert('Cannot delete category that has products assigned to it.');
-                return redirect()->back();
-            }
+            $categoryName = $category->name;
+            $parentId     = $category->category_id ? (int) $category->category_id : null;
+
+            // Products whose primary category is being removed fall back to
+            // the deleted category's parent (or no category for a root one).
+            Product::query()
+                ->where('category_id', $category->id)
+                ->update(['category_id' => $parentId]);
+
+            // Remove the category from every product's additional categories.
+            $category->products()->detach();
+
+            // Keep the category tree valid by moving child categories up one
+            // level instead of leaving them pointing at a deleted parent.
+            Category::query()
+                ->where('category_id', $category->id)
+                ->update(['category_id' => $parentId]);
 
             // Delete category images if they exist
             if ($category->icon) {
@@ -139,7 +152,6 @@ class CategoryController extends Controller
                 Storage::disk('public')->delete($bannerPath);
             }
 
-            $categoryName = $category->name;
             $category->delete();
 
             success_alert($categoryName . ' deleted successfully.');
