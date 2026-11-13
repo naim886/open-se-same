@@ -245,11 +245,8 @@
 
             {{-- Pagination --}}
             @if($customers->hasPages())
-            <div class="px-3 py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div class="text-muted small">
-                    Showing {{ $customers->firstItem() }}–{{ $customers->lastItem() }} of {{ $customers->total() }}
-                </div>
-                <div>{{ $customers->links() }}</div>
+            <div class="px-3 py-3">
+                {{ $customers->links() }}
             </div>
             @endif
             @endif

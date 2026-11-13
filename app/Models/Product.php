@@ -97,12 +97,55 @@ class Product extends Model
         return $this->primary_photo ? self::toThumbPath($this->primary_photo) : null;
     }
 
-    final public function getProducts()
+    final public function getProducts(array $filters = [])
     {
-        return self::query()
+        $query = self::query()
             ->with(['category', 'categories', 'brand', 'photos', 'activeVariations'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->orderBy('created_at', 'desc');
+
+        $name = trim((string) ($filters['name'] ?? ''));
+        if ($name !== '') {
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+        $slug = trim((string) ($filters['slug'] ?? ''));
+        if ($slug !== '') {
+            $query->where('slug', 'like', '%' . $slug . '%');
+        }
+
+        $sku = trim((string) ($filters['sku'] ?? ''));
+        if ($sku !== '') {
+            // Match the parent product SKU or any variation SKU so variant
+            // products can be found by the SKU printed on their variations.
+            $query->where(function (Builder $q) use ($sku) {
+                $q->where('sku', 'like', '%' . $sku . '%')
+                    ->orWhereHas('variations', static fn (Builder $v) => $v->where('sku', 'like', '%' . $sku . '%'));
+            });
+        }
+
+        $categoryId = $filters['category_id'] ?? null;
+        if ($categoryId !== null && $categoryId !== '') {
+            $query->inCategories([(int) $categoryId]);
+        }
+
+        $brandId = $filters['brand_id'] ?? null;
+        if ($brandId !== null && $brandId !== '') {
+            $query->where('brand_id', (int) $brandId);
+        }
+
+        $productType = trim((string) ($filters['product_type'] ?? ''));
+        if ($productType !== '' && array_key_exists($productType, self::PRODUCT_TYPE_LIST)) {
+            $query->where('product_type', $productType);
+        }
+
+        $status = $filters['status'] ?? null;
+        if ($status !== null && $status !== '' && array_key_exists((int) $status, self::STATUS_LIST)) {
+            $query->where('status', (int) $status);
+        }
+
+        return $query
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeProduct(Request $request): Model

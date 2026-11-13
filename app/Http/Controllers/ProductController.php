@@ -80,7 +80,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $cms_content = [
             'page_title'   => 'Product List',
@@ -91,8 +91,22 @@ class ProductController extends Controller
             'button_url'   => route('product.create'),
             'type'         => 'list'
         ];
-        $products = (new Product())->getProducts();
-        return view('backend.modules.product.index', compact('cms_content', 'products'));
+
+        $filters = $request->only([
+            'name',
+            'slug',
+            'sku',
+            'category_id',
+            'brand_id',
+            'product_type',
+            'status',
+        ]);
+
+        $products   = (new Product())->getProducts($filters);
+        $categories = (new Category())->getCategoryAssoc();
+        $brands     = (new Brand())->getBrandAssoc();
+
+        return view('backend.modules.product.index', compact('cms_content', 'products', 'categories', 'brands', 'filters'));
     }
 
     /**

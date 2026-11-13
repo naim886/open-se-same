@@ -2,6 +2,88 @@
 @section('content')
     <div class="row justify-content-center my-5">
         <div class="col-lg-12">
+
+            {{-- Advanced product filters --}}
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="ri-filter-3-line me-2"></i> Filter Products</span>
+                    @if(request()->anyFilled(['name', 'slug', 'sku', 'category_id', 'brand_id', 'product_type', 'status']))
+                        <a href="{{ route('product.index') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="ri-refresh-line"></i> Clear Filters
+                        </a>
+                    @endif
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ route('product.index') }}" class="row g-2 align-items-end">
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Name</label>
+                            <input type="text" name="name" class="form-control form-control-sm"
+                                   placeholder="Product name..." value="{{ $filters['name'] ?? '' }}">
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Slug</label>
+                            <input type="text" name="slug" class="form-control form-control-sm"
+                                   placeholder="Product slug..." value="{{ $filters['slug'] ?? '' }}">
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">SKU</label>
+                            <input type="text" name="sku" class="form-control form-control-sm"
+                                   placeholder="Product or variation SKU..." value="{{ $filters['sku'] ?? '' }}">
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Category</label>
+                            <select name="category_id" class="form-select form-select-sm">
+                                <option value="">All Categories</option>
+                                @foreach($categories as $id => $name)
+                                    <option value="{{ $id }}" {{ (string) ($filters['category_id'] ?? '') === (string) $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Brand</label>
+                            <select name="brand_id" class="form-select form-select-sm">
+                                <option value="">All Brands</option>
+                                @foreach($brands as $id => $name)
+                                    <option value="{{ $id }}" {{ (string) ($filters['brand_id'] ?? '') === (string) $id ? 'selected' : '' }}>
+                                        {{ $name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Type</label>
+                            <select name="product_type" class="form-select form-select-sm">
+                                <option value="">All Types</option>
+                                @foreach(\App\Models\Product::PRODUCT_TYPE_LIST as $value => $label)
+                                    <option value="{{ $value }}" {{ ($filters['product_type'] ?? '') === $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4">
+                            <label class="form-label mb-1">Status</label>
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="">All Statuses</option>
+                                @foreach(\App\Models\Product::STATUS_LIST as $value => $label)
+                                    <option value="{{ $value }}" {{ (string) ($filters['status'] ?? '') === (string) $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="ri-search-line"></i> Filter
+                            </button>
+                            <a href="{{ route('product.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end mb-3">
                 <a href="{{ route('product.import') }}" class="btn theme-button-outline">
                     <i class="fa fa-upload"></i> Import CSV

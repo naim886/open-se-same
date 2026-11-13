@@ -881,6 +881,29 @@ hr {
 }
 
 /* ── Pagination ──────────────────────────────────────────────── */
+.app-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+.app-pagination .pagination {
+    margin-bottom: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+@media (max-width: 575.98px) {
+    .app-pagination {
+        justify-content: center;
+    }
+    .app-pagination-summary {
+        flex: 1 0 100%;
+        text-align: center;
+    }
+}
+
 .pagination {
     --bs-pagination-bg: var(--bg-surface);
     --bs-pagination-border-color: var(--border-subtle);

@@ -1125,6 +1125,29 @@ img { max-width: 100%; }
 }
 
 /* ====== PAGINATION ====== */
+/* Pagination layout: keep the results summary and page links separated */
+.app-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+.app-pagination .pagination {
+    margin-bottom: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+@media (max-width: 575.98px) {
+    .app-pagination {
+        justify-content: center;
+    }
+    .app-pagination-summary {
+        flex: 1 0 100%;
+        text-align: center;
+    }
+}
 .pagination .page-link { color: var(--primary-dark); border-color: var(--border); padding: 8px 14px; }
 .pagination .page-item.active .page-link { background: var(--primary-gradient); border-color: var(--primary); color: #fff; }
 .pagination .page-link:hover { background: rgba(0,81,56,0.08); color: var(--primary-dark); }
@@ -1957,6 +1980,9 @@ img { max-width: 100%; }
     }
     .home-seo-h1-mobile {
         display: inline;
+        white-space: nowrap;
+        font-size: clamp(9px, 3.2vw, 12px);
+        letter-spacing: -0.2px;
     }
 }
 

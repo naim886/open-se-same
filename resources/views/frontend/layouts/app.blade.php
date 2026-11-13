@@ -931,7 +931,7 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
 <!-- Main Header -->
 <header class="main-header sticky-top">
     <div class="container">
-        <div class="row align-items-center py-3">
+        <div class="row align-items-center py-1 py-lg-3">
             <!-- Logo -->
             <div class="col-4 col-md-2 col-lg-2">
                 <a href="{{ route('shop.home') }}" class="logo-link">

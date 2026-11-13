@@ -289,10 +289,7 @@
         </div>
 
         @if($users->hasPages())
-        <div class="card-footer border-0 bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
-            <div class="text-muted small">
-                Showing {{ $users->firstItem() }}–{{ $users->lastItem() }} of {{ $users->total() }} users
-            </div>
+        <div class="card-footer border-0 bg-transparent py-3">
             {{ $users->links() }}
         </div>
         @endif
