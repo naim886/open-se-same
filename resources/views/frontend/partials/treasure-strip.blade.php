@@ -3,19 +3,21 @@
     <style>
         @media (max-width: 767.98px) {
             .treasure-strip {
-                gap: 10px !important;
-                flex-wrap: wrap !important;
-                justify-content: center !important;
+                gap: 6px !important;
+                flex-wrap: nowrap !important;
+                justify-content: space-between !important;
             }
             .treasure-item {
-                width: calc(33.333% - 7px) !important;
-                padding: 10px 6px !important;
+                flex: 1 1 0 !important;
+                width: auto !important;
+                min-width: 0 !important;
+                padding: 8px 4px !important;
                 border-radius: 12px !important;
             }
             .treasure-icon {
-                width: 64px !important;
-                height: 64px !important;
-                padding: 8px !important;
+                width: clamp(40px, 13vw, 56px) !important;
+                height: clamp(40px, 13vw, 56px) !important;
+                padding: 6px !important;
             }
             .treasure-label {
                 display: none !important;

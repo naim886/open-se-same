@@ -18,6 +18,16 @@ class SettingController extends Controller
         'notification.admin_low_stock',
     ];
 
+    /** Social links that must be empty or a valid URL. */
+    private const URL_KEYS = [
+        'social.facebook_url',
+        'social.instagram_url',
+        'social.youtube_url',
+        'social.tiktok_url',
+        'social.messenger_url',
+        'social.whatsapp_url',
+    ];
+
     /** Keys that must be non-negative numbers. */
     private const NUMERIC_KEYS = [
         'delivery.inside_dhaka',
@@ -62,6 +72,10 @@ class SettingController extends Controller
 
             if ($key === 'notification.admin_email' && $value !== '' && ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 return back()->withInput()->with('error', 'Please enter a valid admin notification email address.');
+            }
+
+            if (in_array($key, self::URL_KEYS, true) && $value !== '' && ! filter_var($value, FILTER_VALIDATE_URL)) {
+                return back()->withInput()->with('error', "Please enter a valid URL for '{$key}'.");
             }
 
             $values[$key] = $value;

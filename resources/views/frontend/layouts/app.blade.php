@@ -871,6 +871,14 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
     })(window, document, "clarity", "script", "vqji8l47ab");
 </script>
 </head>
+@php
+    $socialFacebook  = \App\Models\Setting::effective('social.facebook_url');
+    $socialInstagram = \App\Models\Setting::effective('social.instagram_url');
+    $socialYoutube   = \App\Models\Setting::effective('social.youtube_url');
+    $socialTiktok    = \App\Models\Setting::effective('social.tiktok_url');
+    $socialMessenger = \App\Models\Setting::effective('social.messenger_url');
+    $socialWhatsapp  = \App\Models\Setting::effective('social.whatsapp_url');
+@endphp
 <body>
 
 <!-- Top Notice Bar -->
@@ -881,13 +889,19 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
             <span class="top-bar-sep">|</span>
             <a href="tel:+8801826339933"><i class="fas fa-phone-alt" aria-hidden="true"></i> 01826339933</a>
             <span class="top-bar-sep">|</span>
-            <span><i class="fas fa-truck" aria-hidden="true"></i> Islandwide Delivery Across Bangladesh</span>
+            <span><i class="fas fa-truck" aria-hidden="true"></i> Delivery Across Bangladesh</span>
         </div>
         <div class="top-bar-right">
             <div class="top-bar-social">
-                <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
-                <a href="https://wa.me/+8801826339988" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
-                <a href="https://m.me/opensesame1" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
+                @if($socialFacebook)
+                    <a href="{{ $socialFacebook }}" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                @endif
+                @if($socialWhatsapp)
+                    <a href="{{ $socialWhatsapp }}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                @endif
+                @if($socialMessenger)
+                    <a href="{{ $socialMessenger }}" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
+                @endif
             </div>
             <span class="top-bar-sep">|</span>
             <a href="{{ route('shop.track-order') }}"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Track Order</a>
@@ -1128,12 +1142,30 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                     <li><i class="fas fa-clock" aria-hidden="true"></i> <span>Open: 24/7, 365 Days</span></li>
                 </ul>
                 <div class="footer-social">
-                    <a href="https://www.facebook.com/opensesame1" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i
-                            class="fab fa-facebook-f" aria-hidden="true"></i></a>
-                    <a href="https://wa.me/+8801826339988" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i
-                            class="fab fa-whatsapp" aria-hidden="true"></i></a>
-                    <a href="https://m.me/opensesame1" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i
-                            class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
+                    @if($socialFacebook)
+                        <a href="{{ $socialFacebook }}" target="_blank" rel="noopener" aria-label="Follow us on Facebook"><i
+                                class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    @endif
+                    @if($socialWhatsapp)
+                        <a href="{{ $socialWhatsapp }}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i
+                                class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                    @endif
+                    @if($socialMessenger)
+                        <a href="{{ $socialMessenger }}" target="_blank" rel="noopener" aria-label="Message us on Messenger"><i
+                                class="fab fa-facebook-messenger" aria-hidden="true"></i></a>
+                    @endif
+                    @if($socialInstagram)
+                        <a href="{{ $socialInstagram }}" target="_blank" rel="noopener" aria-label="Follow us on Instagram"><i
+                                class="fab fa-instagram" aria-hidden="true"></i></a>
+                    @endif
+                    @if($socialYoutube)
+                        <a href="{{ $socialYoutube }}" target="_blank" rel="noopener" aria-label="Subscribe on YouTube"><i
+                                class="fab fa-youtube" aria-hidden="true"></i></a>
+                    @endif
+                    @if($socialTiktok)
+                        <a href="{{ $socialTiktok }}" target="_blank" rel="noopener" aria-label="Follow us on TikTok"><i
+                                class="fab fa-tiktok" aria-hidden="true"></i></a>
+                    @endif
                 </div>
             </div>
 

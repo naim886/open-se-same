@@ -8,6 +8,8 @@ use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -98,7 +100,7 @@ class Product extends Model
     final public function getProducts()
     {
         return self::query()
-            ->with(['category', 'brand', 'photos', 'activeVariations'])
+            ->with(['category', 'categories', 'brand', 'photos', 'activeVariations'])
             ->orderBy('created_at', 'desc')
             ->paginate(GlobalConstants::DEFAULT_PAGINATION);
     }
@@ -139,6 +141,8 @@ class Product extends Model
 
         // Create the product first
         $product = self::query()->create($productData);
+
+        $this->syncCategories($product, $request);
 
         // Handle gallery photos using ProductPhoto model
         if ($request->hasFile('gallery')) {
@@ -310,6 +314,8 @@ class Product extends Model
 
         // Update the product
         $updated = $this->update($productData);
+
+        $this->syncCategories($this, $request);
 
         // Update specifications
         if ($request->has('specifications')) {
@@ -503,9 +509,11 @@ class Product extends Model
 
     private function prepareData(Request $request): array
     {
+        $categoryIds = $this->resolveCategoryIds($request);
+
         return [
             'product_type'      => $request->input('product_type'),
-            'category_id'       => $request->input('category_id'),
+            'category_id'       => $categoryIds[0] ?? $request->input('category_id'),
             'brand_id'          => $request->input('brand_id') ?: null,
             'sku'               => self::normalizeSku($request->input('sku')),
             'name'              => $request->input('name'),
@@ -592,10 +600,69 @@ class Product extends Model
         return ['min' => $prices->first(), 'max' => $prices->last()];
     }
 
+    /**
+     * Normalise the primary + additional category selection into one unique
+     * list. The first id is stored as the legacy `category_id` (used for the
+     * product card label); all ids are synced to the pivot table.
+     *
+     * @return array<int, int>
+     */
+    private function resolveCategoryIds(Request $request): array
+    {
+        $ids = [];
+
+        if ($request->filled('category_id')) {
+            $ids[] = (int) $request->input('category_id');
+        }
+
+        foreach ((array) $request->input('category_ids', []) as $id) {
+            $id = (int) $id;
+            if ($id > 0) {
+                $ids[] = $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    private function syncCategories(self $product, Request $request): void
+    {
+        $ids = $this->resolveCategoryIds($request);
+
+        if ($ids === [] && $product->category_id) {
+            $ids = [(int) $product->category_id];
+        }
+
+        $product->categories()->sync($ids);
+    }
+
+    /**
+     * Products that belong to any of the supplied categories, either through
+     * the legacy primary category column or the category_product pivot.
+     *
+     * @param  array<int, int>  $categoryIds
+     */
+    public function scopeInCategories(Builder $query, array $categoryIds): Builder
+    {
+        if ($categoryIds === []) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($categoryIds) {
+            $q->whereIn('category_id', $categoryIds)
+                ->orWhereHas('categories', static fn (Builder $c) => $c->whereIn('categories.id', $categoryIds));
+        });
+    }
+
     // Relationships
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_product')->withTimestamps();
     }
 
     public function brand()

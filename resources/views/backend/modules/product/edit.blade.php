@@ -15,7 +15,7 @@
 @section('content')
     <div class="row justify-content-center my-5">
         <div class="col-lg-8">
-            {{html()->modelForm($product, 'PATCH', route('product.update', $product->id))->acceptsFiles()->open()}}
+            {{html()->modelForm($product, 'PATCH', route('product.update', $product->id))->acceptsFiles()->id('productForm')->attribute('novalidate', 'novalidate')->open()}}
             <fieldset>
                 <legend>{{$cms_content['page_title'] ?? null }}</legend>
 
@@ -64,7 +64,7 @@
                             <div class="col-lg-6 mb-4 position-relative">
                                 {{html()->label('Product Category', 'category_id')}}
                                 <x-required/>
-                                {{html()->select('category_id', $categories)->placeholder('Select Category')->class('form-select')}}
+                                {{html()->select('category_id', $categories)->placeholder('Select Category')->class('form-select')->id('category_id')}}
                                 @error('category_id')
                                 <p class="validation-message">{{$message}}</p>
                                 @enderror
@@ -73,6 +73,25 @@
                                 {{html()->label('Product Brand', 'brand_id')}}
                                 {{html()->select('brand_id', $brands ?? [])->placeholder('Select Brand')->class('form-select')}}
                                 @error('brand_id')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                            </div>
+                            @php
+                                $selectedCategoryIds = old('category_ids', $product->categories
+                                    ->pluck('id')
+                                    ->map(static fn ($id) => (int) $id)
+                                    ->reject(static fn ($id) => $id === (int) $product->category_id)
+                                    ->values()
+                                    ->all());
+                            @endphp
+                            <div class="col-lg-6 mb-4 position-relative">
+                                {{html()->label('Additional Categories', 'category_ids')}}
+                                {{html()->multiselect('category_ids[]', $categories, $selectedCategoryIds)->class('form-select')->id('category_ids')}}
+                                <small class="text-muted">Select any additional categories this product should appear in. The primary category above is used on product cards.</small>
+                                @error('category_ids')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                                @error('category_ids.*')
                                 <p class="validation-message">{{$message}}</p>
                                 @enderror
                             </div>
@@ -627,4 +646,6 @@
         });
     });
     </script>
+
+    @include('backend.modules.product.partials.product-form-validation')
 @endpush

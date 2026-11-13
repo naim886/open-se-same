@@ -197,7 +197,10 @@
                     <a href="{{ url('/products') }}" class="quick-pill"><i class="fas fa-shopping-bag me-1"></i>All Products</a>
                     <a href="{{ url('/blogs') }}" class="quick-pill"><i class="fas fa-rss me-1"></i>Blog</a>
                     <a href="{{ url('/cart') }}" class="quick-pill"><i class="fas fa-shopping-cart me-1"></i>My Cart</a>
-                    <a href="https://wa.me/+8801826339988" target="_blank" class="quick-pill"><i class="fab fa-whatsapp me-1"></i>WhatsApp Us</a>
+                    @php $supportWhatsapp = \App\Models\Setting::effective('social.whatsapp_url'); @endphp
+                    @if($supportWhatsapp)
+                    <a href="{{ $supportWhatsapp }}" target="_blank" rel="noopener" class="quick-pill"><i class="fab fa-whatsapp me-1"></i>WhatsApp Us</a>
+                    @endif
                 </div>
             </div>
 

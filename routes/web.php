@@ -116,6 +116,10 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::resource('banner', BannerController::class);
     Route::resource('category', CategoryController::class);
     Route::resource('brand', BrandController::class);
+    // Product CSV import (before the resource route so /product/import is not
+    // captured by /product/{product}).
+    Route::get('product/import', [ProductController::class, 'importForm'])->name('product.import');
+    Route::post('product/import', [ProductController::class, 'importCsv'])->name('product.import.store');
     Route::resource('product', ProductController::class);
     Route::resource('expense', ExpenseController::class);
     Route::resource('attribute-name', AttributeNameController::class);

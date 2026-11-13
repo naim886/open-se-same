@@ -1938,6 +1938,28 @@ img { max-width: 100%; }
     }
 }
 
+/* ====== HOMEPAGE SEO H1 ====== */
+.home-seo-h1 {
+    font-size: clamp(17px, 3.2vw, 27px);
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: center;
+    letter-spacing: -0.3px;
+    line-height: 1.4;
+    margin: 0;
+}
+.home-seo-h1-mobile {
+    display: none;
+}
+@media (max-width: 767.98px) {
+    .home-seo-h1-desktop {
+        display: none;
+    }
+    .home-seo-h1-mobile {
+        display: inline;
+    }
+}
+
 /* ====== UNLOCK HIDDEN TREASURES STRIP ====== */
 .treasure-section {
     padding: 18px 0 28px;
@@ -1956,12 +1978,12 @@ img { max-width: 100%; }
     gap: 14px;
 }
 .treasure-item {
-    width: 116px;
+    width: 128px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 12px 8px 10px;
+    gap: 9px;
+    padding: 14px 8px 12px;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -1974,9 +1996,9 @@ img { max-width: 100%; }
     box-shadow: var(--shadow-hover);
 }
 .treasure-icon {
-    width: 58px;
-    height: 58px;
-    padding: 9px;
+    width: 72px;
+    height: 72px;
+    padding: 11px;
     border-radius: 50%;
     background: var(--bg-light);
     display: flex;
@@ -2001,19 +2023,21 @@ img { max-width: 100%; }
         padding: 14px 0 24px;
     }
     .treasure-strip {
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
+        gap: 6px;
+        flex-wrap: nowrap;
+        justify-content: space-between;
     }
     .treasure-item {
-        width: calc(33.333% - 7px);
-        padding: 10px 6px;
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        padding: 8px 4px;
         border-radius: 12px;
     }
     .treasure-icon {
-        width: 64px;
-        height: 64px;
-        padding: 8px;
+        width: clamp(40px, 13vw, 56px);
+        height: clamp(40px, 13vw, 56px);
+        padding: 6px;
     }
     .treasure-label {
         display: none;

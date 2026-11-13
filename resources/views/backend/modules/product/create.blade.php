@@ -27,7 +27,7 @@
             @endif
 
 
-            {{html()->form('POST', route('product.store'))->acceptsFiles()->open()}}
+            {{html()->form('POST', route('product.store'))->acceptsFiles()->id('productForm')->attribute('novalidate', 'novalidate')->open()}}
             <fieldset>
                 <legend>{{$cms_content['page_title'] ?? null }}</legend>
 
@@ -76,7 +76,7 @@
                             <div class="col-lg-6 mb-4 position-relative">
                                 {{html()->label('Product Category', 'category_id')}}
                                 <x-required/>
-                                {{html()->select('category_id', $categories)->placeholder('Select Category')->class('form-select')}}
+                                {{html()->select('category_id', $categories)->placeholder('Select Category')->class('form-select')->id('category_id')}}
                                 @error('category_id')
                                 <p class="validation-message">{{$message}}</p>
                                 @enderror
@@ -85,6 +85,17 @@
                                 {{html()->label('Product Brand', 'brand_id')}}
                                 {{html()->select('brand_id', $brands ?? [])->placeholder('Select Brand')->class('form-select')}}
                                 @error('brand_id')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                            </div>
+                            <div class="col-lg-6 mb-4 position-relative">
+                                {{html()->label('Additional Categories', 'category_ids')}}
+                                {{html()->multiselect('category_ids[]', $categories, old('category_ids', []))->class('form-select')->id('category_ids')}}
+                                <small class="text-muted">Select any additional categories this product should appear in. The primary category above is used on product cards.</small>
+                                @error('category_ids')
+                                <p class="validation-message">{{$message}}</p>
+                                @enderror
+                                @error('category_ids.*')
                                 <p class="validation-message">{{$message}}</p>
                                 @enderror
                             </div>
@@ -393,6 +404,19 @@
             // Initialize Select2 on page load
             initializeSelect2();
 
+            $('#category_id').select2({
+                placeholder: 'Select Category',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#category_ids').select2({
+                placeholder: 'Select Additional Categories',
+                allowClear: true,
+                closeOnSelect: false,
+                width: '100%'
+            });
+
             // Product type change handler
             $('#productType').on('change', function() {
                 let productType = $(this).val();
@@ -410,7 +434,10 @@
                     // Clear variations
                     $('#variantsContainer').empty();
                     // Switch to basic info tab
-                    $('#basic-info-tab').tab('show');
+                    var basicTab = document.querySelector('#productTabs [data-bs-target="#basic-info"]');
+                    if (basicTab && window.bootstrap && bootstrap.Tab) {
+                        bootstrap.Tab.getOrCreateInstance(basicTab).show();
+                    }
                 }
             });
 
@@ -823,44 +850,6 @@
                 `;
             }
 
-            // Form validation before submit
-            $('form').on('submit', function(e) {
-                let productType = $('#productType').val();
-
-                if (productType === 'group_with_variant') {
-                    let hasVariants = $('#variantsContainer .variant-card').length > 0;
-
-                    if (!hasVariants) {
-                        e.preventDefault();
-                        alert('Please generate variants for this product type');
-                        $('#variation-tab').tab('show');
-                        return false;
-                    }
-
-                    // Validate variant fields
-                    let hasValidationErrors = false;
-                    $('#variantsContainer .variant-card').each(function() {
-                        let $card = $(this);
-                        let price = $card.find('input[name*="[price]"]').val();
-                        let stock = $card.find('input[name*="[stock]"]').val();
-
-                        if (!price || !stock) {
-                            hasValidationErrors = true;
-                            $card.find('input[name*="[price]"], input[name*="[stock]"]').addClass('is-invalid');
-                        } else {
-                            $card.find('input[name*="[price]"], input[name*="[stock]"]').removeClass('is-invalid');
-                        }
-                    });
-
-                    if (hasValidationErrors) {
-                        e.preventDefault();
-                        alert('Please fill in all required variant fields (Price and Stock)');
-                        $('#variation-tab').tab('show');
-                        return false;
-                    }
-                }
-            });
-
             // Key Benefits - Add/Remove rows
             $('#addBenefit').on('click', function() {
                 $('#benefitsContainer').append(`
@@ -911,4 +900,6 @@
             });
         });
     </script>
+
+    @include('backend.modules.product.partials.product-form-validation')
 @endpush

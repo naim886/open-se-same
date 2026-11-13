@@ -95,6 +95,51 @@
                 </div>
             </div>
 
+            {{-- ── Social Media Links ──────────────────────────────── --}}
+            <div class="card mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fas fa-share-alt me-2"></i>Social Media Links
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">
+                        These links power the social icons in the storefront header and footer.
+                        Leave a field empty to hide that icon.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Facebook URL</label>
+                            <input type="url" class="form-control" name="settings[social.facebook_url]"
+                                   value="{{ $val('social.facebook_url') }}" placeholder="https://www.facebook.com/your-page">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Messenger URL</label>
+                            <input type="url" class="form-control" name="settings[social.messenger_url]"
+                                   value="{{ $val('social.messenger_url') }}" placeholder="https://m.me/your-page">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">WhatsApp URL</label>
+                            <input type="url" class="form-control" name="settings[social.whatsapp_url]"
+                                   value="{{ $val('social.whatsapp_url') }}" placeholder="https://wa.me/8801XXXXXXXXX">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Instagram URL</label>
+                            <input type="url" class="form-control" name="settings[social.instagram_url]"
+                                   value="{{ $val('social.instagram_url') }}" placeholder="https://instagram.com/your-page">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">YouTube URL</label>
+                            <input type="url" class="form-control" name="settings[social.youtube_url]"
+                                   value="{{ $val('social.youtube_url') }}" placeholder="https://youtube.com/@your-channel">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">TikTok URL</label>
+                            <input type="url" class="form-control" name="settings[social.tiktok_url]"
+                                   value="{{ $val('social.tiktok_url') }}" placeholder="https://tiktok.com/@your-handle">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- ── Notifications ───────────────────────────────────── --}}
             <div class="card mb-4">
                 <div class="card-header fw-bold">

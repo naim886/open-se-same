@@ -10,12 +10,73 @@ use App\Models\Product;
 use App\Models\Specification;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Jobs\ImportProductsCsv;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class ProductController extends Controller
 {
+    /**
+     * Show the CSV import screen.
+     */
+    public function importForm(): View
+    {
+        $cms_content = [
+            'page_title'   => 'Product CSV Import',
+            'module'       => 'Product',
+            'module_url'   => route('product.index'),
+            'sub_module'   => 'Import',
+            'button_title' => 'Product List',
+            'button_url'   => route('product.index'),
+            'type'         => 'list',
+        ];
+
+        $importStatus = Cache::get('product_csv_import_status');
+
+        return view('backend.modules.product.import', compact('cms_content', 'importStatus'));
+    }
+
+    /**
+     * Queue a CSV import.
+     */
+    public function importCsv(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'csv' => 'required|file|mimes:csv,txt|max:51200',
+        ]);
+
+        try {
+            $path = $request->file('csv')->storeAs(
+                'imports',
+                'products-' . now()->format('YmdHis') . '.csv'
+            );
+
+            ImportProductsCsv::dispatch(Storage::path($path), [
+                'download_images'   => $request->boolean('download_images'),
+                'import_variations' => $request->boolean('import_variations'),
+                'update_existing'   => $request->boolean('update_existing'),
+                'replace_images'    => $request->boolean('replace_images'),
+                'limit'             => (int) $request->input('limit', 0),
+            ]);
+
+            Cache::put('product_csv_import_status', [
+                'state'     => 'queued',
+                'queued_at' => now()->toDateTimeString(),
+            ], now()->addDay());
+
+            success_alert('CSV import queued. Products will appear as the background job processes the file.');
+        } catch (Throwable $throwable) {
+            app_error_log('Product CSV Import', $throwable);
+            failed_alert('Could not queue the CSV import. ' . $throwable->getMessage());
+        }
+
+        return redirect()->route('product.import');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -119,7 +180,7 @@ class ProductController extends Controller
         $brands = (new Brand())->getBrandAssoc();
         $specifications = (new Specification())->getSpecificationAssoc();
         $attributeNames = (new AttributeName())->getAttributeNameAssoc();
-        $product->load(['photos', 'specifications.specification', 'variations.variationAttributes.attributeName', 'variations.variationAttributes.attributeValue']);
+        $product->load(['categories', 'photos', 'specifications.specification', 'variations.variationAttributes.attributeName', 'variations.variationAttributes.attributeValue']);
 
         $attributeValues = AttributeValue::with('attributeName')
             ->where('status', 1)

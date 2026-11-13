@@ -196,7 +196,7 @@ class MobileApiController extends Controller
         $categoryWiseProducts = [];
         foreach ($categories->take(4) as $category) {
             $products = Product::where('status', Product::STATUS_ACTIVE)
-                ->where('category_id', $category['id'])
+                ->inCategories([(int) $category['id']])
                 ->limit(5)
                 ->get();
 
@@ -293,7 +293,7 @@ class MobileApiController extends Controller
         }
 
         $query = Product::where('status', Product::STATUS_ACTIVE)
-            ->where('category_id', $category->id)
+            ->inCategories([(int) $category->id])
             ->with(['category']);
 
         $this->applyFilters($query, $request);
@@ -329,7 +329,7 @@ class MobileApiController extends Controller
             ->with(['category']);
 
         if ($request->filled('category')) {
-            $query->where('category_id', intval($request->category));
+            $query->inCategories([intval($request->category)]);
         }
 
         $this->applyFilters($query, $request);
@@ -359,7 +359,7 @@ class MobileApiController extends Controller
             ->with(['category']);
 
         if ($request->filled('category')) {
-            $query->where('category_id', intval($request->category));
+            $query->inCategories([intval($request->category)]);
         }
 
         if (!$request->filled('sort')) {

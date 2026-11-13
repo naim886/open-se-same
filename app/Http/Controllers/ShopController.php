@@ -158,7 +158,7 @@ class ShopController extends Controller
                 }
 
                 $products = Product::where('status', Product::STATUS_ACTIVE)
-                    ->whereIn('category_id', $this->categoryScopeIds($category))
+                    ->inCategories($this->categoryScopeIds($category))
                     ->with(['category', 'photos'])
                     ->limit(10)
                     ->get();
@@ -200,7 +200,7 @@ class ShopController extends Controller
             ->with(['category', 'photos']);
 
         if ($request->filled('category')) {
-            $query->where('category_id', intval($request->category));
+            $query->inCategories([intval($request->category)]);
         }
 
         // Default sort for offer page is biggest discount first
@@ -253,7 +253,7 @@ class ShopController extends Controller
             ->firstOrFail();
 
         $query = Product::where('status', Product::STATUS_ACTIVE)
-            ->whereIn('category_id', $this->categoryScopeIds($category))
+            ->inCategories($this->categoryScopeIds($category))
             ->with(['category', 'photos']);
 
         $this->applyFilters($query, $request);
@@ -387,7 +387,16 @@ class ShopController extends Controller
             ->whereNull('products.deleted_at')
             ->where('product_variations.status', 1)
             ->where('products.status', Product::STATUS_ACTIVE)
-            ->when($categoryIds !== [], fn ($query) => $query->whereIn('products.category_id', $categoryIds))
+            ->when($categoryIds !== [], function ($query) use ($categoryIds) {
+                $query->where(function ($q) use ($categoryIds) {
+                    $q->whereIn('products.category_id', $categoryIds)
+                        ->orWhereIn('products.id', function ($sub) use ($categoryIds) {
+                            $sub->select('product_id')
+                                ->from('category_product')
+                                ->whereIn('category_id', $categoryIds);
+                        });
+                });
+            })
             ->when($brandId, fn ($query) => $query->where('products.brand_id', $brandId))
             ->distinct()
             ->get([

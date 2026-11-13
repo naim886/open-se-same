@@ -2,6 +2,11 @@
 @section('content')
     <div class="row justify-content-center my-5">
         <div class="col-lg-12">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ route('product.import') }}" class="btn theme-button-outline">
+                    <i class="fa fa-upload"></i> Import CSV
+                </a>
+            </div>
             <div class="table-responsive">
                 <table class="table theme-table">
                     <thead>
@@ -41,8 +46,17 @@
                                 </div>
                             </td>
                             <td>
-                                @if($product->category)
-                                    <span class="badge bg-info">{{$product->category->name}}</span>
+                                @php
+                                    $productCategories = $product->categories
+                                        ->sortByDesc(static fn ($category) => (int) $category->id === (int) $product->category_id)
+                                        ->values();
+                                @endphp
+                                @if($productCategories->isNotEmpty())
+                                    @foreach($productCategories as $category)
+                                        <span class="badge {{ (int) $category->id === (int) $product->category_id ? 'bg-info' : 'bg-secondary' }} me-1 mb-1">{{ $category->name }}</span>
+                                    @endforeach
+                                @elseif($product->category)
+                                    <span class="badge bg-info">{{ $product->category->name }}</span>
                                 @else
                                     <span class="badge bg-secondary">No Category</span>
                                 @endif

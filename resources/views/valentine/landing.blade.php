@@ -235,8 +235,12 @@
             <div class="col-lg-4">
                 <h5>Follow Us</h5>
                 <div class="gap-3">
-                    <a href="https://www.facebook.com/opensesame1" target="_blank" class="fs-4 me-3"><i class="fab fa-facebook"></i></a>
-                    <a href="https://www.instagram.com/open_se_same/" target="_blank" class="fs-4"><i class="fab fa-instagram"></i></a>
+                    @if(\App\Models\Setting::effective('social.facebook_url'))
+                    <a href="{{ \App\Models\Setting::effective('social.facebook_url') }}" target="_blank" rel="noopener" class="fs-4 me-3"><i class="fab fa-facebook"></i></a>
+                    @endif
+                    @if(\App\Models\Setting::effective('social.instagram_url'))
+                    <a href="{{ \App\Models\Setting::effective('social.instagram_url') }}" target="_blank" rel="noopener" class="fs-4"><i class="fab fa-instagram"></i></a>
+                    @endif
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
@@ -102,7 +103,15 @@ class Category extends Model
      */
     final public function getCategoryAssoc(): Collection
     {
-        return self::query()->pluck('name', 'id');
+        return self::query()
+            ->with('parent:id,name')
+            ->orderBy('name')
+            ->get()
+            ->mapWithKeys(static fn (Category $category) => [
+                $category->id => $category->parent
+                    ? $category->parent->name . ' › ' . $category->name
+                    : $category->name,
+            ]);
     }
 
     final public function updateCategory(Request $request): bool
@@ -258,10 +267,10 @@ class Category extends Model
         return $parentId;
     }
 
-    // Relationship with products
-    public function products()
+    // Relationship with products (many-to-many category assignments)
+    public function products(): BelongsToMany
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class, 'category_product')->withTimestamps();
     }
 
     // Scope for active categories

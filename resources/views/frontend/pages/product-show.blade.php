@@ -406,16 +406,25 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                 </div>
 
                 <!-- Chat with us (minimal) -->
+                @php
+                    $chatMessenger = \App\Models\Setting::effective('social.messenger_url');
+                    $chatWhatsapp  = \App\Models\Setting::effective('social.whatsapp_url');
+                    $chatMessage   = urlencode('Hi! I have a question about: '.$product->name.' '.url()->current());
+                @endphp
                 <div class="chat-mini-row">
                     <span class="chat-mini-label"><i class="fas fa-headset me-1" style="color:var(--primary);"></i>Chat with us:</span>
-                    <a href="https://m.me/opensesame1?text={{ urlencode('Hi! I have a question about: '.$product->name.' '.url()->current()) }}"
-                       target="_blank" class="chat-mini-btn" style="background:linear-gradient(135deg,#00b2ff,#006aff);">
+                    @if($chatMessenger)
+                    <a href="{{ $chatMessenger }}{{ str_contains($chatMessenger, '?') ? '&' : '?' }}text={{ $chatMessage }}"
+                       target="_blank" rel="noopener" class="chat-mini-btn" style="background:linear-gradient(135deg,#00b2ff,#006aff);">
                         <i class="fab fa-facebook-messenger"></i> Messenger
                     </a>
-                    <a href="https://wa.me/+8801826339988?text={{ urlencode('Hi! I have a question about: '.$product->name.' '.url()->current()) }}"
-                       target="_blank" class="chat-mini-btn" style="background:linear-gradient(135deg,#25d366,#128c7e);">
+                    @endif
+                    @if($chatWhatsapp)
+                    <a href="{{ $chatWhatsapp }}{{ str_contains($chatWhatsapp, '?') ? '&' : '?' }}text={{ $chatMessage }}"
+                       target="_blank" rel="noopener" class="chat-mini-btn" style="background:linear-gradient(135deg,#25d366,#128c7e);">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
+                    @endif
                 </div>
 
                 <!-- Delivery Info -->

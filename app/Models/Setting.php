@@ -46,6 +46,14 @@ class Setting extends Model
 
         // CRM: order count at which a customer counts as "repeat".
         'crm.repeat_min_orders' => '2',
+
+        // Storefront social links. Leave a value empty to hide that icon.
+        'social.facebook_url'  => 'https://www.facebook.com/opensesame1',
+        'social.instagram_url' => 'https://www.instagram.com/open_se_same/',
+        'social.youtube_url'   => '',
+        'social.tiktok_url'    => '',
+        'social.messenger_url' => 'https://m.me/opensesame1',
+        'social.whatsapp_url'  => 'https://wa.me/+8801826339988',
     ];
 
     /** Request-scoped memo so a page load never queries settings twice. */
@@ -76,6 +84,18 @@ class Setting extends Model
         $value = static::map()[$key] ?? null;
 
         return $value !== null && $value !== '' ? $value : ($default ?? (static::DEFAULTS[$key] ?? null));
+    }
+
+    /**
+     * Like get(), but an explicitly saved empty string stays empty instead of
+     * falling back to the default. Used for optional links (social icons)
+     * where saving an empty field must hide the link.
+     */
+    public static function effective(string $key, mixed $default = null): mixed
+    {
+        $map = static::map();
+
+        return array_key_exists($key, $map) ? $map[$key] : ($default ?? (static::DEFAULTS[$key] ?? null));
     }
 
     public static function bool(string $key): bool

@@ -32,15 +32,21 @@
                 <div class="col-lg-4">
                     <p class="contact-text">আমাদের যে কোন পণ্য অর্ডার করতে যোগাযোগ করুন</p>
                     <div class="right-area">
-                        <a href="https://wa.me/+8801826339988" target="_blank">
+                        @if(\App\Models\Setting::effective('social.whatsapp_url'))
+                        <a href="{{ \App\Models\Setting::effective('social.whatsapp_url') }}" target="_blank" rel="noopener">
                             <i class="fa-brands fa-whatsapp"></i> 01826339988
                         </a>
-                        <a href="https://m.me/opensesame1" target="_blank">
+                        @endif
+                        @if(\App\Models\Setting::effective('social.messenger_url'))
+                        <a href="{{ \App\Models\Setting::effective('social.messenger_url') }}" target="_blank" rel="noopener">
                             <i class="fa-brands fa-facebook-messenger"></i> OpenSesame BD
                         </a>
-                        <a href="https://www.facebook.com/opensesame1" target="_blank">
+                        @endif
+                        @if(\App\Models\Setting::effective('social.facebook_url'))
+                        <a href="{{ \App\Models\Setting::effective('social.facebook_url') }}" target="_blank" rel="noopener">
                             <i class="fa-brands fa-facebook"></i> OpenSesame BD
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>

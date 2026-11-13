@@ -13,7 +13,7 @@
                         <button type="button" class="btn btn-sm btn-danger remove-qa"><i class="fa fa-trash"></i></button>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label">Question <span class="text-danger">*</span></label>
+                        <label class="form-label">Question</label>
                         <input type="text" name="qas[{{ $qaIdx }}][question]" value="{{ $existingQa->question }}"
                                placeholder="E.g. What is the fabric material?" class="form-control">
                     </div>
@@ -32,7 +32,7 @@
                         <button type="button" class="btn btn-sm btn-danger remove-qa"><i class="fa fa-trash"></i></button>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label">Question <span class="text-danger">*</span></label>
+                        <label class="form-label">Question</label>
                         <input type="text" name="qas[0][question]" placeholder="E.g. What is the fabric material?" class="form-control">
                     </div>
                     <div>
@@ -63,7 +63,7 @@
                 <button type="button" class="btn btn-sm btn-danger remove-qa"><i class="fa fa-trash"></i></button>
             </div>
             <div class="mb-2">
-                <label class="form-label">Question <span class="text-danger">*</span></label>
+                <label class="form-label">Question</label>
                 <input type="text" name="qas[${qaIndex}][question]" placeholder="E.g. What is the fabric material?" class="form-control">
             </div>
             <div>

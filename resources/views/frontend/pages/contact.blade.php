@@ -22,6 +22,11 @@ echo Schema::breadcrumbList()->itemListElement([
 @endsection
 
 @section('content')
+@php
+    $socialFacebook  = \App\Models\Setting::effective('social.facebook_url');
+    $socialMessenger = \App\Models\Setting::effective('social.messenger_url');
+    $socialWhatsapp  = \App\Models\Setting::effective('social.whatsapp_url');
+@endphp
 
 {{-- Hero Banner --}}
 <div style="background:var(--primary-gradient); padding:52px 0 44px; text-align:center; position:relative; overflow:hidden;">
@@ -81,10 +86,12 @@ echo Schema::breadcrumbList()->itemListElement([
                            style="color:var(--text-muted); font-size:13px; text-decoration:none; display:block; margin-top:3px;">
                            <i class="fas fa-envelope me-1" style="color:var(--primary);"></i>opensesamebd@gmail.com
                         </a>
-                        <a href="https://wa.me/+8801826339988" target="_blank"
+                        @if($socialWhatsapp)
+                        <a href="{{ $socialWhatsapp }}" target="_blank" rel="noopener"
                            style="color:var(--text-muted); font-size:13px; text-decoration:none;">
                            <i class="fab fa-whatsapp me-1" style="color:#25d366;"></i>Chat on WhatsApp
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -94,15 +101,19 @@ echo Schema::breadcrumbList()->itemListElement([
                     </div>
                     <div>
                         <div style="font-weight:600; font-size:13px; color:var(--text-dark); margin-bottom:3px;">Facebook</div>
-                        <a href="https://www.facebook.com/opensesame1" target="_blank"
+                        @if($socialFacebook)
+                        <a href="{{ $socialFacebook }}" target="_blank" rel="noopener"
                            style="color:var(--primary); font-size:14px; font-weight:500; text-decoration:none;">
-                            facebook.com/opensesame1
+                            {{ preg_replace('#^https?://(www\.)?#', '', rtrim($socialFacebook, '/')) }}
                         </a>
+                        @endif
+                        @if($socialMessenger)
                         <br>
-                        <a href="https://m.me/opensesame1" target="_blank"
+                        <a href="{{ $socialMessenger }}" target="_blank" rel="noopener"
                            style="color:var(--text-muted); font-size:13px; text-decoration:none;">
                            <i class="fab fa-facebook-messenger me-1" style="color:#0084ff;"></i>Message us
                         </a>
+                        @endif
                     </div>
                 </div>
 

@@ -16,6 +16,19 @@ $(document).ready(function() {
     // Initialize Select2 on page load
     initializeSelect2();
 
+    $('#category_id').select2({
+        placeholder: 'Select Category',
+        allowClear: true,
+        width: '100%'
+    });
+
+    $('#category_ids').select2({
+        placeholder: 'Select Additional Categories',
+        allowClear: true,
+        closeOnSelect: false,
+        width: '100%'
+    });
+
     // Product type change handler
     $('#productType').on('change', function() {
         let productType = $(this).val();
@@ -33,7 +46,10 @@ $(document).ready(function() {
             // Clear variations
             $('#variantsContainer').empty();
             // Switch to basic info tab
-            $('#basic-info-tab').tab('show');
+            var basicTab = document.querySelector('#productTabs [data-bs-target="#basic-info"]');
+            if (basicTab && window.bootstrap && bootstrap.Tab) {
+                bootstrap.Tab.getOrCreateInstance(basicTab).show();
+            }
         }
     });
 

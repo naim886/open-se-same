@@ -48,13 +48,16 @@
             </div>
             @endif
 
+            @php $orderWhatsapp = \App\Models\Setting::effective('social.whatsapp_url'); @endphp
+            @if($orderWhatsapp)
             <div class="p-3 rounded mb-4" style="background:rgba(0,81,56,0.05); border:1px dashed rgba(0,81,56,0.25);">
                 <p class="mb-0" style="font-size:13.5px; line-height:1.7; color:var(--text-dark);">
                     <i class="fas fa-info-circle" style="color:var(--primary-dark);"></i>
                     For any queries, <strong>WhatsApp</strong> us at:
-                    <a href="https://wa.me/+8801826339988" class="fw-bold" style="color:var(--primary-dark);">01826339988</a>
+                    <a href="{{ $orderWhatsapp }}" class="fw-bold" style="color:var(--primary-dark);">01826339988</a>
                 </p>
             </div>
+            @endif
 
             <div class="d-flex gap-3 justify-content-center flex-wrap">
                 <a href="{{ route('shop.home') }}" class="btn-add-cart-lg d-inline-block">
@@ -65,11 +68,13 @@
                 </a>
             </div>
 
+            @if($orderWhatsapp)
             <div class="mt-4">
-                <a href="https://wa.me/+8801826339988" target="_blank" style="color:#25d366; font-weight:600; font-size:14px;">
+                <a href="{{ $orderWhatsapp }}" target="_blank" rel="noopener" style="color:#25d366; font-weight:600; font-size:14px;">
                     <i class="fab fa-whatsapp" style="font-size:18px;"></i> Track your order on WhatsApp
                 </a>
             </div>
+            @endif
         </div>
     </div>
 </section>

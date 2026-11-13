@@ -172,10 +172,13 @@
                         <a href="{{ route('shop.checkout') }}" class="btn-checkout mt-3" id="checkoutBtn">
                             <i class="fas fa-lock me-2"></i>Proceed to Checkout
                         </a>
-                        <a href="https://wa.me/+8801826339988?text={{ urlencode('I want to place an order') }}" target="_blank"
+                        @php $cartWhatsapp = \App\Models\Setting::effective('social.whatsapp_url'); @endphp
+                        @if($cartWhatsapp)
+                        <a href="{{ $cartWhatsapp }}{{ str_contains($cartWhatsapp, '?') ? '&' : '?' }}text={{ urlencode('I want to place an order') }}" target="_blank" rel="noopener"
                            class="d-block text-center mt-2" style="font-size:13px; color:#25d366; font-weight:600;">
                             <i class="fab fa-whatsapp me-1"></i>Order via WhatsApp
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>
