@@ -159,6 +159,35 @@
             margin-right: 3px
         }
 
+        .top-bar-logout-btn {
+            background: none;
+            border: 0;
+            padding: 0;
+            color: rgba(255, 255, 255, .9);
+            font: inherit;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer
+        }
+
+        .top-bar-logout-btn:hover {
+            color: #ffd032
+        }
+
+        .footer-link-button {
+            background: none;
+            border: 0;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+            text-align: left
+        }
+
+        .footer-link-button:hover {
+            color: var(--primary)
+        }
+
         .top-bar-sep {
             color: rgba(255, 255, 255, .3)
         }
@@ -870,19 +899,30 @@
             <a href="{{ route('shop.track-order') }}"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> Track Order</a>
             <span class="top-bar-sep">|</span>
             @auth
-                @if(auth()->user()->hasRole('Registered Customer'))
-                    <a href="{{ route('customer.dashboard') }}">
-                        @if(auth()->user()->photo)
-                            <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . auth()->user()->photo) }}"
-                                 loading="lazy" decoding="async"
-                                 style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-2px;margin-right:4px;"
-                                 alt="">
-                        @else
-                            <i class="fas fa-user-circle" aria-hidden="true"></i>
-                        @endif
-                        {{ Str::words(auth()->user()->name, 1, '') }}
-                    </a>
-                @endif
+                @php
+                    $topbarUser = auth()->user();
+                    $topbarAccountUrl = $topbarUser->hasAnyRole(['Super Admin', 'Admin'])
+                        ? route('dashboard.index')
+                        : route('customer.dashboard');
+                @endphp
+                <a href="{{ $topbarAccountUrl }}">
+                    @if($topbarUser->photo)
+                        <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . $topbarUser->photo) }}"
+                             loading="lazy" decoding="async"
+                             style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-2px;margin-right:4px;"
+                             alt="">
+                    @else
+                        <i class="fas fa-user-circle" aria-hidden="true"></i>
+                    @endif
+                    {{ Str::words($topbarUser->name, 1, '') }}
+                </a>
+                <span class="top-bar-sep">|</span>
+                <form action="{{ route('logout') }}" method="POST" class="d-inline m-0">
+                    @csrf
+                    <button type="submit" class="top-bar-logout-btn">
+                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                    </button>
+                </form>
             @else
                 <a href="{{ route('login') }}"><i class="fas fa-user" aria-hidden="true"></i> Login</a>
                 <span class="top-bar-sep">/</span>
@@ -1061,11 +1101,22 @@
         </a>
 
         @auth
-            @if(auth()->user()->hasRole('Registered Customer'))
-                <a href="{{ route('customer.dashboard') }}" class="mobile-nav-link">
-                    <i class="fas fa-user-circle"></i> My Account
-                </a>
-            @endif
+            @php
+                $mobileUser = auth()->user();
+                $mobileAccountUrl = $mobileUser->hasAnyRole(['Super Admin', 'Admin'])
+                    ? route('dashboard.index')
+                    : route('customer.dashboard');
+            @endphp
+            <a href="{{ $mobileAccountUrl }}" class="mobile-nav-link">
+                <i class="fas fa-user-circle"></i>
+                {{ $mobileUser->hasAnyRole(['Super Admin', 'Admin']) ? 'Admin Panel' : 'My Account' }}
+            </a>
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                @csrf
+                <button type="submit" class="mobile-nav-link border-0 bg-transparent w-100 text-start">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
         @else
             <a href="{{ route('login') }}" class="mobile-nav-link"><i class="fas fa-user"></i> Login</a>
             <a href="{{ route('register') }}" class="mobile-nav-link"><i class="fas fa-user-plus"></i> Register</a>
@@ -1156,9 +1207,19 @@
                     @empty
                     @endforelse
                     @auth
-                        @if(auth()->user()->hasRole('Registered Customer'))
-                        <li><a href="{{ route('customer.dashboard') }}">My Account</a></li>
-                        @endif
+                        @php
+                            $footerUser = auth()->user();
+                            $footerAccountUrl = $footerUser->hasAnyRole(['Super Admin', 'Admin'])
+                                ? route('dashboard.index')
+                                : route('customer.dashboard');
+                        @endphp
+                        <li><a href="{{ $footerAccountUrl }}">{{ $footerUser->hasAnyRole(['Super Admin', 'Admin']) ? 'Admin Panel' : 'My Account' }}</a></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="footer-link-button">Logout</button>
+                            </form>
+                        </li>
                     @else
                         <li><a href="{{ route('login') }}">Login / Register</a></li>
                     @endauth

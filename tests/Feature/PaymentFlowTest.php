@@ -348,12 +348,16 @@ class PaymentFlowTest extends TestCase
         $this->enableNagad();
 
         $order = $this->makeOrder(Order::PAYMENT_METHOD_NAGAD);
+        $nagadOrderId = \App\Services\Payment\NagadService::orderIdFor($order);
+
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9]+$/', $nagadOrderId);
+        $this->assertSame('OS'.$order->order_number, $nagadOrderId);
 
         Http::fake([
             '*verify/payment/*' => Http::response([
                 'status' => 'Success',
                 'statusCode' => '000',
-                'orderId' => (string) $order->order_number,
+                'orderId' => $nagadOrderId,
                 'merchantId' => 'TESTMERCHANT',
                 'paymentRefId' => 'PAY-REF-123',
                 'amount' => (string) $order->total_amount,
@@ -362,7 +366,7 @@ class PaymentFlowTest extends TestCase
         ]);
 
         $response = $this->get(route('payment.nagad.callback', [
-            'order_id' => $order->order_number,
+            'order_id' => $nagadOrderId,
             'payment_ref_id' => 'PAY-REF-123',
             'status' => 'success',
         ]));

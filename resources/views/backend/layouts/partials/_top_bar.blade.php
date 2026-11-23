@@ -9,8 +9,8 @@
         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i
                 class="fas fa-user fa-fw"></i></a>
         <ul class="dropdown-menu dropdown-menu-end text-center mt-2 shadow-bottom" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#!">Settings</a></li>
-            <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+            <li><a class="dropdown-item" href="{{ route('shop.home') }}" target="_blank" rel="noopener">View Store</a></li>
+            <li><a class="dropdown-item" href="{{ route('settings.index') }}">Settings</a></li>
             <li>
                 <hr class="dropdown-divider"/>
             </li>
@@ -21,6 +21,15 @@
                 </button>
             </li>
         </ul>
+    </li>
+    <li class="nav-item d-flex align-items-center">
+        <form method="POST" action="{{ route('logout') }}" class="m-0" onsubmit="return confirm('Log out of the admin panel?');">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-danger" title="Logout">
+                <i class="fas fa-power-off"></i>
+                <span class="d-none d-lg-inline ms-1">Logout</span>
+            </button>
+        </form>
     </li>
 </ul>
 @push('scripts')

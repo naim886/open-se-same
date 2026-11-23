@@ -38,6 +38,15 @@ class NagadService
     }
 
     /**
+     * Nagad requires an alphanumeric merchant order id; our order numbers are
+     * numeric only, so prefix them with the store initials.
+     */
+    public static function orderIdFor(Order $order): string
+    {
+        return 'OS'.preg_replace('/[^A-Za-z0-9]/', '', (string) $order->order_number);
+    }
+
+    /**
      * Initialize and complete the Nagad checkout, returning the redirect URL.
      *
      * @return array<string, mixed>
@@ -45,7 +54,7 @@ class NagadService
     public function initiate(Order $order): array
     {
         $merchantId = trim((string) Setting::effective('payment.nagad.merchant_id', ''));
-        $orderId = (string) $order->order_number;
+        $orderId = self::orderIdFor($order);
         $amount = number_format((float) $order->total_amount, 2, '.', '');
         $dateTime = now()->format('YmdHis');
         $challenge = Str::random(40);

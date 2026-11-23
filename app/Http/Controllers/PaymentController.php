@@ -128,7 +128,14 @@ class PaymentController extends Controller
             ?? ''
         );
 
-        $order = $this->findOrder($orderNumber);
+        // Our Nagad order id is the numeric order number with an "OS" prefix.
+        $lookupReference = preg_replace('/^OS/i', '', $orderNumber);
+
+        $order = $this->findOrder($lookupReference);
+
+        if (! $order && $lookupReference !== $orderNumber) {
+            $order = $this->findOrder($orderNumber);
+        }
 
         // Some Nagad callback variants omit the order id; the payment reference
         // stored when checkout started identifies the order just as well.
@@ -316,7 +323,10 @@ class PaymentController extends Controller
             return false;
         }
 
-        if ((string) ($verification['orderId'] ?? '') !== (string) $order->order_number) {
+        if (! in_array((string) ($verification['orderId'] ?? ''), [
+            NagadService::orderIdFor($order),
+            (string) $order->order_number,
+        ], true)) {
             return false;
         }
 
