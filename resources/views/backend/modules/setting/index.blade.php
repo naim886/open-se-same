@@ -340,7 +340,10 @@
                                       style="font-family:monospace; font-size:11px;"
                                       placeholder="-----BEGIN PUBLIC KEY-----">{{ $val('payment.nagad.pg_public_key') }}</textarea>
                             <div class="text-muted mt-1" style="font-size:12px;">
-                                Used to encrypt sensitive checkout data.
+                                Use the <strong>Nagad PG Public Key</strong> supplied by Nagad, not the public key
+                                generated from your merchant private key. Sandbox and live keys are different.
+                                If Nagad returns “Decryption failed”, this key is wrong for the selected mode.
+                                Run <code>php artisan nagad:check-keys</code> on the server to verify it.
                             </div>
                         </div>
                         <div class="col-md-6">

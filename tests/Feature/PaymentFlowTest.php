@@ -12,10 +12,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Spatie\Permission\Models\Role;
+use Tests\Support\NagadTestKeys;
 use Tests\TestCase;
 
 class PaymentFlowTest extends TestCase
 {
+    use NagadTestKeys;
     use RefreshDatabase;
 
     protected function tearDown(): void
@@ -192,8 +194,8 @@ class PaymentFlowTest extends TestCase
         Setting::set('payment.nagad.enabled', '1');
         Setting::set('payment.nagad.mode', 'sandbox');
         Setting::set('payment.nagad.merchant_id', 'TESTMERCHANT');
-        Setting::set('payment.nagad.merchant_private_key', $this->nagadPrivateKey());
-        Setting::set('payment.nagad.pg_public_key', $this->nagadPublicKey());
+        Setting::set('payment.nagad.merchant_private_key', $this->merchantTestPrivateKey());
+        Setting::set('payment.nagad.pg_public_key', $this->nagadTestPublicKey());
 
         Http::fake([
             '*check-out/initialize/*' => Http::response([
@@ -399,54 +401,6 @@ class PaymentFlowTest extends TestCase
         $user->assignRole('Super Admin');
 
         return $user;
-    }
-
-    private function nagadPrivateKey(): string
-    {
-        return <<<'PEM'
------BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAs7rfVub8c6Bno0tWEuF2vS0bmRb5bJgGrxVispVGv3k51be/
-EUA9UW5Gwso+HeIRlepFR/4Lk4cgrO9FslZnKpkCsVV5kuuDJp/asWbkTpPMP0pf
-RJZ5/3+fOcwzfgttBqKy7ChkcNzSKmYuFzhofp3WQKqPuZi/5ovwxyrwNCqZ2O4v
-toeg6m+4KKjtdpOQjlCCSwe0bzWW5QoLW4mUvsVGiB/qcSTVgiLBtf9oYP+GPQGk
-AfwzSezgpjn5rgQwmTftQ6OpA2COsE4YC5dboA5PnpFLKkVjUZlkR60YzcKVRzGV
-lT5agcxmzNuVTP2k7Z7IKAIczgUKnkid1RDJNwIDAQABAoIBAHQP3APRW/sK/YIM
-t0OwBy54v5anqGBA+Cf+BmNOVIZ3MSra4m6wbih0rwtA8MX5Y+PMifrIig81tpsW
-VIqqkyqF7qA3ky+WGHZLyjy/NfWsKbxBOa4gAh5E+rynKiVeGYSsciBgoSPk5W7t
-1xu1mH0TTfUqb2+pvVqSyeTDzKPSPBhoFxRfGxByC6yTkJvBZKU36Ad7uOExUX4r
-oj44PJ5NAb0kEdEJuom4vFyrSVNlfWW3eCo0QxwQMyUdONA8grglySNdzzG/HDWM
-rJ447pwT9WOI6Z6J2PVSXiCGUAswaJz2lrxLeRaLPNJQWnfH7NBBgewc3SHJFAWo
-ZbaNvHkCgYEA74IrTsTEatK+F1G49jz3GR7+YqTJ2qC7TRvDS64zTPHceFS/37n8
-u8zVnj5nH8bjo7hZgWWRoc4o+kHcF8tTEfSn07rU8cGk2BYatKjAWd33VPsQDOiv
-uZaZFhh+0lrY4CwqQPgjcZLsH4kln5pzCNYhwJHbDQn7FdZ+npvd//0CgYEAwBr7
-3Qo8VwtRIkEbqy5ZEneZOmuATx2OHmfmEKHAEpDgEgoV90qcJzaBpkMrlT6sWsDH
-VjFe1+qG1wzE0yW5mcW9Fyyjm3PBttQGHc+gv5BW3Bs7I+wRJoU8U7UrbcCV4aqW
-psWh179uh9ituOqL/D1XVMYu2F1z2F6t0YYDEkMCgYA5kubqNm6o5yP+4ww9VQZp
-KYQpHkfPoFel/4iAxs1aL8G5w1WkaEcStfib45BSmTLbhlMtwcaySKadEfvgVGYR
-qOg3A3Bw9QW1VArzZqVmdO8hpICFOeIUENmX8Cd8VY5QxQ0bNQsAIDtWkVdT+IKy
-mxbd/bHUfpO2+irR4dIJ2QKBgBi74K3HAZnbdSjJ5TwXDZTZHTtuV+jXz1KO4gpG
-KSq6yH7KGaXrT0ulMvArOdNPbHWK2J96X9HA+nd5x2XAN7NayEvRjYcYUlqt1dPE
-xdekR+qy/txTKqohAXFtpBfPcfzKL/ds/rd+iEapWUSzvi5N346kradh8OZs2khd
-zsttAoGBAK0I2/iHk4I/nleQUwAeJXguyQQXB3e61rhoxVxVMHTv3dG6WAS1JSHb
-a5T12psxeGhK2eOd4v9WfsxiKeSHTl41D4eTxtMTromy4zEDaFto2mbkJZx769ka
-5PuezHWao1TPBevQQwkYZmq/Ps1dMcuMOoACJ8VfeenNR8+09yRB
------END RSA PRIVATE KEY-----
-PEM;
-    }
-
-    private function nagadPublicKey(): string
-    {
-        return <<<'PEM'
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs7rfVub8c6Bno0tWEuF2
-vS0bmRb5bJgGrxVispVGv3k51be/EUA9UW5Gwso+HeIRlepFR/4Lk4cgrO9FslZn
-KpkCsVV5kuuDJp/asWbkTpPMP0pfRJZ5/3+fOcwzfgttBqKy7ChkcNzSKmYuFzho
-fp3WQKqPuZi/5ovwxyrwNCqZ2O4vtoeg6m+4KKjtdpOQjlCCSwe0bzWW5QoLW4mU
-vsVGiB/qcSTVgiLBtf9oYP+GPQGkAfwzSezgpjn5rgQwmTftQ6OpA2COsE4YC5db
-oA5PnpFLKkVjUZlkR60YzcKVRzGVlT5agcxmzNuVTP2k7Z7IKAIczgUKnkid1RDJ
-NwIDAQAB
------END PUBLIC KEY-----
-PEM;
     }
 
     private function encryptedNagadInitResponse(): string

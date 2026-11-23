@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Setting;
+use App\Services\Payment\NagadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -48,9 +49,9 @@ class SettingController extends Controller
     public function index(): View
     {
         return view('backend.modules.setting.index', [
-            'settings'       => Setting::map(),
+            'settings' => Setting::map(),
             'deliveryLabels' => Order::DELIVERY_LIST,
-            'booleanKeys'    => self::BOOLEAN_KEYS,
+            'booleanKeys' => self::BOOLEAN_KEYS,
         ]);
     }
 
@@ -65,6 +66,7 @@ class SettingController extends Controller
         foreach (array_keys(Setting::DEFAULTS) as $key) {
             if (in_array($key, self::BOOLEAN_KEYS, true)) {
                 $values[$key] = empty($input[$key]) ? '0' : '1';
+
                 continue;
             }
 
@@ -118,6 +120,25 @@ class SettingController extends Controller
                 || trim($values['payment.nagad.merchant_private_key']) === ''
                 || trim($values['payment.nagad.pg_public_key']) === '')) {
             return back()->withInput()->with('error', 'Nagad is enabled but its Merchant ID or keys are empty.');
+        }
+
+        if ($values['payment.nagad.enabled'] === '1') {
+            $nagadKeys = (new NagadService(
+                $values['payment.nagad.merchant_private_key'],
+                $values['payment.nagad.pg_public_key']
+            ))->keyDiagnostics();
+
+            if (! $nagadKeys['merchant_key_ok']) {
+                return back()->withInput()->with('error', 'The Nagad merchant private key could not be parsed. Paste the complete private key issued by Nagad.');
+            }
+
+            if (! $nagadKeys['pg_key_ok']) {
+                return back()->withInput()->with('error', 'The Nagad PG public key could not be parsed. Paste the public key issued by Nagad.');
+            }
+
+            if ($nagadKeys['keys_match']) {
+                return back()->withInput()->with('error', 'The Nagad PG Public Key is your own merchant public key. Paste the public key issued by Nagad, not the public key generated from your private key.');
+            }
         }
 
         $pathaoCredentialKeys = [
