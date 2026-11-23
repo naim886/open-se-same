@@ -151,6 +151,7 @@
             border-top: 1px solid #dee2e6;
         }
     </style>
+    @include('frontend.partials.analytics')
 </head>
 <body>
     <div class="success-container">
@@ -182,7 +183,7 @@
         </div>
 
         <div class="d-flex gap-3 justify-content-center flex-wrap">
-            <a href="{{ route('frontend.index') }}" class="btn-primary-custom">
+            <a href="{{ route('shop.home') }}" class="btn-primary-custom">
                 <i class="fas fa-home"></i>
                 Continue Shopping
             </a>
@@ -203,48 +204,44 @@
     </div>
 
     @php
-        $pixelIp = trim(explode(',', request()->header('CF-Connecting-IP') ?? request()->header('X-Forwarded-For') ?? request()->ip())[0]);
-        $pixelUa = request()->userAgent() ?? '';
         $fbPurchaseData = session('order_details');
-        $fbFn = $fbLn = $fbPh = '';
-        if ($fbPurchaseData) {
-            $nameParts = explode(' ', trim($fbPurchaseData['customer_name'] ?? ''), 2);
-            $rawFn = strtolower(trim($nameParts[0] ?? ''));
-            $rawLn = strtolower(trim($nameParts[1] ?? ''));
-            $rawPh = preg_replace('/\D/', '', $fbPurchaseData['customer_phone'] ?? '');
-            $fbFn = $rawFn !== '' ? hash('sha256', $rawFn) : '';
-            $fbLn = $rawLn !== '' ? hash('sha256', $rawLn) : '';
-            $fbPh = $rawPh !== '' ? hash('sha256', $rawPh) : '';
+        $fbOrder        = session('order_number') ?? '';
+        $fbTotal        = round((float) ($fbPurchaseData['total_amount'] ?? 0), 2);
+        $fbContentIds   = $fbPurchaseData['content_ids'] ?? [$fbOrder];
+        $fbItems        = $fbPurchaseData['items'] ?? [];
+        $fbNumItems     = collect($fbItems)->sum('quantity') ?: 1;
+        $fbShipping     = (float) ($fbPurchaseData['delivery_charge'] ?? 0);
+        $fbCoupon       = $fbPurchaseData['coupon_code'] ?? null;
+        $purchasePhone = preg_replace('/\D/', '', $fbPurchaseData['customer_phone'] ?? '');
+        if (strlen($purchasePhone) === 11 && str_starts_with($purchasePhone, '0')) {
+            $purchasePhone = '880' . substr($purchasePhone, 1);
         }
+        $purchaseExternalId = $purchasePhone !== ''
+            ? hash('sha256', $purchasePhone)
+            : hash('sha256', (string) session('capi_uid'));
     @endphp
-    <!-- Meta Pixel Code -->
+    @if($fbPurchaseData)
     <script>
-        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-        (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '26065580893095421', {
-            client_ip_address: {!! json_encode($pixelIp) !!},
-            client_user_agent: {!! json_encode($pixelUa) !!}
-            @if($fbFn), fn: '{{ $fbFn }}'@endif
-            @if($fbLn), ln: '{{ $fbLn }}'@endif
-            @if($fbPh), ph: '{{ $fbPh }}'@endif
-        });
-        fbq('track', 'PageView');
-        @if($fbPurchaseData)
-        fbq('track', 'Purchase', {
-            value:        {{ round((float)($fbPurchaseData['total_amount'] ?? 0) / 2, 2) }},
-            currency:     'BDT',
-            content_ids:  {!! json_encode($fbPurchaseData['content_ids'] ?? [session('order_number') ?? '']) !!},
-            content_type: 'product',
-            order_id:     {!! json_encode(session('order_number') ?? '') !!}
-        }, {eventID: {!! json_encode(session('purchase_event_id') ?? '') !!}});
-        @endif
+        if (typeof fbq === 'function' && window.ocMetaPixelId) {
+            fbq('init', window.ocMetaPixelId, { external_id: {!! json_encode($purchaseExternalId) !!} });
+        }
+        if (typeof ocTrack === 'function') {
+            ocTrack('Purchase', {
+                value:        {{ $fbTotal }},
+                currency:     'BDT',
+                content_ids:  {!! json_encode($fbContentIds) !!},
+                content_type: 'product',
+                num_items:    {{ $fbNumItems }},
+                order_id:     {!! json_encode($fbOrder) !!}
+            }, {!! json_encode(session('purchase_event_id') ?? '') !!}, {
+                items: {!! json_encode($fbItems ?: null) !!},
+                transaction_id: {!! json_encode($fbOrder) !!},
+                shipping: {{ $fbShipping }},
+                coupon: {!! json_encode($fbCoupon) !!}
+            });
+        }
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"/></noscript>
-    <!-- End Meta Pixel Code -->
+    @endif
     <!-- Bootstrap JS Bundle -->
     <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
 </body>

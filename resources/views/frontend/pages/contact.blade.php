@@ -309,22 +309,22 @@ echo Schema::breadcrumbList()->itemListElement([
 
 @section('extra_js')
 <script>
-// ── Meta Pixel: Lead (contact form submit) + Contact (phone/WA click) ───
+// ── Meta Pixel + GA4: Lead / Contact ─────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
     var cf = document.getElementById('contact-form');
     if (cf) {
         cf.addEventListener('submit', function () {
-            if (typeof fbq === 'function') {
-                fbq('track', 'Lead',    { content_name: 'Contact Form' });
-                fbq('track', 'Contact', { content_name: 'Contact Form' });
+            if (typeof ocTrack === 'function') {
+                ocTrack('Lead',    { content_name: 'Contact Form' });
+                ocTrack('Contact', { content_name: 'Contact Form' });
             }
         });
     }
     // Contact event on phone / WhatsApp / Messenger clicks
     document.querySelectorAll('a[href^="tel:"], a[href^="https://wa.me"], a[href^="https://m.me"]').forEach(function(el) {
         el.addEventListener('click', function () {
-            if (typeof fbq === 'function') {
-                fbq('track', 'Contact', { content_name: el.getAttribute('href') });
+            if (typeof ocTrack === 'function') {
+                ocTrack('Contact', { content_name: el.getAttribute('href') });
             }
         });
     });

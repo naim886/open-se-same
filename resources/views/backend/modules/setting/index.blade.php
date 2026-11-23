@@ -238,6 +238,53 @@
                 </div>
             </div>
 
+            {{-- ── Analytics & Conversion Tracking ─────────────────── --}}
+            <div class="card mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fas fa-chart-line me-2"></i>Analytics &amp; Conversion Tracking
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">
+                        Meta Pixel, Meta Conversions API and Google Analytics. Leave a field empty to
+                        disable that tracker. Events are deduplicated with shared event IDs and use BDT values.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Pixel ID</label>
+                            <input type="text" class="form-control" name="settings[analytics.meta.pixel_id]"
+                                   value="{{ $val('analytics.meta.pixel_id') }}" placeholder="e.g. 26065580893095421">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Conversions API Token</label>
+                            <input type="password" class="form-control" name="settings[analytics.meta.capi_token]"
+                                   value="{{ $val('analytics.meta.capi_token') }}" autocomplete="off"
+                                   placeholder="Events Manager → Conversions API access token">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Test Event Code</label>
+                            <input type="text" class="form-control" name="settings[analytics.meta.test_event_code]"
+                                   value="{{ $val('analytics.meta.test_event_code') }}" placeholder="Optional, e.g. TEST12345">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Use this only while testing in Events Manager → Test Events.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">GA4 Measurement ID</label>
+                            <input type="text" class="form-control" name="settings[analytics.ga4.measurement_id]"
+                                   value="{{ $val('analytics.ga4.measurement_id') }}" placeholder="G-XXXXXXXXXX">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Universal Analytics ID</label>
+                            <input type="text" class="form-control" name="settings[analytics.ga.measurement_id]"
+                                   value="{{ $val('analytics.ga.measurement_id') }}" placeholder="UA-XXXXXXXXX-X (optional)">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Optional legacy Google Analytics property.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- ── Social Media Links ──────────────────────────────── --}}
             <div class="card mb-4">
                 <div class="card-header fw-bold">

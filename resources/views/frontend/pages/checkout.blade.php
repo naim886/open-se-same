@@ -54,6 +54,7 @@
         @else
         <form action="{{ route('shop.order.place') }}" method="POST" id="checkoutForm">
             @csrf
+            <input type="hidden" name="add_payment_event_id" value="{{ $addPaymentEventId ?? '' }}">
             <input type="hidden" name="delivery_charge" value="{{ $delivery }}" id="hiddenDelivery">
             <input type="hidden" name="product_price" value="{{ $subtotal }}">
             <input type="hidden" name="order_total" value="{{ $total }}" id="hiddenTotal">
@@ -394,46 +395,59 @@ function setDelivery(charge, locationVal) {
 @php
     $fbCoCart  = session('cart', []);
     $fbCoIds   = array_values(array_map(fn($i) => (string) ($i['variation_id'] ?? $i['product_id'] ?? 0), $fbCoCart));
-    $fbCoValue = round((float) collect($fbCoCart)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']) / 2, 2);
+    $fbCoValue = round((float) collect($fbCoCart)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']), 2);
     $fbCoItems = (int)   array_sum(array_column($fbCoCart, 'quantity'));
-    $pixelIp   = trim(explode(',', request()->header('CF-Connecting-IP') ?? request()->header('X-Forwarded-For') ?? request()->ip())[0]);
-    $pixelUa   = request()->userAgent() ?? '';
+    $gaCoItems = array_values(array_map(function ($item) {
+        return [
+            'item_id'      => (string) ($item['product_id'] ?? 0),
+            'item_name'    => $item['name'] ?? '',
+            'item_variant' => $item['variation_label'] ?? '',
+            'price'        => (float) ($item['sale_price'] ?? $item['price'] ?? 0),
+            'quantity'     => (int) ($item['quantity'] ?? 1),
+        ];
+    }, $fbCoCart));
 @endphp
-// ── Meta Pixel: InitiateCheckout ─────────────────────────────────────
+// ── Meta Pixel + GA4: InitiateCheckout ───────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof fbq === 'function') {
-        fbq('track', 'InitiateCheckout', {
+    if (typeof ocTrack === 'function') {
+        ocTrack('InitiateCheckout', {
             content_ids: {!! json_encode($fbCoIds) !!},
             content_type: 'product',
             num_items: {{ $fbCoItems }},
             value: {{ $fbCoValue }},
             currency: 'BDT'
-        }, {eventID: '{{ $icEventId ?? '' }}'});
+        }, '{{ $icEventId ?? '' }}', {
+            items: {!! json_encode($gaCoItems) !!}
+        });
     }
+
+    if (typeof ocTrackGA4 === 'function') {
+        var deliverySelect = document.querySelector('[name="delivery_location"]');
+        var shippingTier = deliverySelect && deliverySelect.options[deliverySelect.selectedIndex]
+            ? deliverySelect.options[deliverySelect.selectedIndex].text
+            : 'Standard';
+
+        ocTrackGA4('add_shipping_info', {
+            currency: 'BDT',
+            value: {{ $fbCoValue }},
+            shipping_tier: shippingTier,
+            items: {!! json_encode($gaCoItems) !!}
+        });
+    }
+
     // AddPaymentInfo when user confirms the order
     var coForm = document.getElementById('checkoutForm');
     if (coForm) {
         coForm.addEventListener('submit', function () {
-            if (typeof fbq === 'function') {
-                var rawName  = (document.querySelector('[name="customer_name"]')?.value || '').trim();
-                var rawPhone = (document.querySelector('[name="customer_phone"]')?.value || '').replace(/\D/g, '');
-                var rawEmail = (document.querySelector('[name="customer_email"]')?.value || '').trim().toLowerCase();
-                var nameParts = rawName.split(' ');
-                var userData = {
-                    client_ip_address: {!! json_encode($pixelIp) !!},
-                    client_user_agent: {!! json_encode($pixelUa) !!}
-                };
-                if (rawPhone) userData.ph = rawPhone;
-                if (rawEmail) userData.em = rawEmail;
-                if (nameParts[0]) userData.fn = nameParts[0].toLowerCase();
-                if (nameParts[1]) userData.ln = nameParts.slice(1).join(' ').toLowerCase();
-                fbq('init', '26065580893095421', userData);
-                fbq('track', 'AddPaymentInfo', {
+            if (typeof ocTrack === 'function') {
+                ocTrack('AddPaymentInfo', {
                     content_ids: {!! json_encode($fbCoIds) !!},
                     content_type: 'product',
                     num_items: {{ $fbCoItems }},
                     value: {{ $fbCoValue }},
                     currency: 'BDT'
+                }, '{{ $addPaymentEventId ?? '' }}', {
+                    items: {!! json_encode($gaCoItems) !!}
                 });
             }
         });

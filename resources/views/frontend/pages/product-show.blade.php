@@ -854,17 +854,25 @@ function addToCartWithQty(productId) {
                 var cartCountEls = document.querySelectorAll('#cart-count, .cart-count, #cartCount, .nav-cart-count');
                 cartCountEls.forEach(function (el) { el.textContent = data.cart_qty || data.cart_count || 0; });
                 if (typeof showCartAddedPopup === 'function') showCartAddedPopup(data);
-                // ── Meta Pixel: AddToCart (variant) ──────────────
-                if (typeof fbq === 'function') {
-                    var contentId = data.variation_id ? String(data.variation_id) : String(productId);
-                    fbq('track', 'AddToCart', {
+                // ── Meta Pixel + GA4: AddToCart ──────────────────
+                if (typeof ocTrack === 'function') {
+                    var contentId = data.atc_content_id || (data.variation_id ? String(data.variation_id) : String(productId));
+                    ocTrack('AddToCart', {
                         content_ids:  [contentId],
                         content_name: data.product_name || '',
                         content_type: 'product',
                         num_items:    qty,
-                        value:        Math.round((data.product_price || 0) / 2 * 100) / 100,
+                        value:        Math.round((data.product_price || 0) * qty * 100) / 100,
                         currency:     'BDT'
-                    }, {eventID: data.atc_event_id || ''});
+                    }, data.atc_event_id || '', {
+                        items: [{
+                            item_id: data.atc_product_id || String(productId),
+                            item_name: data.product_name || '',
+                            item_variant: data.atc_variation_label || '',
+                            price: Number(data.product_price || 0),
+                            quantity: qty
+                        }]
+                    });
                 }
             } else {
                 if (typeof showToast === 'function') showToast(data.message || 'Error adding to cart.', 'error');
@@ -943,16 +951,17 @@ function shareToInstagram() {
     }
 }
 
-// ── Meta Pixel: ViewContent ──────────────────────────────────────────
+// ── Meta Pixel + GA4: ViewContent ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof fbq === 'function') {
-        fbq('track', 'ViewContent', {
+    if (typeof ocTrack === 'function') {
+        ocTrack('ViewContent', {
             content_ids:  [{{ $product->id }}],
             content_name:  {!! json_encode($product->name) !!},
             content_type: 'product',
-            value:        {{ round((float)($product->sale_price ?? $product->price ?? 0) / 2, 2) }},
+            num_items:    1,
+            value:        {{ round((float)($product->sale_price ?? $product->price ?? 0), 2) }},
             currency:     'BDT'
-        }, {eventID: '{{ $vcEventId ?? '' }}'});
+        }, '{{ $vcEventId ?? '' }}');
     }
 });
 </script>

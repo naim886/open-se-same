@@ -114,8 +114,9 @@ echo Schema::product()
                         <div class="checkout-card">
                             <h5 class="checkout-card-title"><i class="fas fa-bolt"></i>Quick Order</h5>
 
-                            <form action="{{ route('shop.order.quick') }}" method="POST">
+                            <form action="{{ route('shop.order.quick') }}" method="POST" id="quickOrderForm">
                                 @csrf
+                                <input type="hidden" name="add_payment_event_id" value="{{ $addPaymentEventId ?? '' }}">
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="product_price" id="productPriceHidden" value="{{ $product->isVariantProduct() ? 0 : ($product->sale_price ?? $product->price) }}">
                                 <input type="hidden" name="delivery_charge" id="deliveryHidden" value="{{ $dcInside }}">
@@ -571,22 +572,68 @@ function recalcTotal() {
     if (oh) oh.value = total;
 }
 
-@php
-    $pixelIp = trim(explode(',', request()->header('CF-Connecting-IP') ?? request()->header('X-Forwarded-For') ?? request()->ip())[0]);
-    $pixelUa = request()->userAgent() ?? '';
-@endphp
-// ── Meta Pixel: InitiateCheckout on load (no PageView, no ViewContent) ──
-// Purchase fires on order-success page after the server confirms the order.
+// ── Meta Pixel + GA4: InitiateCheckout / AddPaymentInfo ───────────────
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof fbq === 'function') {
-        fbq('track', 'InitiateCheckout', {
+    var qty = parseInt(document.getElementById('qtyInput')?.value || 1);
+    var total = parseFloat(document.getElementById('productPriceHidden')?.value || {{ (float)($product->sale_price ?? $product->price ?? 0) }});
+    var unit = qty > 0 ? total / qty : total;
+    var gaItems = [{
+        item_id: '{{ $product->id }}',
+        item_name: {!! json_encode($product->name) !!},
+        item_variant: '',
+        price: unit,
+        quantity: qty
+    }];
+
+    if (typeof ocTrack === 'function') {
+        ocTrack('InitiateCheckout', {
             content_ids:  ['{{ $product->id }}'],
             content_name:  {!! json_encode($product->name) !!},
             content_type: 'product',
-            num_items:    parseInt(document.getElementById('qtyInput')?.value || 1),
-            value:        Math.round(parseFloat(document.getElementById('productPriceHidden')?.value || {{ (float)($product->sale_price ?? $product->price ?? 0) }}) / 2 * 100) / 100,
+            num_items:    qty,
+            value:        Math.round(total * 100) / 100,
             currency:     'BDT'
-        }, {eventID: '{{ $icEventId ?? '' }}'});
+        }, '{{ $icEventId ?? '' }}', { items: gaItems });
+    }
+
+    if (typeof ocTrackGA4 === 'function') {
+        var deliverySelect = document.querySelector('[name="delivery_location"]');
+        var shippingTier = deliverySelect && deliverySelect.options[deliverySelect.selectedIndex]
+            ? deliverySelect.options[deliverySelect.selectedIndex].text
+            : 'Standard';
+
+        ocTrackGA4('add_shipping_info', {
+            currency: 'BDT',
+            value: Math.round(total * 100) / 100,
+            shipping_tier: shippingTier,
+            items: gaItems
+        });
+    }
+
+    var form = document.getElementById('quickOrderForm');
+    if (form) {
+        form.addEventListener('submit', function () {
+            var qtyNow = parseInt(document.getElementById('qtyInput')?.value || 1);
+            var totalNow = parseFloat(document.getElementById('productPriceHidden')?.value || 0);
+            var unitNow = qtyNow > 0 ? totalNow / qtyNow : totalNow;
+
+            if (typeof ocTrack === 'function') {
+                ocTrack('AddPaymentInfo', {
+                    content_ids:  ['{{ $product->id }}'],
+                    content_type: 'product',
+                    num_items:    qtyNow,
+                    value:        Math.round(totalNow * 100) / 100,
+                    currency:     'BDT'
+                }, '{{ $addPaymentEventId ?? '' }}', {
+                    items: [{
+                        item_id: '{{ $product->id }}',
+                        item_name: {!! json_encode($product->name) !!},
+                        price: unitNow,
+                        quantity: qtyNow
+                    }]
+                });
+            }
+        });
     }
 });
 </script>

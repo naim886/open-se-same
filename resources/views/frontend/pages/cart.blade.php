@@ -240,18 +240,30 @@ document.addEventListener('DOMContentLoaded', function() {
 @php
     $fbCartData    = session('cart', []);
     $fbCartIds     = array_values(array_map(fn($i) => (string) ($i['variation_id'] ?? $i['product_id'] ?? 0), $fbCartData));
-    $fbCartValue   = round((float) collect($fbCartData)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']) / 2, 2);
+    $fbCartValue   = round((float) collect($fbCartData)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']), 2);
     $fbCartItems   = (int)   array_sum(array_column($fbCartData, 'quantity'));
+    $gaCartItems   = array_values(array_map(function ($item) {
+        return [
+            'item_id'      => (string) ($item['product_id'] ?? 0),
+            'item_name'    => $item['name'] ?? '',
+            'item_variant' => $item['variation_label'] ?? '',
+            'price'        => (float) ($item['sale_price'] ?? $item['price'] ?? 0),
+            'quantity'     => (int) ($item['quantity'] ?? 1),
+        ];
+    }, $fbCartData));
 @endphp
-// ── Meta Pixel: ViewContent (cart) ───────────────────────────────────
+// ── Meta Pixel + GA4: ViewContent / view_cart ────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof fbq === 'function') {
-        fbq('track', 'ViewContent', {
+    if (typeof ocTrack === 'function') {
+        ocTrack('ViewContent', {
             content_ids: {!! json_encode($fbCartIds) !!},
             content_type: 'product',
             num_items: {{ $fbCartItems }},
             value: {{ $fbCartValue }},
             currency: 'BDT'
+        }, null, {
+            event: 'view_cart',
+            items: {!! json_encode($gaCartItems) !!}
         });
     }
 });

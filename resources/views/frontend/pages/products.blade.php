@@ -54,16 +54,23 @@ if ($products->count() > 0) {
 
 @section('extra_js')
 <script>
-@if(request('q'))
-// ── Meta Pixel: Search ───────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-    if (typeof fbq === 'function') {
-        fbq('track', 'Search', {
-            search_string: {!! json_encode(request('q')) !!}
+    if (typeof ocTrackGA4 === 'function') {
+        ocTrackGA4('view_item_list', {
+            item_list_name: {!! json_encode($gaListName) !!},
+            items: {!! json_encode($gaListItems) !!}
         });
     }
+
+    @if(request('q'))
+    // ── Meta Pixel + GA4: Search ─────────────────────────────────────
+    if (typeof ocTrack === 'function') {
+        ocTrack('Search', {
+            search_string: {!! json_encode(request('q')) !!}
+        }, {!! json_encode($searchEventId ?? '') !!});
+    }
+    @endif
 });
-@endif
 </script>
 @endsection
 

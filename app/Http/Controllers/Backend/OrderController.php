@@ -323,11 +323,23 @@ class OrderController extends Controller
             'phone'       => $order->customer_phone ?? null,
             'first_name'  => $nameParts[0] ?? null,
             'last_name'   => $nameParts[1] ?? null,
+            'city'        => 'Dhaka',
+            'state'       => 'Dhaka',
+            'zip'         => null,
+            'country'     => 'bd',
         ];
 
+        $contents = $order->orderItems->map(fn ($item) => [
+            'id'         => (string) ($item->variation_id ?? $item->product_id),
+            'title'      => $item->product_name ?? '',
+            'quantity'   => (int) ($item->quantity ?? 1),
+            'item_price' => (float) ($item->unit_price ?? 0),
+        ])->filter(fn ($item) => $item['id'] !== '')->values()->all();
+
         $customData = [
-            'value'        => (float) ($order->order_total ?? 0),
+            'value'        => (float) ($order->total_amount ?? 0),
             'content_ids'  => $contentIds,
+            'contents'     => $contents,
             'content_name' => $contentName,
             'content_type' => 'product',
             'num_items'    => $numItems,

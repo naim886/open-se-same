@@ -825,44 +825,7 @@
     @endphp
     @yield('schema')
 
-@php
-    $pixelIp = trim(explode(',', request()->header('CF-Connecting-IP') ?? request()->header('X-Forwarded-For') ?? request()->ip())[0]);
-    $pixelUa = request()->userAgent() ?? '';
-@endphp
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '26065580893095421', {
-    client_ip_address: {!! json_encode($pixelIp) !!},
-    client_user_agent: {!! json_encode($pixelUa) !!}
-});
-@if(!request()->routeIs('quick-order'))
-fbq('track', 'PageView');
-@endif
-</script>
-@if(!request()->routeIs('quick-order'))
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
-/></noscript>
-@endif
-<!-- End Meta Pixel Code -->
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C0K5XZEQF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C0K5XZEQF');
-</script>
+@include('frontend.partials.analytics')
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -1422,16 +1385,24 @@ src="https://www.facebook.com/tr?id=26065580893095421&ev=PageView&noscript=1"
                 if (data.success) {
                     if (cartCountEl) cartCountEl.textContent = data.cart_count;
                     showCartAddedPopup(data);
-                    // ── Meta Pixel: AddToCart ────────────────────────────
-                    if (typeof fbq === 'function') {
-                        fbq('track', 'AddToCart', {
-                            content_ids:  [productId],
+                    // ── Meta Pixel + GA4: AddToCart ──────────────────────
+                    if (typeof ocTrack === 'function') {
+                        ocTrack('AddToCart', {
+                            content_ids:  [data.atc_content_id || productId],
                             content_name: data.product_name || '',
                             content_type: 'product',
                             num_items:    qty,
-                            value:        Math.round((data.product_price || 0) / 2 * 100) / 100,
+                            value:        Math.round((data.product_price || 0) * qty * 100) / 100,
                             currency:     'BDT'
-                        }, {eventID: data.atc_event_id || ''});
+                        }, data.atc_event_id || '', {
+                            items: [{
+                                item_id: data.atc_product_id || String(productId),
+                                item_name: data.product_name || '',
+                                item_variant: data.atc_variation_label || '',
+                                price: Number(data.product_price || 0),
+                                quantity: qty
+                            }]
+                        });
                     }
                 } else {
                     showToast(data.message || 'Could not add item.', 'error');

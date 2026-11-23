@@ -297,9 +297,18 @@ class ShopController extends Controller
     public function search(Request $request): View
     {
         $q = $request->get('q', '');
+        $searchEventId = Str::uuid()->toString();
 
         if (trim($q) !== '') {
             \App\Models\SearchKeyword::record($q);
+
+            SendFacebookCapiEvent::dispatch(
+                'Search',
+                $this->capiRequestData(),
+                ['search_string' => $q],
+                $searchEventId,
+                request()->url()
+            );
         }
 
         $query = Product::where('status', Product::STATUS_ACTIVE)
@@ -318,6 +327,7 @@ class ShopController extends Controller
             'products' => $products,
             'category' => null,
             'brand'    => null,
+            'searchEventId' => $searchEventId,
         ]));
     }
 
@@ -332,6 +342,20 @@ class ShopController extends Controller
     {
         $categoryIds = $data['category'] ? $this->categoryScopeIds($data['category']) : [];
         $brandId     = $data['brand']?->id;
+
+        $listProducts = $data['products'] ?? collect();
+
+        $data['gaListItems'] = collect(method_exists($listProducts, 'items') ? $listProducts->items() : $listProducts)
+            ->map(fn ($product) => [
+                'item_id'   => (string) $product->id,
+                'item_name' => $product->name,
+                'price'     => (float) ($product->sale_price ?? $product->price ?? 0),
+            ])
+            ->values()
+            ->all();
+
+        $data['gaListName'] = $data['category']?->name
+            ?? ($data['brand']?->name ?? (request('q') ? 'Search results' : 'All Products'));
 
         $data['categoryTree']     = $this->categoryTree();
         $data['variationFilters'] = $this->variationFilterOptions($categoryIds, $brandId);
@@ -451,10 +475,17 @@ class ShopController extends Controller
             'ViewContent',
             $this->capiRequestData(),
             [
-                'value'        => round((float)($product->sale_price ?? $product->price ?? 0) / 2, 2),
+                'value'        => round((float) ($product->sale_price ?? $product->price ?? 0), 2),
                 'content_ids'  => [(string) $product->id],
+                'contents'     => [[
+                    'id'         => (string) $product->id,
+                    'title'      => $product->name,
+                    'quantity'   => 1,
+                    'item_price' => (float) ($product->sale_price ?? $product->price ?? 0),
+                ]],
                 'content_name' => $product->name,
                 'content_type' => 'product',
+                'num_items'    => 1,
             ],
             $vcEventId,
             request()->url()
@@ -487,12 +518,20 @@ class ShopController extends Controller
 
         // ── CAPI: InitiateCheckout ────────────────────────────────
         $icEventId = Str::uuid()->toString();
+        $addPaymentEventId = Str::uuid()->toString();
+        $unitPrice = (float) ($product->sale_price ?? $product->price ?? 0);
         SendFacebookCapiEvent::dispatch(
             'InitiateCheckout',
             $this->capiRequestData(),
             [
-                'value'        => round((float)($product->sale_price ?? $product->price ?? 0) / 2, 2),
+                'value'        => round($unitPrice, 2),
                 'content_ids'  => [(string) $product->id],
+                'contents'     => [[
+                    'id'         => (string) $product->id,
+                    'title'      => $product->name,
+                    'quantity'   => 1,
+                    'item_price' => $unitPrice,
+                ]],
                 'content_name' => $product->name,
                 'content_type' => 'product',
                 'num_items'    => 1,
@@ -504,7 +543,7 @@ class ShopController extends Controller
         $defaultAddress = auth()->check() ? auth()->user()->addresses()->where('is_default', true)->first() : null;
         $authUser       = auth()->user();
 
-        return view('frontend.pages.quick-order', compact('product', 'icEventId', 'defaultAddress', 'authUser'));
+        return view('frontend.pages.quick-order', compact('product', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser'));
     }
 
     // ============================================================
@@ -575,10 +614,46 @@ class ShopController extends Controller
 
             app(OrderNotificationService::class)->orderPlaced($order);
 
+            $purchaseContentId = $variation ? (string) $variation->id : (string) $product->id;
+            $nameParts         = explode(' ', trim($request->customer_name), 2);
+            $contents          = [[
+                'id'         => $purchaseContentId,
+                'title'      => $product->name,
+                'quantity'   => $qty,
+                'item_price' => (float) $price,
+            ]];
+            $gaItems = [[
+                'item_id'      => (string) $product->id,
+                'item_name'    => $product->name,
+                'item_variant' => $variation?->label ?? '',
+                'price'        => (float) $price,
+                'quantity'     => $qty,
+            ]];
+
+            // ── CAPI: AddPaymentInfo ──────────────────────────────
+            $addPaymentEventId = (string) ($request->input('add_payment_event_id') ?: Str::uuid()->toString());
+            SendFacebookCapiEvent::dispatch(
+                'AddPaymentInfo',
+                $this->capiRequestData([
+                    'email'      => $request->customer_email,
+                    'phone'      => $request->customer_phone,
+                    'first_name' => $nameParts[0] ?? '',
+                    'last_name'  => $nameParts[1] ?? '',
+                ]),
+                [
+                    'value'        => round((float) $payload['order_total'], 2),
+                    'content_ids'  => [$purchaseContentId],
+                    'contents'     => $contents,
+                    'content_name' => $product->name,
+                    'content_type' => 'product',
+                    'num_items'    => $qty,
+                ],
+                $addPaymentEventId,
+                request()->url()
+            );
+
             // ── CAPI: Purchase ────────────────────────────────────
             $purchaseEventId = Str::uuid()->toString();
-            $nameParts       = explode(' ', trim($request->customer_name), 2);
-            $purchaseContentId = $variation ? (string) $variation->id : (string) $product->id;
             SendFacebookCapiEvent::dispatch(
                 'Purchase',
                 $this->capiRequestData([
@@ -588,8 +663,9 @@ class ShopController extends Controller
                     'last_name'  => $nameParts[1] ?? '',
                 ]),
                 [
-                    'value'        => round(($price * $qty) / 2, 2),
+                    'value'        => round((float) $payload['order_total'], 2),
                     'content_ids'  => [$purchaseContentId],
+                    'contents'     => $contents,
                     'content_name' => $product->name,
                     'content_type' => 'product',
                     'num_items'    => $qty,
@@ -612,6 +688,10 @@ class ShopController extends Controller
                     'product_price'    => $payload['product_price'],
                     'total_amount'     => $payload['order_total'],
                     'content_ids'      => [$purchaseContentId],
+                    'items'            => $gaItems,
+                    'delivery_charge'  => (float) $payload['delivery_charge'],
+                    'discount_amount'  => (float) $payload['discount_amount'],
+                    'coupon_code'      => $payload['coupon_code'],
                 ]);
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'অর্ডার করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
@@ -732,15 +812,62 @@ class ShopController extends Controller
             // Clear cart after successful order
             session()->forget('cart');
 
-            // ── CAPI: Purchase ────────────────────────────────────
-            $purchaseEventId = Str::uuid()->toString();
-            $nameParts       = explode(' ', trim($request->customer_name), 2);
             // Build content_ids: use variation_id when present, else product_id
             $purchaseContentIds = array_values(array_map(
                 fn($vId, $pId) => $vId ? (string) $vId : (string) $pId,
                 $variationIds,
                 $productIds
             ));
+
+            $contents = [];
+            $gaItems  = [];
+
+            foreach ($productIds as $idx => $pid) {
+                $vid  = $variationIds[$idx] ?? null;
+                $qty  = (int) ($quantities[$idx] ?? 1);
+                $unit = (float) ($unitPrices[$idx] ?? 0);
+
+                $contents[] = [
+                    'id'         => $vid ? (string) $vid : (string) $pid,
+                    'title'      => $productNames[$idx] ?? '',
+                    'quantity'   => $qty,
+                    'item_price' => $unit,
+                ];
+
+                $gaItems[] = [
+                    'item_id'      => (string) $pid,
+                    'item_name'    => $productNames[$idx] ?? '',
+                    'item_variant' => $variationLabels[$idx] ?? '',
+                    'price'        => $unit,
+                    'quantity'     => $qty,
+                ];
+            }
+
+            $nameParts = explode(' ', trim($request->customer_name), 2);
+
+            // ── CAPI: AddPaymentInfo ──────────────────────────────
+            $addPaymentEventId = (string) ($request->input('add_payment_event_id') ?: Str::uuid()->toString());
+            SendFacebookCapiEvent::dispatch(
+                'AddPaymentInfo',
+                $this->capiRequestData([
+                    'email'      => $request->customer_email,
+                    'phone'      => $request->customer_phone,
+                    'first_name' => $nameParts[0] ?? '',
+                    'last_name'  => $nameParts[1] ?? '',
+                ]),
+                [
+                    'value'        => round((float) $payload['order_total'], 2),
+                    'content_ids'  => $purchaseContentIds,
+                    'contents'     => $contents,
+                    'content_type' => 'product',
+                    'num_items'    => (int) array_sum($quantities),
+                ],
+                $addPaymentEventId,
+                request()->url()
+            );
+
+            // ── CAPI: Purchase ────────────────────────────────────
+            $purchaseEventId = Str::uuid()->toString();
             SendFacebookCapiEvent::dispatch(
                 'Purchase',
                 $this->capiRequestData([
@@ -750,8 +877,9 @@ class ShopController extends Controller
                     'last_name'  => $nameParts[1] ?? '',
                 ]),
                 [
-                    'value'        => round($productTotal / 2, 2),
+                    'value'        => round((float) $payload['order_total'], 2),
                     'content_ids'  => $purchaseContentIds,
+                    'contents'     => $contents,
                     'content_type' => 'product',
                     'num_items'    => (int) array_sum($quantities),
                     'order_id'     => (string) $order->order_number,
@@ -773,6 +901,10 @@ class ShopController extends Controller
                     'product_price'    => $payload['product_price'],
                     'total_amount'     => $payload['order_total'],
                     'content_ids'      => $purchaseContentIds,
+                    'items'            => $gaItems,
+                    'delivery_charge'  => (float) $payload['delivery_charge'],
+                    'discount_amount'  => (float) $payload['discount_amount'],
+                    'coupon_code'      => $payload['coupon_code'],
                 ]);
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'অর্ডার করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
@@ -791,11 +923,18 @@ class ShopController extends Controller
         $subtotal   = collect($cart)->sum(fn($i) => ($i['sale_price'] ?? $i['price']) * $i['quantity']);
         $delivery   = request('delivery', 70);
         $icEventId  = Str::uuid()->toString();
+        $addPaymentEventId = Str::uuid()->toString();
         // Build content_ids using variation_id when present, else product_id
         $contentIds = array_values(array_map(
             fn($item) => $item['variation_id'] ? (string) $item['variation_id'] : (string) ($item['product_id'] ?? 0),
             $cart
         ));
+        $contents   = array_values(array_map(fn($item) => [
+            'id'         => $item['variation_id'] ? (string) $item['variation_id'] : (string) ($item['product_id'] ?? 0),
+            'title'      => $item['name'] ?? '',
+            'quantity'   => (int) ($item['quantity'] ?? 1),
+            'item_price' => (float) ($item['sale_price'] ?? $item['price'] ?? 0),
+        ], $cart));
         $numItems   = (int) collect($cart)->sum(fn($i) => $i['quantity']);
 
         // ── CAPI: InitiateCheckout ────────────────────────────────
@@ -803,8 +942,9 @@ class ShopController extends Controller
             'InitiateCheckout',
             $this->capiRequestData(),
             [
-                'value'        => round($subtotal / 2, 2),
+                'value'        => round((float) $subtotal, 2),
                 'content_ids'  => $contentIds,
+                'contents'     => $contents,
                 'content_type' => 'product',
                 'num_items'    => $numItems,
             ],
@@ -815,7 +955,7 @@ class ShopController extends Controller
         $defaultAddress = auth()->check() ? auth()->user()->addresses()->where('is_default', true)->first() : null;
         $authUser       = auth()->user();
 
-        return view('frontend.pages.checkout', compact('cart', 'subtotal', 'delivery', 'icEventId', 'defaultAddress', 'authUser'));
+        return view('frontend.pages.checkout', compact('cart', 'subtotal', 'delivery', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser'));
     }
 
     // ============================================================
@@ -834,6 +974,20 @@ class ShopController extends Controller
         // Persistent anonymous session ID — used as external_id when no phone available
         if (!session()->has('capi_uid')) {
             session(['capi_uid' => (string) Str::uuid()]);
+        }
+
+        // Use the logged-in customer's identity for upper-funnel events too.
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            $customer['email'] = $customer['email'] ?? $user->email;
+            $customer['phone'] = $customer['phone'] ?? $user->phone;
+
+            if (empty($customer['first_name']) && ! empty($user->name)) {
+                $nameParts = explode(' ', trim((string) $user->name), 2);
+                $customer['first_name'] = $nameParts[0] ?? null;
+                $customer['last_name']  = $nameParts[1] ?? null;
+            }
         }
 
         // external_id: prefer hashed phone (most stable), fall back to session UUID
@@ -859,6 +1013,10 @@ class ShopController extends Controller
             'phone'       => $customer['phone']      ?? null,
             'first_name'  => $customer['first_name'] ?? null,
             'last_name'   => $customer['last_name']  ?? null,
+            'city'        => 'Dhaka',
+            'state'       => 'Dhaka',
+            'zip'         => null,
+            'country'     => 'bd',
         ];
     }
 
@@ -971,8 +1129,14 @@ class ShopController extends Controller
             'AddToCart',
             $this->capiRequestData(),
             [
-                'value'        => round($atcPrice / 2, 2),
+                'value'        => round($atcPrice * $qty, 2),
                 'content_ids'  => [$atcContentId],
+                'contents'     => [[
+                    'id'         => $atcContentId,
+                    'title'      => $product->name,
+                    'quantity'   => $qty,
+                    'item_price' => $atcPrice,
+                ]],
                 'content_name' => $product->name,
                 'content_type' => 'product',
                 'num_items'    => $qty,
@@ -990,6 +1154,8 @@ class ShopController extends Controller
             'product_name'          => $product->name,
             'atc_event_id'          => $atcEventId,
             'atc_content_id'        => $atcContentId,
+            'atc_product_id'        => (string) $product->id,
+            'atc_variation_label'   => $variationLabel ?? null,
             'variation_id'          => $variationId,
             'similar_products_html' => $similarProductsHtml,
         ]);

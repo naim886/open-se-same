@@ -82,39 +82,40 @@
 @section('extra_js')
 @if(session('order_details'))
 @php
-    $od        = session('order_details');
-    $nameParts = explode(' ', trim($od['customer_name'] ?? ''), 2);
-    $rawFn     = strtolower(trim($nameParts[0] ?? ''));
-    $rawLn     = strtolower(trim($nameParts[1] ?? ''));
-    $rawPh     = preg_replace('/\D/', '', $od['customer_phone'] ?? '');
-    $rawEm     = strtolower(trim($od['customer_email'] ?? ''));
-    $fbFn      = $rawFn !== '' ? hash('sha256', $rawFn) : '';
-    $fbLn      = $rawLn !== '' ? hash('sha256', $rawLn) : '';
-    $fbPh      = $rawPh !== '' ? hash('sha256', $rawPh) : '';
-    $fbEm      = $rawEm !== '' ? hash('sha256', $rawEm) : '';
-    $fbTotal   = round((float)($od['product_price'] ?? $od['total_amount'] ?? 0) / 2, 2);
-    $fbOrder   = session('order_number') ?? '';
-    $pixelIp   = trim(explode(',', request()->header('CF-Connecting-IP') ?? request()->header('X-Forwarded-For') ?? request()->ip())[0]);
-    $pixelUa   = request()->userAgent() ?? '';
+    $od           = session('order_details');
+    $fbTotal      = round((float) ($od['total_amount'] ?? $od['product_price'] ?? 0), 2);
+    $fbOrder      = session('order_number') ?? '';
+    $fbContentIds = $od['content_ids'] ?? [$fbOrder];
+    $fbItems      = $od['items'] ?? [];
+    $fbNumItems   = collect($fbItems)->sum('quantity') ?: 1;
+    $fbShipping   = (float) ($od['delivery_charge'] ?? 0);
+    $fbCoupon     = $od['coupon_code'] ?? null;
+    $purchasePhone = preg_replace('/\D/', '', $od['customer_phone'] ?? '');
+    if (strlen($purchasePhone) === 11 && str_starts_with($purchasePhone, '0')) {
+        $purchasePhone = '880' . substr($purchasePhone, 1);
+    }
+    $purchaseExternalId = $purchasePhone !== ''
+        ? hash('sha256', $purchasePhone)
+        : hash('sha256', (string) session('capi_uid'));
 @endphp
 <script>
-if (typeof fbq === 'function') {
-    fbq('init', '26065580893095421', {
-        client_ip_address: {!! json_encode($pixelIp) !!},
-        client_user_agent: {!! json_encode($pixelUa) !!}
-        @if($fbFn), fn: '{{ $fbFn }}'@endif
-        @if($fbLn), ln: '{{ $fbLn }}'@endif
-        @if($fbPh), ph: '{{ $fbPh }}'@endif
-        @if($fbEm), em: '{{ $fbEm }}'@endif
-    });
-    fbq('track', 'Purchase', {
+if (typeof fbq === 'function' && window.ocMetaPixelId) {
+    fbq('init', window.ocMetaPixelId, { external_id: {!! json_encode($purchaseExternalId) !!} });
+}
+if (typeof ocTrack === 'function') {
+    ocTrack('Purchase', {
         value:        {{ $fbTotal }},
         currency:     'BDT',
-        content_ids:  [{!! json_encode($fbOrder) !!}],
+        content_ids:  {!! json_encode($fbContentIds) !!},
         content_type: 'product',
-        num_items:    1,
+        num_items:    {{ $fbNumItems }},
         order_id:     {!! json_encode($fbOrder) !!}
-    }, {eventID: '{{ session('purchase_event_id') }}'});
+    }, {!! json_encode(session('purchase_event_id') ?? '') !!}, {
+        items: {!! json_encode($fbItems ?: null) !!},
+        transaction_id: {!! json_encode($fbOrder) !!},
+        shipping: {{ $fbShipping }},
+        coupon: {!! json_encode($fbCoupon) !!}
+    });
 }
 </script>
 @endif
