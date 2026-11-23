@@ -74,7 +74,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             @if($item['image'])
-                                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="cart-product-img">
+                                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="cart-product-img" loading="lazy" decoding="async">
                                             @else
                                                 <div class="cart-product-img d-flex align-items-center justify-content-center" style="background:#f5f5f5;">
                                                     <i class="fas fa-image text-muted"></i>

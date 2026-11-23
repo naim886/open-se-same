@@ -233,7 +233,7 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                             : ($product->photos->first() ? asset('storage/'.$product->photos->first()->photo_path) : null);
                     @endphp
                     @if($mainImg)
-                        <img src="{{ $mainImg }}" alt="{{ $product->name }}" class="product-detail-main-img" id="mainProductImg">
+                        <img src="{{ $mainImg }}" alt="{{ $product->name }}" class="product-detail-main-img" id="mainProductImg" loading="eager" fetchpriority="high" decoding="async">
                     @else
                         <div class="product-detail-main-img d-flex align-items-center justify-content-center" style="background:#f5f5f5;">
                             <i class="fas fa-image" style="font-size:80px; color:#ddd;"></i>
@@ -253,13 +253,15 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
                         <img src="{{ asset('storage/'.$product->primary_photo_thumb) }}"
                              class="product-thumb gallery-thumb-active"
                              onclick="changeMainImg(this, '{{ asset('storage/'.$product->primary_photo) }}')"
-                             alt="{{ $product->name }}">
+                             alt="{{ $product->name }}"
+                             loading="lazy" decoding="async">
                     @endif
                     @foreach($product->photos as $photo)
                         <img src="{{ asset('storage/'.$photo->photo_thumb) }}"
                              class="product-thumb"
                              onclick="changeMainImg(this, '{{ asset('storage/'.$photo->photo_path) }}')"
-                             alt="{{ $product->name }}">
+                             alt="{{ $product->name }}"
+                             loading="lazy" decoding="async">
                     @endforeach
                 </div>
                 @endif

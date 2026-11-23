@@ -68,7 +68,7 @@ echo Schema::breadcrumbList()->itemListElement([
             <div class="col-lg-8">
                 <article class="cms-page-card">
                     @if($page->cover_photo)
-                        <img src="{{ asset('storage/' . $page->cover_photo) }}" alt="{{ $page->title }}" class="cms-page-cover">
+                        <img src="{{ asset('storage/' . $page->cover_photo) }}" alt="{{ $page->title }}" class="cms-page-cover" loading="lazy" decoding="async">
                     @endif
 
                     <div class="cms-page-body">

@@ -205,7 +205,7 @@
                             @php $itemPrice = $item['sale_price'] ?? $item['price']; @endphp
                             <div class="order-item-row">
                                 @if($item['image'])
-                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="order-item-img">
+                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="order-item-img" loading="lazy" decoding="async">
                                 @else
                                     <div class="order-item-img d-flex align-items-center justify-content-center" style="background:#f5f5f5;">
                                         <i class="fas fa-image text-muted"></i>

@@ -104,6 +104,7 @@ echo Schema::breadcrumbList()->itemListElement([
                             <div style="position:relative; overflow:hidden;">
                                 @if($blog->cover_photo)
                                     <img src="{{ asset('storage/' . $blog->cover_photo) }}" alt="{{ $blog->title }}"
+                                         loading="lazy" decoding="async"
                                          style="width:100%; height:210px; object-fit:cover; display:block; transition:transform 0.4s ease;"
                                          onmouseover="this.style.transform='scale(1.06)'"
                                          onmouseout="this.style.transform='scale(1)'">

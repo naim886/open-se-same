@@ -60,6 +60,7 @@
             <div class="shop-page-header-inner">
                 @if($brand && $brand->logo_url)
                     <img src="{{ $brand->logo_url }}" alt="{{ $brand->name }} logo" class="shop-page-logo"
+                         loading="lazy" decoding="async"
                          onerror="this.style.display='none';">
                 @endif
                 <div>

@@ -874,6 +874,7 @@
                     <a href="{{ route('customer.dashboard') }}">
                         @if(auth()->user()->photo)
                             <img src="{{ asset('storage' . \App\Models\User::IMAGE_PATH . auth()->user()->photo) }}"
+                                 loading="lazy" decoding="async"
                                  style="width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-2px;margin-right:4px;"
                                  alt="">
                         @else
@@ -898,7 +899,7 @@
             <!-- Logo -->
             <div class="col-4 col-md-2 col-lg-2">
                 <a href="{{ route('shop.home') }}" class="logo-link">
-                    <img src="{{ asset('images/logo-web.png') }}" alt="OpenSesame BD" class="header-logo" width="175" height="78">
+                    <img src="{{ asset('images/logo-web.png') }}" alt="OpenSesame BD" class="header-logo" width="175" height="78" loading="eager" decoding="async">
                 </a>
             </div>
 
@@ -1191,7 +1192,8 @@
                 <picture>
                     <source media="(max-width: 767.98px)" srcset="{{ asset('images/ssl-mobile.jpg') }}">
                     <img src="{{ asset('images/ssl.jpg') }}"
-                         alt="Accepted payment methods — verified by SSLCommerz">
+                         alt="Accepted payment methods — verified by SSLCommerz"
+                         loading="lazy" decoding="async">
                 </picture>
             </div>
         </div>

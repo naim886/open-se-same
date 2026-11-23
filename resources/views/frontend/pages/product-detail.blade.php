@@ -166,9 +166,9 @@
             <div class="col-lg-7">
                 <div class="main-image-container mb-3">
                     @if($product->primary_photo)
-                        <img src="{{ asset('storage/' . $product->primary_photo) }}" alt="{{ $product->name }}" class="main-product-image" id="mainImage">
+                        <img src="{{ asset('storage/' . $product->primary_photo) }}" alt="{{ $product->name }}" class="main-product-image" id="mainImage" loading="eager" fetchpriority="high" decoding="async">
                     @elseif($product->activePhotos->count() > 0)
-                        <img src="{{ asset('storage/' . $product->activePhotos->first()->photo_path) }}" alt="{{ $product->name }}" class="main-product-image" id="mainImage">
+                        <img src="{{ asset('storage/' . $product->activePhotos->first()->photo_path) }}" alt="{{ $product->name }}" class="main-product-image" id="mainImage" loading="eager" fetchpriority="high" decoding="async">
                     @else
                         <div class="no-image-placeholder">
                             <div class="text-center">
@@ -185,6 +185,7 @@
                         <img src="{{ asset('storage/' . $product->primary_photo) }}"
                              alt="Primary Image"
                              class="img-thumbnail active"
+                             loading="lazy" decoding="async"
                              onclick="changeImage('{{ asset('storage/' . $product->primary_photo) }}')">
                     @endif
 
@@ -192,6 +193,7 @@
                         <img src="{{ asset('storage/' . $photo->photo_path) }}"
                              alt="Gallery Image {{ $index + 1 }}"
                              class="img-thumbnail {{ !$product->primary_photo && $index === 0 ? 'active' : '' }}"
+                             loading="lazy" decoding="async"
                              onclick="changeImage('{{ asset('storage/' . $photo->photo_path) }}')">
                     @endforeach
                 </div>

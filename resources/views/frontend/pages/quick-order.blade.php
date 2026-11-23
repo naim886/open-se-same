@@ -82,7 +82,7 @@ echo Schema::product()
                                     : ($product->photos->first() ? asset('storage/'.$product->photos->first()->photo_path) : null);
                             @endphp
                             @if($img)
-                                <img id="quickOrderMainImg" src="{{ $img }}" alt="{{ $product->name }}" class="rounded mb-3" style="width:100%; aspect-ratio:1/1; object-fit:cover; border:1px solid var(--border);">
+                                <img id="quickOrderMainImg" src="{{ $img }}" alt="{{ $product->name }}" class="rounded mb-3" loading="eager" fetchpriority="high" decoding="async" style="width:100%; aspect-ratio:1/1; object-fit:cover; border:1px solid var(--border);">
                             @endif
                             <h6 class="fw-bold mb-2" style="font-size:15px;">{{ $product->name }}</h6>
                             <div class="mb-2" id="qoPriceDisplay">

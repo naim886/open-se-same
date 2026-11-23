@@ -19,7 +19,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-3">
                     <a href="{{route('frontend.index')}}">
-                        <img class="logo" src="{{asset('images/logo-web.png')}}" alt="Logo">
+                        <img class="logo" src="{{asset('images/logo-web.png')}}" alt="Logo" loading="eager">
                     </a>
                 </div>
                 <div class="col-lg-5">
@@ -69,7 +69,7 @@
     </div>
 </nav>
 <section class="hero">
-    <img src="{{asset('images/banner/lingaree.png')}}" alt="Hero Image">
+    <img src="{{asset('images/banner/lingaree.png')}}" alt="Hero Image" loading="eager" fetchpriority="high" decoding="async">
 </section>
 <section class="category my-5">
     <div class="container">
@@ -77,7 +77,7 @@
             @for($i=0 ; $i<4; $i++)
             <div class="col-lg-3">
                 <a href="#" class="category-card">
-                    <img class="category-image img-thumbnail" src="{{asset('images/category/rose.webp')}}" alt="Category Image">
+                    <img class="category-image img-thumbnail" src="{{asset('images/category/rose.webp')}}" alt="Category Image" loading="lazy" decoding="async">
                     <h3>treasures </h3>
                 </a>
             </div>
@@ -97,7 +97,7 @@
             </div>
             <div class="col-lg-3">
                 <a href="#" class="product-card">
-                    <img class="product-image img-thumbnail" src="{{asset('images/product/rose.webp')}}" alt="Product Image">
+                    <img class="product-image img-thumbnail" src="{{asset('images/product/rose.webp')}}" alt="Product Image" loading="lazy" decoding="async">
                     <div class="product-card-content">
                         <h4>Eternal Preserved Black Rose Flower With Acrylic Crystal Ring Box</h4>
                         <div class="star-review">

@@ -120,7 +120,7 @@ if ($schemaProducts->isNotEmpty()) {
                             <a href="{{ route('shop.category', $tile->slug) }}" class="cat-card-new">
                                 <div class="cat-card-inner">
                                     @if($tile->getRawOriginal('icon'))
-                                        <img src="{{ $tile->icon }}" alt="{{ $tile->name }}">
+                                        <img src="{{ $tile->icon }}" alt="{{ $tile->name }}" loading="lazy" decoding="async">
                                     @else
                                         <div class="cat-card-no-img">
                                             <i class="fas fa-tag"></i>

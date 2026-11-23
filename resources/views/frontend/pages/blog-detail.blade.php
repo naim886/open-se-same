@@ -77,6 +77,7 @@ if ($blog->faqs && $blog->faqs->count() > 0) {
                     <!-- Cover Image -->
                     @if($blog->cover_photo)
                         <img src="{{ asset('storage/' . $blog->cover_photo) }}" alt="{{ $blog->title }}"
+                             loading="lazy" decoding="async"
                              style="width:100%; max-height:400px; object-fit:cover; display:block;">
                     @endif
 

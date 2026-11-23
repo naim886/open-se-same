@@ -31,6 +31,8 @@
                             <img src="{{ asset('storage/' . $banner->image) }}"
                                  class="d-block w-100"
                                  alt="{{ $banner->title }}"
+                                 @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif
+                                 decoding="async"
                                  style="height: 600px; object-fit: cover;">
                         </picture>
                     </div>

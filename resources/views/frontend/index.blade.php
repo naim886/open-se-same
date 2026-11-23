@@ -694,7 +694,7 @@
                 <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($key + 1) * 100 }}">
                     <div class="category-card">
                         @if($category->icon)
-                        <img src="{{ asset($category->icon) }}" alt="{{ $category->name }}" class="category-icon">
+                        <img src="{{ asset($category->icon) }}" alt="{{ $category->name }}" class="category-icon" loading="lazy" decoding="async">
                         @else
                         <div class="category-icon">
                             <i class="fas fa-cube"></i>
