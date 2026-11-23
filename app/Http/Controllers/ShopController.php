@@ -22,11 +22,14 @@ use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendFacebookCapiEvent;
 use App\Services\CouponService;
 use App\Services\OrderNotificationService;
+use App\Services\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ShopController extends Controller
@@ -542,8 +545,10 @@ class ShopController extends Controller
 
         $defaultAddress = auth()->check() ? auth()->user()->addresses()->where('is_default', true)->first() : null;
         $authUser       = auth()->user();
+        $sslEnabled     = app(\App\Services\Payment\PaymentService::class)->sslcommerzEnabled();
+        $nagadEnabled   = app(\App\Services\Payment\PaymentService::class)->nagadEnabled();
 
-        return view('frontend.pages.quick-order', compact('product', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser'));
+        return view('frontend.pages.quick-order', compact('product', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser', 'sslEnabled', 'nagadEnabled'));
     }
 
     // ============================================================
@@ -560,7 +565,11 @@ class ShopController extends Controller
             'quantity'         => 'required|integer|min:1',
             'delivery_location'=> 'required|in:1,2,3,4,5',
             'variation_id'     => 'nullable|integer|exists:product_variations,id',
+            'payment_method'   => 'nullable|in:cod,sslcommerz,nagad',
         ]);
+
+        $payments        = app(PaymentService::class);
+        $paymentMethodId = $this->resolvePaymentMethod($request);
 
         $product = Product::findOrFail($request->product_id);
         $qty     = (int) $request->quantity;
@@ -603,6 +612,8 @@ class ShopController extends Controller
             'note'              => $request->note,
             'status'            => Order::STATUS_PENDING,
             'source'            => 'website',
+            'payment_method'    => $paymentMethodId,
+            'analytics_context' => $this->analyticsContext(),
         ];
 
         try {
@@ -652,28 +663,37 @@ class ShopController extends Controller
                 request()->url()
             );
 
-            // ── CAPI: Purchase ────────────────────────────────────
-            $purchaseEventId = Str::uuid()->toString();
-            SendFacebookCapiEvent::dispatch(
-                'Purchase',
-                $this->capiRequestData([
-                    'email'      => $request->customer_email,
-                    'phone'      => $request->customer_phone,
-                    'first_name' => $nameParts[0] ?? '',
-                    'last_name'  => $nameParts[1] ?? '',
-                ]),
-                [
-                    'value'        => round((float) $payload['order_total'], 2),
-                    'content_ids'  => [$purchaseContentId],
-                    'contents'     => $contents,
-                    'content_name' => $product->name,
-                    'content_type' => 'product',
-                    'num_items'    => $qty,
-                    'order_id'     => (string) $order->order_number,
-                ],
-                $purchaseEventId,
-                request()->url()
-            );
+            // ── CAPI: Purchase (COD only; online fires after a verified payment) ──
+            $isOnline        = $paymentMethodId !== Order::PAYMENT_METHOD_COD;
+            $purchaseEventId = '';
+
+            if (! $isOnline) {
+                $purchaseEventId = Str::uuid()->toString();
+                SendFacebookCapiEvent::dispatch(
+                    'Purchase',
+                    $this->capiRequestData([
+                        'email'      => $request->customer_email,
+                        'phone'      => $request->customer_phone,
+                        'first_name' => $nameParts[0] ?? '',
+                        'last_name'  => $nameParts[1] ?? '',
+                    ]),
+                    [
+                        'value'        => round((float) $payload['order_total'], 2),
+                        'content_ids'  => [$purchaseContentId],
+                        'contents'     => $contents,
+                        'content_name' => $product->name,
+                        'content_type' => 'product',
+                        'num_items'    => $qty,
+                        'order_id'     => (string) $order->order_number,
+                    ],
+                    $purchaseEventId,
+                    request()->url()
+                );
+            }
+
+            if ($isOnline) {
+                return $this->redirectToGateway($order, $payments);
+            }
 
             return redirect()->route('shop.order.success')
                 ->with('success', 'আপনার অর্ডার সফলভাবে গৃহীত হয়েছে!')
@@ -744,7 +764,11 @@ class ShopController extends Controller
             'customer_address' => 'required|string|max:500',
             'customer_email'   => 'nullable|email|max:255',
             'delivery_location'=> 'required|in:1,2,3,4,5',
+            'payment_method'   => 'nullable|in:cod,sslcommerz,nagad',
         ]);
+
+        $payments        = app(PaymentService::class);
+        $paymentMethodId = $this->resolvePaymentMethod($request);
 
         $cart = session('cart', []);
         if (empty($cart)) {
@@ -798,6 +822,8 @@ class ShopController extends Controller
             'note'              => $request->note,
             'status'            => Order::STATUS_PENDING,
             'source'            => 'website',
+            'payment_method'    => $paymentMethodId,
+            'analytics_context' => $this->analyticsContext(),
         ];
 
         try {
@@ -866,27 +892,36 @@ class ShopController extends Controller
                 request()->url()
             );
 
-            // ── CAPI: Purchase ────────────────────────────────────
-            $purchaseEventId = Str::uuid()->toString();
-            SendFacebookCapiEvent::dispatch(
-                'Purchase',
-                $this->capiRequestData([
-                    'email'      => $request->customer_email,
-                    'phone'      => $request->customer_phone,
-                    'first_name' => $nameParts[0] ?? '',
-                    'last_name'  => $nameParts[1] ?? '',
-                ]),
-                [
-                    'value'        => round((float) $payload['order_total'], 2),
-                    'content_ids'  => $purchaseContentIds,
-                    'contents'     => $contents,
-                    'content_type' => 'product',
-                    'num_items'    => (int) array_sum($quantities),
-                    'order_id'     => (string) $order->order_number,
-                ],
-                $purchaseEventId,
-                request()->url()
-            );
+            // ── CAPI: Purchase (COD only; online fires after a verified payment) ──
+            $isOnline        = $paymentMethodId !== Order::PAYMENT_METHOD_COD;
+            $purchaseEventId = '';
+
+            if (! $isOnline) {
+                $purchaseEventId = Str::uuid()->toString();
+                SendFacebookCapiEvent::dispatch(
+                    'Purchase',
+                    $this->capiRequestData([
+                        'email'      => $request->customer_email,
+                        'phone'      => $request->customer_phone,
+                        'first_name' => $nameParts[0] ?? '',
+                        'last_name'  => $nameParts[1] ?? '',
+                    ]),
+                    [
+                        'value'        => round((float) $payload['order_total'], 2),
+                        'content_ids'  => $purchaseContentIds,
+                        'contents'     => $contents,
+                        'content_type' => 'product',
+                        'num_items'    => (int) array_sum($quantities),
+                        'order_id'     => (string) $order->order_number,
+                    ],
+                    $purchaseEventId,
+                    request()->url()
+                );
+            }
+
+            if ($isOnline) {
+                return $this->redirectToGateway($order, $payments);
+            }
 
             return redirect()->route('shop.order.success')
                 ->with('success', 'আপনার অর্ডার সফলভাবে গৃহীত হয়েছে!')
@@ -954,8 +989,10 @@ class ShopController extends Controller
 
         $defaultAddress = auth()->check() ? auth()->user()->addresses()->where('is_default', true)->first() : null;
         $authUser       = auth()->user();
+        $sslEnabled     = app(\App\Services\Payment\PaymentService::class)->sslcommerzEnabled();
+        $nagadEnabled   = app(\App\Services\Payment\PaymentService::class)->nagadEnabled();
 
-        return view('frontend.pages.checkout', compact('cart', 'subtotal', 'delivery', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser'));
+        return view('frontend.pages.checkout', compact('cart', 'subtotal', 'delivery', 'icEventId', 'addPaymentEventId', 'defaultAddress', 'authUser', 'sslEnabled', 'nagadEnabled'));
     }
 
     // ============================================================
@@ -1018,6 +1055,90 @@ class ShopController extends Controller
             'zip'         => null,
             'country'     => 'bd',
         ];
+    }
+
+    /**
+     * Payment method chosen at checkout, validated against the gateways the
+     * admin has enabled in Settings.
+     */
+    private function resolvePaymentMethod(Request $request): int
+    {
+        $payments = app(PaymentService::class);
+        $method   = (string) $request->input('payment_method', 'cod');
+
+        if ($method === 'sslcommerz' && ! $payments->sslcommerzEnabled()) {
+            throw ValidationException::withMessages([
+                'payment_method' => 'SSLCommerz is not available right now. Please choose another payment method.',
+            ]);
+        }
+
+        if ($method === 'nagad' && ! $payments->nagadEnabled()) {
+            throw ValidationException::withMessages([
+                'payment_method' => 'Nagad is not available right now. Please choose another payment method.',
+            ]);
+        }
+
+        return $payments->paymentMethodId($method);
+    }
+
+    /**
+     * Browser context captured when the order is placed. Online payments finish
+     * on a gateway callback, where the request IP/user agent belong to the
+     * gateway — this keeps the server-side Purchase event accurate.
+     *
+     * @return array<string, mixed>
+     */
+    private function analyticsContext(): array
+    {
+        return [
+            'ip'               => request()->ip(),
+            'user_agent'       => request()->userAgent() ?? '',
+            'fbc'              => request()->cookie('_fbc'),
+            'fbp'              => request()->cookie('_fbp'),
+            'event_source_url' => request()->fullUrl(),
+        ];
+    }
+
+    /**
+     * Redirect to the selected gateway, or to the signed retry page if the
+     * gateway cannot be started.
+     */
+    private function redirectToGateway(Order $order, PaymentService $payments): RedirectResponse
+    {
+        try {
+            $result = $payments->start($order);
+        } catch (\Throwable $e) {
+            app_error_log('Payment Gateway Start', $e);
+
+            $result = [
+                'status'  => 'FAILED',
+                'gateway' => (string) ($order->payment_gateway ?: 'gateway'),
+                'message' => $e->getMessage(),
+            ];
+        }
+
+        if (($result['status'] ?? '') === 'SUCCESS' && ! empty($result['url'])) {
+            return redirect()->away((string) $result['url']);
+        }
+
+        $payments->markFailed(
+            $order,
+            (string) ($result['gateway'] ?? 'gateway'),
+            'initiation_failed',
+            isset($result['reference']) ? (string) $result['reference'] : null,
+            is_array($result['response'] ?? null) ? $result['response'] : []
+        );
+
+        $url = URL::temporarySignedRoute(
+            'payment.failed',
+            now()->addHours(24),
+            ['order' => $order->id]
+        );
+
+        return redirect($url)->with(
+            'payment_error',
+            (string) ($result['message'] ?? 'Could not start the payment gateway. Please try again.')
+        );
     }
 
     // ============================================================

@@ -371,7 +371,12 @@
     $vatIncluded = round($productTotal * 0.075, 2);
     $orderTotal  = (float) $order->total_amount;
 
-    $gatewayFee = ((int) $order->payment_method === \App\Models\Order::PAYMENT_METHOD_ONLINE)
+    $isOnlinePayment = in_array((int) $order->payment_method, [
+        \App\Models\Order::PAYMENT_METHOD_SSLCOMMERZ,
+        \App\Models\Order::PAYMENT_METHOD_NAGAD,
+    ], true);
+
+    $gatewayFee = $isOnlinePayment
         ? round($subtotal * 0.025, 2)
         : null;
 

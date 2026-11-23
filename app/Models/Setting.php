@@ -62,6 +62,21 @@ class Setting extends Model
         'analytics.ga4.measurement_id'   => 'G-0C0K5XZEQF',
         'analytics.ga.measurement_id'    => '',
 
+        // Payment gateways.
+        'payment.sslcommerz.enabled'        => '0',
+        'payment.sslcommerz.mode'           => 'sandbox',
+        'payment.sslcommerz.store_id'       => '',
+        'payment.sslcommerz.store_password' => '',
+        'payment.sslcommerz.base_url'       => '',
+
+        'payment.nagad.enabled'             => '0',
+        'payment.nagad.mode'                => 'sandbox',
+        'payment.nagad.merchant_id'         => '',
+        'payment.nagad.merchant_number'     => '',
+        'payment.nagad.merchant_private_key' => '',
+        'payment.nagad.pg_public_key'       => '',
+        'payment.nagad.base_url'            => '',
+
         // Notification switches.
         'notification.order_confirmation' => '1',
         'notification.admin_new_order'    => '1',

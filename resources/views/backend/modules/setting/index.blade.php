@@ -12,7 +12,7 @@
 
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Settings</h4>
-            <span class="text-muted" style="font-size:13px;">Delivery charges, courier credentials, invoices and notifications</span>
+            <span class="text-muted" style="font-size:13px;">Delivery charges, courier and payment credentials, invoices and notifications</span>
         </div>
 
         @if(session('success'))
@@ -232,6 +232,128 @@
                             <div class="text-muted mt-1" style="font-size:12px;">
                                 Add this callback URL in Pathao Merchant → Developer's API → Webhook Integration,
                                 and use the same secret above.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Payment Gateways ────────────────────────────────── --}}
+            <div class="card mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fas fa-credit-card me-2"></i>Payment Gateways
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">
+                        Enable the online payment methods shown at checkout and quick order.
+                        Cash on Delivery always stays available. Credentials are only used
+                        when the matching gateway is enabled.
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-lock me-1"></i>SSLCommerz</h6>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="pay-ssl-enabled"
+                                   name="settings[payment.sslcommerz.enabled]" value="1" @checked($on('payment.sslcommerz.enabled'))>
+                            <label class="form-check-label" for="pay-ssl-enabled" style="font-size:13px;">Enabled</label>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
+                            <select class="form-select" name="settings[payment.sslcommerz.mode]">
+                                <option value="sandbox" @selected($val('payment.sslcommerz.mode') === 'sandbox')>Sandbox (testing)</option>
+                                <option value="live" @selected($val('payment.sslcommerz.mode') === 'live')>Live</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
+                            <input type="text" class="form-control" name="settings[payment.sslcommerz.store_id]"
+                                   value="{{ $val('payment.sslcommerz.store_id') }}" autocomplete="off"
+                                   placeholder="e.g. opensesamelive">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Store Password</label>
+                            <input type="password" class="form-control" name="settings[payment.sslcommerz.store_password]"
+                                   value="{{ $val('payment.sslcommerz.store_password') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
+                            <input type="url" class="form-control" name="settings[payment.sslcommerz.base_url]"
+                                   value="{{ $val('payment.sslcommerz.base_url') }}"
+                                   placeholder="Leave empty for the mode default">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Sandbox: https://sandbox.sslcommerz.com — Live: https://securepay.sslcommerz.com
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">IPN URL</label>
+                            <input type="text" class="form-control" value="{{ route('payment.sslcommerz.ipn') }}" readonly>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Set this as the IPN URL in your SSLCommerz merchant panel. Success, fail and
+                                cancel URLs are sent automatically with every order.
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color:rgba(255,255,255,.12);">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-mobile-alt me-1"></i>Nagad</h6>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="pay-nagad-enabled"
+                                   name="settings[payment.nagad.enabled]" value="1" @checked($on('payment.nagad.enabled'))>
+                            <label class="form-check-label" for="pay-nagad-enabled" style="font-size:13px;">Enabled</label>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
+                            <select class="form-select" name="settings[payment.nagad.mode]">
+                                <option value="sandbox" @selected($val('payment.nagad.mode') === 'sandbox')>Sandbox (testing)</option>
+                                <option value="live" @selected($val('payment.nagad.mode') === 'live')>Live</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant ID</label>
+                            <input type="text" class="form-control" name="settings[payment.nagad.merchant_id]"
+                                   value="{{ $val('payment.nagad.merchant_id') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Number</label>
+                            <input type="text" class="form-control" name="settings[payment.nagad.merchant_number]"
+                                   value="{{ $val('payment.nagad.merchant_number') }}" autocomplete="off"
+                                   placeholder="e.g. 017XXXXXXXX">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Private Key</label>
+                            <textarea class="form-control" rows="5" name="settings[payment.nagad.merchant_private_key]"
+                                      style="font-family:monospace; font-size:11px;"
+                                      placeholder="-----BEGIN RSA PRIVATE KEY-----">{{ $val('payment.nagad.merchant_private_key') }}</textarea>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Supplied by Nagad. Pasted without the BEGIN/END lines is also accepted.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Nagad PG Public Key</label>
+                            <textarea class="form-control" rows="5" name="settings[payment.nagad.pg_public_key]"
+                                      style="font-family:monospace; font-size:11px;"
+                                      placeholder="-----BEGIN PUBLIC KEY-----">{{ $val('payment.nagad.pg_public_key') }}</textarea>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Used to encrypt sensitive checkout data.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
+                            <input type="url" class="form-control" name="settings[payment.nagad.base_url]"
+                                   value="{{ $val('payment.nagad.base_url') }}"
+                                   placeholder="Leave empty for the mode default">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Callback URL</label>
+                            <input type="text" class="form-control" value="{{ route('payment.nagad.callback') }}" readonly>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Sent to Nagad with every checkout and used to verify the payment.
                             </div>
                         </div>
                     </div>

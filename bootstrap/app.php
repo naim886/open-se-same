@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'webhooks/steadfast',
             'webhooks/pathao',
+            'payment/sslcommerz/*',
+            'payment/nagad/callback',
         ]);
         $middleware->alias([
             'role' => RoleMiddleware::class,

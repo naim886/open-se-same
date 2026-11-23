@@ -299,15 +299,28 @@ echo Schema::product()
                                                 </div>
                                                 <i class="fas fa-check-circle payment-method-check"></i>
                                             </label>
-                                            <label class="payment-method-card disabled" title="Coming soon">
-                                                <input type="radio" name="payment_method" value="online" disabled>
+                                            @if($sslEnabled ?? false)
+                                            <label class="payment-method-card">
+                                                <input type="radio" name="payment_method" value="sslcommerz">
                                                 <div class="payment-method-icon"><i class="fas fa-credit-card"></i></div>
                                                 <div class="payment-method-text">
-                                                    <div class="payment-method-title">Online Payment</div>
-                                                    <div class="payment-method-sub">Card, bKash, Nagad &amp; more</div>
+                                                    <div class="payment-method-title">SSLCommerz</div>
+                                                    <div class="payment-method-sub">Card, bKash, Nagad, bank &amp; more</div>
                                                 </div>
-                                                <span class="payment-method-badge">Coming Soon</span>
+                                                <i class="fas fa-check-circle payment-method-check"></i>
                                             </label>
+                                            @endif
+                                            @if($nagadEnabled ?? false)
+                                            <label class="payment-method-card">
+                                                <input type="radio" name="payment_method" value="nagad">
+                                                <div class="payment-method-icon"><i class="fas fa-mobile-alt"></i></div>
+                                                <div class="payment-method-text">
+                                                    <div class="payment-method-title">Nagad</div>
+                                                    <div class="payment-method-sub">Pay securely with your Nagad account</div>
+                                                </div>
+                                                <i class="fas fa-check-circle payment-method-check"></i>
+                                            </label>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -635,6 +648,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('quickOrderForm');
+    if (!form) return;
+
+    var btn = document.getElementById('qoSubmitBtn');
+
+    function syncPaymentCards() {
+        form.querySelectorAll('.payment-method-card').forEach(function (card) {
+            var radio = card.querySelector('input[name="payment_method"]');
+            card.classList.toggle('active', !!(radio && radio.checked));
+        });
+
+        var selected = form.querySelector('input[name="payment_method"]:checked');
+
+        if (btn && !btn.dataset.locked) {
+            btn.innerHTML = selected && selected.value !== 'cod'
+                ? '<i class="fas fa-lock me-2"></i>Pay Now'
+                : '<i class="fas fa-check-circle me-2"></i>Confirm Order';
+        }
+    }
+
+    form.querySelectorAll('input[name="payment_method"]').forEach(function (radio) {
+        radio.addEventListener('change', syncPaymentCards);
+    });
+
+    syncPaymentCards();
+
+    form.addEventListener('submit', function () {
+        if (btn) {
+            btn.dataset.locked = '1';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Please wait...';
+        }
+    });
 });
 </script>
 @endsection

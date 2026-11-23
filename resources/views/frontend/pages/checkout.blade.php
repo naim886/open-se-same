@@ -169,15 +169,28 @@
                                 </div>
                                 <i class="fas fa-check-circle payment-method-check"></i>
                             </label>
-                            <label class="payment-method-card disabled" title="Coming soon">
-                                <input type="radio" name="payment_method" value="online" disabled>
+                            @if($sslEnabled ?? false)
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment_method" value="sslcommerz">
                                 <div class="payment-method-icon"><i class="fas fa-credit-card"></i></div>
                                 <div class="payment-method-text">
-                                    <div class="payment-method-title">Online Payment</div>
-                                    <div class="payment-method-sub">Card, bKash, Nagad &amp; more</div>
+                                    <div class="payment-method-title">SSLCommerz</div>
+                                    <div class="payment-method-sub">Card, bKash, Nagad, bank &amp; more</div>
                                 </div>
-                                <span class="payment-method-badge">Coming Soon</span>
+                                <i class="fas fa-check-circle payment-method-check"></i>
                             </label>
+                            @endif
+                            @if($nagadEnabled ?? false)
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment_method" value="nagad">
+                                <div class="payment-method-icon"><i class="fas fa-mobile-alt"></i></div>
+                                <div class="payment-method-text">
+                                    <div class="payment-method-title">Nagad</div>
+                                    <div class="payment-method-sub">Pay securely with your Nagad account</div>
+                                </div>
+                                <i class="fas fa-check-circle payment-method-check"></i>
+                            </label>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -259,6 +272,47 @@
 @endsection
 
 @section('extra_js')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var cards = document.querySelectorAll('.payment-method-card');
+    var submitBtn = document.querySelector('.btn-place-order');
+
+    function syncPaymentCards() {
+        cards.forEach(function (card) {
+            var radio = card.querySelector('input[name="payment_method"]');
+            card.classList.toggle('active', !!(radio && radio.checked));
+        });
+
+        var selected = document.querySelector('input[name="payment_method"]:checked');
+
+        if (submitBtn) {
+            submitBtn.innerHTML = selected && selected.value !== 'cod'
+                ? '<i class="fas fa-lock me-2"></i>Pay Now'
+                : '<i class="fas fa-check-circle me-2"></i>Confirm Order';
+        }
+    }
+
+    cards.forEach(function (card) {
+        var radio = card.querySelector('input[name="payment_method"]');
+        if (radio) {
+            radio.addEventListener('change', syncPaymentCards);
+        }
+    });
+
+    syncPaymentCards();
+
+    var form = document.getElementById('checkoutForm');
+    if (form) {
+        form.addEventListener('submit', function () {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.7';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Please wait...';
+            }
+        });
+    }
+});
+</script>
 <script>
 var baseSubtotal   = {{ $subtotal ?? 0 }};
 var couponDiscount = 0;

@@ -16,6 +16,8 @@ class SettingController extends Controller
         'notification.order_confirmation',
         'notification.admin_new_order',
         'notification.admin_low_stock',
+        'payment.sslcommerz.enabled',
+        'payment.nagad.enabled',
     ];
 
     /** Social links that must be empty or a valid URL. */
@@ -28,6 +30,8 @@ class SettingController extends Controller
         'social.whatsapp_url',
         'courier.steadfast.base_url',
         'courier.pathao.base_url',
+        'payment.sslcommerz.base_url',
+        'payment.nagad.base_url',
     ];
 
     /** Keys that must be non-negative numbers. */
@@ -96,7 +100,24 @@ class SettingController extends Controller
                 return back()->withInput()->with('error', 'Pathao item weight must be between 0.5 kg and 10 kg.');
             }
 
+            if (in_array($key, ['payment.sslcommerz.mode', 'payment.nagad.mode'], true)
+                && ! in_array($value, ['sandbox', 'live'], true)) {
+                return back()->withInput()->with('error', 'Payment gateway mode must be either sandbox or live.');
+            }
+
             $values[$key] = $value;
+        }
+
+        if ($values['payment.sslcommerz.enabled'] === '1'
+            && (trim($values['payment.sslcommerz.store_id']) === '' || trim($values['payment.sslcommerz.store_password']) === '')) {
+            return back()->withInput()->with('error', 'SSLCommerz is enabled but its Store ID or Store Password is empty.');
+        }
+
+        if ($values['payment.nagad.enabled'] === '1'
+            && (trim($values['payment.nagad.merchant_id']) === ''
+                || trim($values['payment.nagad.merchant_private_key']) === ''
+                || trim($values['payment.nagad.pg_public_key']) === '')) {
+            return back()->withInput()->with('error', 'Nagad is enabled but its Merchant ID or keys are empty.');
         }
 
         $pathaoCredentialKeys = [

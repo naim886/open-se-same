@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerPanelController;
 use App\Http\Controllers\SteadfastWebhookController;
 use App\Http\Controllers\PathaoWebhookController;
+use App\Http\Controllers\PaymentController;
 
 // ============================================================
 // Customer Panel (authenticated registered customers)
@@ -63,6 +64,22 @@ Route::prefix('account')->name('customer.')->middleware('auth')->group(function 
 // ============================================================
 Route::post('/webhooks/steadfast', [SteadfastWebhookController::class, 'handle'])->name('webhooks.steadfast');
 Route::post('/webhooks/pathao', [PathaoWebhookController::class, 'handle'])->name('webhooks.pathao');
+
+// ============================================================
+// Payment gateway callbacks (no auth; signatures/validation enforce security)
+// ============================================================
+Route::match(['get', 'post'], '/payment/sslcommerz/success', [PaymentController::class, 'sslSuccess'])->name('payment.sslcommerz.success');
+Route::match(['get', 'post'], '/payment/sslcommerz/fail', [PaymentController::class, 'sslFail'])->name('payment.sslcommerz.fail');
+Route::match(['get', 'post'], '/payment/sslcommerz/cancel', [PaymentController::class, 'sslCancel'])->name('payment.sslcommerz.cancel');
+Route::post('/payment/sslcommerz/ipn', [PaymentController::class, 'sslIpn'])->name('payment.sslcommerz.ipn');
+Route::match(['get', 'post'], '/payment/nagad/callback', [PaymentController::class, 'nagadCallback'])->name('payment.nagad.callback');
+
+Route::get('/payment/retry/{order}', [PaymentController::class, 'retry'])
+    ->middleware('signed')
+    ->name('payment.retry');
+Route::get('/payment/failed/{order}', [PaymentController::class, 'failed'])
+    ->middleware('signed')
+    ->name('payment.failed');
 
 // ============================================================
 // SHOP (Public Frontend) Routes

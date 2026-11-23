@@ -320,6 +320,59 @@
                 </div>
             </div>
 
+            {{-- Payment Information --}}
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="card-title mb-0"><i class="fas fa-credit-card me-1"></i> Payment Information</h5></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Method</small>
+                            <strong>{{ $order->getPaymentMethodText() }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Status</small>
+                            @if((int) $order->payment_status === \App\Models\Order::PAYMENT_STATUS_PAID)
+                                <span class="badge bg-success">Paid</span>
+                            @else
+                                <span class="badge bg-secondary">Unpaid</span>
+                            @endif
+                        </div>
+                        @if($order->payment_gateway)
+                            <div class="col-6">
+                                <small class="text-muted d-block">Gateway</small>
+                                <strong>{{ ['sslcommerz' => 'SSLCommerz', 'nagad' => 'Nagad'][$order->payment_gateway] ?? ucfirst($order->payment_gateway) }}</strong>
+                            </div>
+                        @endif
+                        @if($order->paid_at)
+                            <div class="col-6">
+                                <small class="text-muted d-block">Paid At</small>
+                                <strong>{{ $order->paid_at->format('M d, Y h:i A') }}</strong>
+                            </div>
+                        @endif
+                        @if($order->payment_transaction_id)
+                            <div class="col-12">
+                                <small class="text-muted d-block">Transaction ID</small>
+                                <span style="word-break:break-all;">{{ $order->payment_transaction_id }}</span>
+                            </div>
+                        @endif
+                        @if($order->payment_reference)
+                            <div class="col-12">
+                                <small class="text-muted d-block">Payment Reference</small>
+                                <span style="word-break:break-all;">{{ $order->payment_reference }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    @if(in_array((int) $order->payment_method, [\App\Models\Order::PAYMENT_METHOD_SSLCOMMERZ, \App\Models\Order::PAYMENT_METHOD_NAGAD], true)
+                        && (int) $order->payment_status !== \App\Models\Order::PAYMENT_STATUS_PAID)
+                        <div class="alert alert-warning mt-3 mb-0 py-2" style="font-size:12px;">
+                            <i class="fas fa-hourglass-half me-1"></i>
+                            The customer has not completed this online payment yet.
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- Order Summary --}}
             <div class="card mb-3">
                 <div class="card-header"><h5 class="card-title mb-0">Order Summary</h5></div>

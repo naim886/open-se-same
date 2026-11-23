@@ -24,6 +24,8 @@ class Order extends Model
     protected $casts = [
         'order_date'    => 'datetime',
         'delivery_date' => 'datetime',
+        'paid_at'       => 'datetime',
+        'analytics_context' => 'array',
     ];
 
     // Order Status Constants
@@ -139,12 +141,17 @@ class Order extends Model
     ];
 
     // Payment Method Constants
-    public const PAYMENT_METHOD_COD    = 1;
-    public const PAYMENT_METHOD_ONLINE = 2;
+    public const PAYMENT_METHOD_COD        = 1;
+    public const PAYMENT_METHOD_SSLCOMMERZ = 2;
+    public const PAYMENT_METHOD_NAGAD      = 3;
+
+    // Legacy alias kept for older records/code paths.
+    public const PAYMENT_METHOD_ONLINE = self::PAYMENT_METHOD_SSLCOMMERZ;
 
     public const PAYMENT_METHOD_LIST = [
-        self::PAYMENT_METHOD_COD    => 'Cash on Delivery',
-        self::PAYMENT_METHOD_ONLINE => 'Online Payment',
+        self::PAYMENT_METHOD_COD        => 'Cash on Delivery',
+        self::PAYMENT_METHOD_SSLCOMMERZ => 'SSLCommerz',
+        self::PAYMENT_METHOD_NAGAD      => 'Nagad',
     ];
 
     // Payment Status Constants
@@ -296,6 +303,7 @@ class Order extends Model
             'order_date'        => now(),
             'notes'             => $payload['note'] ?? null,
             'source'            => $payload['source'] ?? 'facebook',
+            'analytics_context' => $payload['analytics_context'] ?? null,
         ];
 
         // Create order row
