@@ -31,12 +31,23 @@ class Banner extends Model
     public const MOBILE_IMAGE_WIDTH  = 770;
     public const MOBILE_IMAGE_HEIGHT = 430;
 
-    final public function getBanners()
+    final public function getBanners(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('button_text', 'like', "%{$search}%");
+                });
+            })
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderBy('sort_order', 'asc')
             ->orderBy('created_at', 'desc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeBanner(Request $request): Model

@@ -11,6 +11,15 @@
             </div>
         @endif
 
+        @include('backend.partials.index-filters', [
+            'action' => route('top-selling.index'),
+            'search' => $search ?? '',
+            'placeholder' => 'Search product name or SKU',
+            'selects' => [
+                ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\TopSellingProduct::STATUS_LIST, 'value' => $status ?? ''],
+            ],
+        ])
+
         <div class="table-responsive">
             <table class="table theme-table" id="topSellingTable">
                 <thead>

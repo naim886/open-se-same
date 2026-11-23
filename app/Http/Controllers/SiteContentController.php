@@ -6,14 +6,15 @@ use App\Http\Requests\StoreSiteContentRequest;
 use App\Http\Requests\UpdateSiteContentRequest;
 use App\Models\SiteContent;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
 class SiteContentController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $contents = (new SiteContent())->getContents();
+        $contents = (new SiteContent())->getContents($request);
 
         $cms_content = [
             'page_title'   => 'Site Contents',
@@ -25,7 +26,10 @@ class SiteContentController extends Controller
             'type'         => 'create',
         ];
 
-        return view('backend.modules.site-content.index', compact('cms_content', 'contents'));
+        $search = (string) $request->input('search', '');
+        $type = (string) $request->input('type', '');
+
+        return view('backend.modules.site-content.index', compact('cms_content', 'contents', 'search', 'type'));
     }
 
     public function create(): View

@@ -14,11 +14,17 @@ use Throwable;
 class FlashSaleController extends Controller
 {
     // ── LIST ──────────────────────────────────────────────────────
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->input('search', ''));
+        $status = (string) $request->input('status', '');
+
         $flashSales = FlashSale::withCount('products')
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($status !== '', fn ($query) => $query->where('status', $status))
             ->orderByDesc('created_at')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         $cms_content = [
             'page_title'   => 'Flash Sales',
@@ -30,7 +36,7 @@ class FlashSaleController extends Controller
             'type'         => 'create',
         ];
 
-        return view('backend.modules.flash-sale.index', compact('cms_content', 'flashSales'));
+        return view('backend.modules.flash-sale.index', compact('cms_content', 'flashSales', 'search', 'status'));
     }
 
     // ── CREATE FORM ───────────────────────────────────────────────

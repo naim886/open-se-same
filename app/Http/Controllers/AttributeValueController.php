@@ -8,6 +8,7 @@ use App\Http\Requests\StoreAttributeValueRequest;
 use App\Http\Requests\UpdateAttributeValueRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class AttributeValueController extends Controller
@@ -15,7 +16,7 @@ class AttributeValueController extends Controller
     /**
      * Display a listing of the resource.
      */
-    final public function index(): View
+    final public function index(Request $request): View
     {
         $cms_content = [
             'page_title'   => 'Attribute Value List',
@@ -26,8 +27,12 @@ class AttributeValueController extends Controller
             'button_url'   => route('attribute-value.create'),
             'type'         => 'list'
         ];
-        $attributeValues = (new AttributeValue())->getAttributeValues();
-        return view('backend.modules.attribute-value.index', compact('cms_content', 'attributeValues'));
+        $attributeValues = (new AttributeValue())->getAttributeValues($request);
+        $attributeNames = (new AttributeName())->getAttributeNameAssoc();
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+        $attributeNameId = (string) $request->input('attribute_name_id', '');
+        return view('backend.modules.attribute-value.index', compact('cms_content', 'attributeValues', 'attributeNames', 'search', 'status', 'attributeNameId'));
     }
 
     /**

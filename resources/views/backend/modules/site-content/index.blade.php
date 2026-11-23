@@ -3,6 +3,18 @@
 @section('content')
 <div class="row justify-content-center my-5">
     <div class="col-lg-12">
+        @include('backend.partials.index-filters', [
+            'action' => route('site-content.index'),
+            'search' => $search ?? '',
+            'placeholder' => 'Search key or label',
+            'selects' => [
+                ['name' => 'type', 'label' => 'Type', 'options' => [
+                    \App\Models\SiteContent::TYPE_TEXT => 'Text',
+                    \App\Models\SiteContent::TYPE_TEXTAREA => 'Textarea',
+                    \App\Models\SiteContent::TYPE_HTML => 'HTML',
+                ], 'value' => $type ?? ''],
+            ],
+        ])
         <div class="table-responsive">
             <table class="table theme-table">
                 <thead>

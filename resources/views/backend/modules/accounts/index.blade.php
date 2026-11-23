@@ -46,6 +46,16 @@
         @endforeach
     </div>
 
+    @include('backend.partials.index-filters', [
+        'action' => route('accounts.index'),
+        'search' => $search ?? '',
+        'placeholder' => 'Search purpose, reference or note',
+        'selects' => [
+            ['name' => 'account', 'label' => 'Account', 'options' => \App\Models\AccountTransaction::ACCOUNT_LIST, 'value' => $account ?? ''],
+            ['name' => 'type', 'label' => 'Type', 'options' => ['credit' => 'Credit (In)', 'debit' => 'Debit (Out)'], 'value' => $type ?? ''],
+        ],
+    ])
+
     <div class="row g-4">
         {{-- ── Add Transaction Form ── --}}
         <div class="col-lg-4">

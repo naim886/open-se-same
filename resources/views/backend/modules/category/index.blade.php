@@ -8,6 +8,14 @@
                     <i class="fas fa-plus me-1"></i> Create Category
                 </a>
             </div>
+            @include('backend.partials.index-filters', [
+                'action' => route('category.index'),
+                'search' => $search ?? '',
+                'placeholder' => 'Search category name or slug',
+                'selects' => [
+                    ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\Category::STATUS_LIST, 'value' => $status ?? ''],
+                ],
+            ])
             <div class="table-responsive">
                 <table class="table theme-table">
                     <thead>

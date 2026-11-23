@@ -23,9 +23,16 @@ class Specification extends Model
         self::STATUS_INACTIVE => 'Inactive',
     ];
 
-    final public function getSpecifications()
+    final public function getSpecifications(?Request $request = null)
     {
-        return self::query()->orderBy('specifications_name', 'asc')->paginate(GlobalConstants::DEFAULT_PAGINATION);
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
+        return self::query()
+            ->when($search !== '', fn ($query) => $query->where('specifications_name', 'like', "%{$search}%"))
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
+            ->orderBy('specifications_name', 'asc')
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeSpecification(Request $request): Model

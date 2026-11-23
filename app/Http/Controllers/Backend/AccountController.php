@@ -10,7 +10,7 @@ use Illuminate\View\View;
 
 class AccountController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         // Per-account balance
         $balances = [];
@@ -19,11 +19,25 @@ class AccountController extends Controller
         }
         $totalBalance = AccountTransaction::totalBalance();
 
-        // Recent 100 transactions, newest first
+        $search  = trim((string) $request->input('search', ''));
+        $account = (string) $request->input('account', '');
+        $type    = (string) $request->input('type', '');
+
+        // Recent transactions, newest first
         $transactions = AccountTransaction::with('user')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('purpose', 'like', "%{$search}%")
+                        ->orWhere('reference', 'like', "%{$search}%")
+                        ->orWhere('note', 'like', "%{$search}%");
+                });
+            })
+            ->when($account !== '', fn ($query) => $query->where('account', $account))
+            ->when($type !== '', fn ($query) => $query->where('type', $type))
             ->orderByDesc('date')
             ->orderByDesc('id')
-            ->paginate(50);
+            ->paginate(50)
+            ->withQueryString();
 
         $cms_content = [
             'page_title' => 'Accounts',
@@ -32,7 +46,7 @@ class AccountController extends Controller
         ];
 
         return view('backend.modules.accounts.index', compact(
-            'cms_content', 'balances', 'totalBalance', 'transactions'
+            'cms_content', 'balances', 'totalBalance', 'transactions', 'search', 'account', 'type'
         ));
     }
 

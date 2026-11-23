@@ -40,11 +40,11 @@ class HomepageSection extends Model
      * Only the label and link of each item are editable in the admin panel.
      */
     public const TREASURE_ICONS = [
-        ['key' => 'pen',    'label' => 'Pen',    'icon' => 'images/pen.png'],
-        ['key' => 'car',    'label' => 'Car',    'icon' => 'images/car.png'],
-        ['key' => 'ramen',  'label' => 'Ramen',  'icon' => 'images/ramen.png'],
-        ['key' => 'gum',    'label' => 'Gum',    'icon' => 'images/gum.png'],
-        ['key' => 'others', 'label' => 'Others', 'icon' => 'images/others.png'],
+        ['key' => 'pen',    'label' => 'Pen',    'icon' => 'images/pen.png',    'link' => '/category/pentel'],
+        ['key' => 'car',    'label' => 'Car',    'icon' => 'images/car.png',    'link' => '/category/takara-tomy'],
+        ['key' => 'ramen',  'label' => 'Ramen',  'icon' => 'images/ramen.png',  'link' => '/category/nissin'],
+        ['key' => 'gum',    'label' => 'Gum',    'icon' => 'images/gum.png',    'link' => '/category/lotte'],
+        ['key' => 'others', 'label' => 'Others', 'icon' => 'images/others.png', 'link' => '/category/others'],
     ];
 
 
@@ -157,12 +157,30 @@ class HomepageSection extends Model
             $items[] = [
                 'key'   => $default['key'],
                 'label' => $label !== '' ? $label : $default['label'],
-                'link'  => $link,
+                'link'  => self::normalizeTreasureLink($link !== '' ? $link : $default['link']),
                 'icon'  => $default['icon'],
             ];
         }
 
         return $items;
+    }
+
+    /**
+     * Accept full URLs, absolute paths and bare paths such as
+     * "category/pentel" (the latter is what admins usually paste).
+     */
+    private static function normalizeTreasureLink(string $link): string
+    {
+        $link = trim($link);
+
+        if ($link === ''
+            || str_starts_with($link, '/')
+            || str_starts_with($link, '#')
+            || preg_match('#^[a-z][a-z0-9+.-]*:#i', $link)) {
+            return $link;
+        }
+
+        return '/' . $link;
     }
 
     public function requiresCategory(): bool

@@ -95,6 +95,40 @@ class HomepageSettingsTest extends TestCase
         $this->assertDatabaseMissing('homepage_sections', ['id' => $removed->id]);
     }
 
+    public function test_treasure_strip_uses_the_brand_category_links(): void
+    {
+        HomepageSection::query()->create([
+            'type'       => HomepageSection::TYPE_TREASURES,
+            'status'     => HomepageSection::STATUS_ACTIVE,
+            'sort_order' => 0,
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('href="/category/pentel"', false)
+            ->assertSee('href="/category/takara-tomy"', false)
+            ->assertSee('href="/category/nissin"', false)
+            ->assertSee('href="/category/lotte"', false);
+    }
+
+    public function test_treasure_links_saved_without_a_leading_slash_are_normalised(): void
+    {
+        HomepageSection::query()->create([
+            'type'       => HomepageSection::TYPE_TREASURES,
+            'status'     => HomepageSection::STATUS_ACTIVE,
+            'sort_order' => 0,
+            'settings'   => [
+                'items' => [
+                    ['label' => 'Pen', 'link' => 'category/pentel'],
+                ],
+            ],
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('href="/category/pentel"', false);
+    }
+
     private function makeCategory(): Category
     {
         return Category::query()->create([

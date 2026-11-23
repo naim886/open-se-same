@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAttributeNameRequest;
 use App\Http\Requests\UpdateAttributeNameRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class AttributeNameController extends Controller
@@ -14,7 +15,7 @@ class AttributeNameController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $cms_content = [
             'page_title'   => 'Attribute Name List',
@@ -25,8 +26,10 @@ class AttributeNameController extends Controller
             'button_url'   => route('attribute-name.create'),
             'type'         => 'list'
         ];
-        $attributeNames = (new AttributeName())->getAttributeNames();
-        return view('backend.modules.attribute-name.index', compact('cms_content', 'attributeNames'));
+        $attributeNames = (new AttributeName())->getAttributeNames($request);
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+        return view('backend.modules.attribute-name.index', compact('cms_content', 'attributeNames', 'search', 'status'));
     }
 
     /**

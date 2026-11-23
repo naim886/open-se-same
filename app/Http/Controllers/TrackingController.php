@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 use Illuminate\Support\Collection;
 
@@ -45,6 +46,24 @@ class TrackingController extends Controller
                     $order->masked_phone   = self::maskPhone($order->customer_phone ?? '');
                     // Mask address: replace first 15 chars with ***
                     $order->masked_address = self::maskAddress($order->customer_address ?? '');
+
+                    // Let the customer restart an unpaid online payment from
+                    // tracking, even if the original failure link expired.
+                    $order->payment_retry_url = null;
+
+                    if ((int) $order->payment_status !== Order::PAYMENT_STATUS_PAID
+                        && in_array((int) $order->payment_method, [
+                            Order::PAYMENT_METHOD_SSLCOMMERZ,
+                            Order::PAYMENT_METHOD_NAGAD,
+                        ], true)) {
+                        $order->payment_retry_url = URL::temporarySignedRoute(
+                            'payment.retry',
+                            now()->addHours(24),
+                            ['order' => $order->id],
+                            false
+                        );
+                    }
+
 
                     // Build a clean public status timeline from histories
                     $order->status_timeline = $order->histories

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreSpecificationRequest;
 use App\Http\Requests\UpdateSpecificationRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class SpecificationController extends Controller
@@ -14,7 +15,7 @@ class SpecificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $cms_content = [
             'page_title'   => 'Specification List',
@@ -25,8 +26,10 @@ class SpecificationController extends Controller
             'button_url'   => route('specification.create'),
             'type'         => 'list'
         ];
-        $specifications = (new Specification())->getSpecifications();
-        return view('backend.modules.specification.index', compact('cms_content', 'specifications'));
+        $specifications = (new Specification())->getSpecifications($request);
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+        return view('backend.modules.specification.index', compact('cms_content', 'specifications', 'search', 'status'));
     }
 
     /**

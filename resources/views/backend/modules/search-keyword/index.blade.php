@@ -11,6 +11,12 @@
             </span>
         </div>
 
+        @include('backend.partials.index-filters', [
+            'action' => route('search-keywords.index'),
+            'search' => $search ?? '',
+            'placeholder' => 'Search keyword',
+        ])
+
         <div class="table-responsive">
             <table class="table theme-table">
                 <thead>

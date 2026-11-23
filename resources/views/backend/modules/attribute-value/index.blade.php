@@ -2,6 +2,15 @@
 @section('content')
     <div class="row justify-content-center my-5">
         <div class="col-lg-12">
+            @include('backend.partials.index-filters', [
+                'action' => route('attribute-value.index'),
+                'search' => $search ?? '',
+                'placeholder' => 'Search attribute value',
+                'selects' => [
+                    ['name' => 'attribute_name_id', 'label' => 'Attribute', 'options' => $attributeNames ?? [], 'value' => $attributeNameId ?? '', 'width' => '180px'],
+                    ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\AttributeValue::STATUS_LIST, 'value' => $status ?? ''],
+                ],
+            ])
             <div class="table-responsive">
                 <table class="table theme-table">
                     <thead>

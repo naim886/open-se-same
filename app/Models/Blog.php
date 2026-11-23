@@ -6,9 +6,9 @@ use App\Manager\Constant\GlobalConstants;
 use App\Manager\Image\ImageUploadManager;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class Blog extends Model
@@ -34,11 +34,23 @@ class Blog extends Model
         return $this->hasMany(BlogFaq::class)->orderBy('sort_order');
     }
 
-    final public function getBlogs()
+    final public function getBlogs(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('author', 'like', "%{$search}%")
+                        ->orWhere('meta_title', 'like', "%{$search}%");
+                });
+            })
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderBy('created_at', 'desc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeBlog(Request $request): Model

@@ -8,6 +8,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -16,15 +17,18 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $cms_content = [
             'page_title' => 'Category List',
             'module' => 'Category',
         ];
 
-        $categories = (new Category())->getCategories();
-        return view('backend.modules.category.index', compact('cms_content', 'categories'));
+        $categories = (new Category())->getCategories($request);
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+
+        return view('backend.modules.category.index', compact('cms_content', 'categories', 'search', 'status'));
     }
 
     /**

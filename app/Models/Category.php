@@ -42,12 +42,22 @@ class Category extends Model
     public const MOBILE_BANNER_HEIGHT = 430;
 
 
-    public function getCategories()
+    public function getCategories(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
             ->with('parent:id,name')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%");
+                });
+            })
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderBy('sort_order', 'asc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeCategory(Request $request): Model

@@ -220,6 +220,55 @@ class PaymentFlowTest extends TestCase
         $this->assertSame('PR-123', $order->payment_reference);
     }
 
+    public function test_signed_payment_failure_page_is_reachable(): void
+    {
+        Queue::fake();
+
+        $order = $this->makeOrder(Order::PAYMENT_METHOD_SSLCOMMERZ);
+
+        $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'payment.failed',
+            now()->addHour(),
+            ['order' => $order->id],
+            false
+        );
+
+        $this->get($url)
+            ->assertOk()
+            ->assertSee('Payment Failed')
+            ->assertSee('Try Payment Again');
+    }
+
+    public function test_track_order_offers_a_retry_link_for_unpaid_online_orders(): void
+    {
+        Queue::fake();
+
+        $order = $this->makeOrder(Order::PAYMENT_METHOD_SSLCOMMERZ);
+
+        $this->get(route('shop.track-order', ['q' => (string) $order->order_number]))
+            ->assertOk()
+            ->assertSee('Pay Now')
+            ->assertSee('/payment/retry/'.$order->id, false);
+    }
+
+    public function test_expired_payment_link_shows_a_friendly_403_page(): void
+    {
+        Queue::fake();
+
+        $order = $this->makeOrder(Order::PAYMENT_METHOD_SSLCOMMERZ);
+
+        $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'payment.failed',
+            now()->subMinute(),
+            ['order' => $order->id],
+            false
+        );
+
+        $this->get($url)
+            ->assertForbidden()
+            ->assertSee('payment link has expired');
+    }
+
     public function test_sslcommerz_success_callback_validates_and_marks_the_order_paid(): void
     {
         Queue::fake();

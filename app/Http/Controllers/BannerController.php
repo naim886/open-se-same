@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBannerRequest;
 use App\Http\Requests\UpdateBannerRequest;
 use App\Models\Banner;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
@@ -14,9 +15,9 @@ class BannerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $banners = (new Banner())->getBanners();
+        $banners = (new Banner())->getBanners($request);
 
         $cms_content = [
             'page_title'   => 'Banner List',
@@ -28,7 +29,10 @@ class BannerController extends Controller
             'type'         => 'create'
         ];
 
-        return view('backend.modules.banner.index', compact('cms_content', 'banners'));
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+
+        return view('backend.modules.banner.index', compact('cms_content', 'banners', 'search', 'status'));
     }
 
     /**

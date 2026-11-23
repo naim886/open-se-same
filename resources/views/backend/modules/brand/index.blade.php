@@ -8,6 +8,14 @@
                     <i class="fas fa-plus me-1"></i> Create Brand
                 </a>
             </div>
+            @include('backend.partials.index-filters', [
+                'action' => route('brand.index'),
+                'search' => $search ?? '',
+                'placeholder' => 'Search brand name or slug',
+                'selects' => [
+                    ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\Brand::STATUS_LIST, 'value' => $status ?? ''],
+                ],
+            ])
             <div class="table-responsive">
                 <table class="table theme-table">
                     <thead>

@@ -11,10 +11,15 @@ class SearchKeywordController extends Controller
 {
     public function index(Request $request): View
     {
-        $keywords = SearchKeyword::orderByDesc('count')
-            ->orderByDesc('updated_at')
-            ->paginate(50);
+        $search = trim((string) $request->input('search', ''));
 
-        return view('backend.modules.search-keyword.index', compact('keywords'));
+        $keywords = SearchKeyword::query()
+            ->when($search !== '', fn ($query) => $query->where('keyword', 'like', "%{$search}%"))
+            ->orderByDesc('count')
+            ->orderByDesc('updated_at')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('backend.modules.search-keyword.index', compact('keywords', 'search'));
     }
 }

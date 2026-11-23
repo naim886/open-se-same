@@ -6,14 +6,15 @@ use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
 use App\Models\Blog;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
 class BlogController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $blogs = (new Blog())->getBlogs();
+        $blogs = (new Blog())->getBlogs($request);
 
         $cms_content = [
             'page_title'   => 'Blogs',
@@ -25,7 +26,10 @@ class BlogController extends Controller
             'type'         => 'create',
         ];
 
-        return view('backend.modules.blog.index', compact('cms_content', 'blogs'));
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+
+        return view('backend.modules.blog.index', compact('cms_content', 'blogs', 'search', 'status'));
     }
 
     public function create(): View

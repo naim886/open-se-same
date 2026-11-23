@@ -31,12 +31,18 @@ class AttributeValue extends Model
         return $this->belongsTo(AttributeName::class);
     }
 
-    final public function getAttributeValues()
+    final public function getAttributeValues(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
             ->with('attributeName')
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($request && $request->filled('attribute_name_id'), fn ($query) => $query->where('attribute_name_id', $request->input('attribute_name_id')))
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderBy('name', 'asc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeAttributeValue(Request $request): Model

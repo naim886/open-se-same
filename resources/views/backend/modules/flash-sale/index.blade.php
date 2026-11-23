@@ -4,6 +4,15 @@
 <div class="row justify-content-center my-5">
     <div class="col-lg-12">
 
+        @include('backend.partials.index-filters', [
+            'action' => route('flash-sale.index'),
+            'search' => $search ?? '',
+            'placeholder' => 'Search flash sale name',
+            'selects' => [
+                ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\FlashSale::STATUS_LIST, 'value' => $status ?? ''],
+            ],
+        ])
+
         <div class="table-responsive">
             <table class="table theme-table">
                 <thead>

@@ -3,6 +3,14 @@
 @section('content')
 <div class="row justify-content-center my-5">
     <div class="col-lg-12">
+        @include('backend.partials.index-filters', [
+            'action' => route('blog.index'),
+            'search' => $search ?? '',
+            'placeholder' => 'Search title, slug or author',
+            'selects' => [
+                ['name' => 'status', 'label' => 'Status', 'options' => \App\Models\Blog::STATUS_LIST, 'value' => $status ?? ''],
+            ],
+        ])
         <div class="table-responsive">
             <table class="table theme-table">
                 <thead>

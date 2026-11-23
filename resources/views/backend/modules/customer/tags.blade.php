@@ -58,6 +58,12 @@
     </div>
 
     {{-- ── List ── --}}
+    @include('backend.partials.index-filters', [
+        'action' => route('customers.tags.index'),
+        'search' => $search ?? '',
+        'placeholder' => 'Search tag name',
+    ])
+
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent fw-bold">
             <i class="fas fa-list me-1"></i>All Tags

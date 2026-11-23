@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // The live site sits behind Cloudflare, which terminates TLS and
+        // forwards the original scheme/host in X-Forwarded-* headers. Trusting
+        // the proxy keeps generated URLs on https (so signed URLs validate),
+        // and preserves the real customer IP for analytics and Nagad.
+        $middleware->trustProxies(at: '*');
+
         $middleware->validateCsrfTokens(except: [
             'webhooks/steadfast',
             'webhooks/pathao',

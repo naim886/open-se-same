@@ -75,10 +75,10 @@ Route::post('/payment/sslcommerz/ipn', [PaymentController::class, 'sslIpn'])->na
 Route::match(['get', 'post'], '/payment/nagad/callback', [PaymentController::class, 'nagadCallback'])->name('payment.nagad.callback');
 
 Route::get('/payment/retry/{order}', [PaymentController::class, 'retry'])
-    ->middleware('signed')
+    ->middleware('signed:relative')
     ->name('payment.retry');
 Route::get('/payment/failed/{order}', [PaymentController::class, 'failed'])
-    ->middleware('signed')
+    ->middleware('signed:relative')
     ->name('payment.failed');
 
 // ============================================================

@@ -10,11 +10,16 @@ use Illuminate\View\View;
 
 class CustomerTagController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $tags = CustomerTag::withCount('assignments')->orderBy('name')->get();
+        $search = trim((string) $request->input('search', ''));
 
-        return view('backend.modules.customer.tags', compact('tags'));
+        $tags = CustomerTag::withCount('assignments')
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->orderBy('name')
+            ->get();
+
+        return view('backend.modules.customer.tags', compact('tags', 'search'));
     }
 
     public function store(Request $request): RedirectResponse

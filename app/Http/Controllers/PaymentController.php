@@ -236,7 +236,8 @@ class PaymentController extends Controller
         $retryUrl = URL::temporarySignedRoute(
             'payment.retry',
             now()->addHours(24),
-            ['order' => $order->id]
+            ['order' => $order->id],
+            false
         );
 
         return view('frontend.pages.payment-failed', [
@@ -372,7 +373,8 @@ class PaymentController extends Controller
         $url = URL::temporarySignedRoute(
             'payment.failed',
             now()->addHours(24),
-            ['order' => $order->id]
+            ['order' => $order->id],
+            false
         );
 
         return redirect($url)->with('payment_error', $message);

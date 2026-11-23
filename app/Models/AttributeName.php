@@ -25,9 +25,16 @@ class AttributeName extends Model
         self::STATUS_INACTIVE => 'Inactive',
     ];
 
-    final public function getAttributeNames()
+    final public function getAttributeNames(?Request $request = null)
     {
-        return self::query()->orderBy('name', 'asc')->paginate(GlobalConstants::DEFAULT_PAGINATION);
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
+        return self::query()
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
+            ->orderBy('name', 'asc')
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeAttributeName(Request $request): Model

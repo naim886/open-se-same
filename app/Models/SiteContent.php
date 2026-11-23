@@ -22,11 +22,21 @@ class SiteContent extends Model
         self::TYPE_HTML     => 'Rich Text (HTML)',
     ];
 
-    final public function getContents()
+    final public function getContents(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('key', 'like', "%{$search}%")
+                        ->orWhere('label', 'like', "%{$search}%");
+                });
+            })
+            ->when($request && $request->filled('type'), fn ($query) => $query->where('type', $request->input('type')))
             ->orderBy('label')
-            ->paginate(50);
+            ->paginate(50)
+            ->withQueryString();
     }
 
     final public function storeContent(Request $request): Model

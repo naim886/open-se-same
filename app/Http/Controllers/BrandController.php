@@ -8,6 +8,7 @@ use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class BrandController extends Controller
@@ -15,15 +16,18 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $cms_content = [
             'page_title' => 'Brand List',
             'module' => 'Brand',
         ];
 
-        $brands = (new Brand())->getBrands();
-        return view('backend.modules.brand.index', compact('cms_content', 'brands'));
+        $brands = (new Brand())->getBrands($request);
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+
+        return view('backend.modules.brand.index', compact('cms_content', 'brands', 'search', 'status'));
     }
 
     /**

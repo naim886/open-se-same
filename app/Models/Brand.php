@@ -37,12 +37,23 @@ class Brand extends Model
     public const MOBILE_BANNER_WIDTH = 770;
     public const MOBILE_BANNER_HEIGHT = 430;
 
-    public function getBrands()
+    public function getBrands(?Request $request = null)
     {
+        $search = trim((string) ($request?->input('search', '') ?? ''));
+
         return self::query()
             ->withCount('products')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('short_description', 'like', "%{$search}%");
+                });
+            })
+            ->when($request && $request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderBy('sort_order', 'asc')
-            ->paginate(GlobalConstants::DEFAULT_PAGINATION);
+            ->paginate(GlobalConstants::DEFAULT_PAGINATION)
+            ->withQueryString();
     }
 
     final public function storeBrand(Request $request): Model

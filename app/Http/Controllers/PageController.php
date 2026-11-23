@@ -6,14 +6,15 @@ use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Models\Page;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
 class PageController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $pages = (new Page())->getPages();
+        $pages = (new Page())->getPages($request);
 
         $cms_content = [
             'page_title'   => 'Pages',
@@ -25,7 +26,10 @@ class PageController extends Controller
             'type'         => 'create',
         ];
 
-        return view('backend.modules.page.index', compact('cms_content', 'pages'));
+        $search = (string) $request->input('search', '');
+        $status = (string) $request->input('status', '');
+
+        return view('backend.modules.page.index', compact('cms_content', 'pages', 'search', 'status'));
     }
 
     public function create(): View

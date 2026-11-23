@@ -194,6 +194,15 @@
                                         </span>
                                     @endif
                                 </div>
+                                @if(!empty($order->payment_retry_url))
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span style="color:var(--text-muted);font-size:12.5px;">Online payment not completed</span>
+                                    <a href="{{ $order->payment_retry_url }}"
+                                       style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#fff;background:var(--primary-gradient);padding:4px 14px;border-radius:20px;text-decoration:none;">
+                                        <i class="fas fa-lock" style="font-size:10px;"></i> Pay Now
+                                    </a>
+                                </div>
+                                @endif
                                 @if($order->tracking_code)
                                 <div class="d-flex justify-content-between align-items-center" style="border-top:1.5px solid var(--border);padding-top:8px;margin-top:4px;">
                                     <span style="color:var(--text-muted);">Tracking Code</span>

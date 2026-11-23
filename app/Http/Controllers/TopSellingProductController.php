@@ -12,12 +12,23 @@ use Illuminate\View\View;
 class TopSellingProductController extends Controller
 {
     // ── LIST ──────────────────────────────────────────────────────
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim((string) $request->input('search', ''));
+        $status = (string) $request->input('status', '');
+
         $items = TopSellingProduct::with('product')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->whereHas('product', function ($productQuery) use ($search) {
+                    $productQuery->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%");
+                });
+            })
+            ->when($status !== '', fn ($query) => $query->where('status', $status))
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->paginate(30);
+            ->paginate(30)
+            ->withQueryString();
 
         $cms_content = [
             'page_title'   => 'Top Selling Products',
@@ -29,7 +40,7 @@ class TopSellingProductController extends Controller
             'type'         => 'create',
         ];
 
-        return view('backend.modules.top-selling.index', compact('items', 'cms_content'));
+        return view('backend.modules.top-selling.index', compact('items', 'cms_content', 'search', 'status'));
     }
 
     // ── CREATE ────────────────────────────────────────────────────
