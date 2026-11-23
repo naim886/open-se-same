@@ -12,7 +12,7 @@
 
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Settings</h4>
-            <span class="text-muted" style="font-size:13px;">Delivery charges, invoices and notifications</span>
+            <span class="text-muted" style="font-size:13px;">Delivery charges, courier credentials, invoices and notifications</span>
         </div>
 
         @if(session('success'))
@@ -110,6 +110,129 @@
                         <div class="col-12">
                             <label class="form-label" style="font-size:13px; font-weight:600;">Terms &amp; Conditions</label>
                             <textarea class="form-control" rows="2" name="settings[invoice.terms]">{{ $val('invoice.terms') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Courier Integrations ────────────────────────────── --}}
+            <div class="card mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fas fa-truck me-2"></i>Courier Integrations
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:13px;">
+                        Credentials used when an order is sent to courier and when courier webhooks
+                        update an order. Pathao access tokens are stored automatically.
+                    </p>
+
+                    <h6 class="fw-bold mb-3"><i class="fas fa-box me-1"></i>Steadfast</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
+                            <input type="url" class="form-control" name="settings[courier.steadfast.base_url]"
+                                   value="{{ $val('courier.steadfast.base_url') }}"
+                                   placeholder="https://portal.packzy.com/api/v1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">API Key</label>
+                            <input type="password" class="form-control" name="settings[courier.steadfast.api_key]"
+                                   value="{{ $val('courier.steadfast.api_key') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Secret Key</label>
+                            <input type="password" class="form-control" name="settings[courier.steadfast.secret_key]"
+                                   value="{{ $val('courier.steadfast.secret_key') }}" autocomplete="off">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook URL</label>
+                            <input type="text" class="form-control" value="{{ route('webhooks.steadfast') }}" readonly>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Use the API key above as the Bearer token for Steadfast webhooks.
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color:rgba(255,255,255,.12);">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0"><i class="fas fa-motorcycle me-1"></i>Pathao</h6>
+                        <a href="https://merchant.pathao.com/courier/developer-api" target="_blank" rel="noopener"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-external-link-alt me-1"></i> Developer API
+                        </a>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
+                            <input type="url" class="form-control" name="settings[courier.pathao.base_url]"
+                                   value="{{ $val('courier.pathao.base_url') }}"
+                                   placeholder="https://api-hermes.pathao.com">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Production: https://api-hermes.pathao.com — Sandbox: https://courier-api-sandbox.pathao.com
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Client ID</label>
+                            <input type="text" class="form-control" name="settings[courier.pathao.client_id]"
+                                   value="{{ $val('courier.pathao.client_id') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Client Secret</label>
+                            <input type="password" class="form-control" name="settings[courier.pathao.client_secret]"
+                                   value="{{ $val('courier.pathao.client_secret') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Email / Username</label>
+                            <input type="text" class="form-control" name="settings[courier.pathao.username]"
+                                   value="{{ $val('courier.pathao.username') }}" autocomplete="off"
+                                   placeholder="merchant@example.com">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Password</label>
+                            <input type="password" class="form-control" name="settings[courier.pathao.password]"
+                                   value="{{ $val('courier.pathao.password') }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
+                            <input type="text" class="form-control" name="settings[courier.pathao.store_id]"
+                                   value="{{ $val('courier.pathao.store_id') }}" placeholder="e.g. 512138">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Find it in Pathao Merchant → Stores (Id column).
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Delivery Type</label>
+                            <select class="form-select" name="settings[courier.pathao.delivery_type]">
+                                <option value="48" @selected($val('courier.pathao.delivery_type') === '48')>Normal Delivery (48)</option>
+                                <option value="12" @selected($val('courier.pathao.delivery_type') === '12')>On Demand Delivery (12)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Item Type</label>
+                            <select class="form-select" name="settings[courier.pathao.item_type]">
+                                <option value="2" @selected($val('courier.pathao.item_type') === '2')>Parcel (2)</option>
+                                <option value="1" @selected($val('courier.pathao.item_type') === '1')>Document (1)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Item Weight (kg)</label>
+                            <input type="number" step="0.1" min="0.5" max="10" class="form-control"
+                                   name="settings[courier.pathao.item_weight]"
+                                   value="{{ $val('courier.pathao.item_weight') }}" placeholder="0.5">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Secret</label>
+                            <input type="password" class="form-control" name="settings[courier.pathao.webhook_secret]"
+                                   value="{{ $val('courier.pathao.webhook_secret') }}" autocomplete="off">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Callback URL</label>
+                            <input type="text" class="form-control" value="{{ route('webhooks.pathao') }}" readonly>
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                Add this callback URL in Pathao Merchant → Developer's API → Webhook Integration,
+                                and use the same secret above.
+                            </div>
                         </div>
                     </div>
                 </div>

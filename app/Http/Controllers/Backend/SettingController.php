@@ -26,6 +26,8 @@ class SettingController extends Controller
         'social.tiktok_url',
         'social.messenger_url',
         'social.whatsapp_url',
+        'courier.steadfast.base_url',
+        'courier.pathao.base_url',
     ];
 
     /** Keys that must be non-negative numbers. */
@@ -78,10 +80,50 @@ class SettingController extends Controller
                 return back()->withInput()->with('error', "Please enter a valid URL for '{$key}'.");
             }
 
+            if ($key === 'courier.pathao.store_id' && $value !== '' && (! ctype_digit($value) || (int) $value < 1)) {
+                return back()->withInput()->with('error', 'Pathao store ID must be a positive number.');
+            }
+
+            if ($key === 'courier.pathao.delivery_type' && $value !== '' && ! in_array($value, ['12', '48'], true)) {
+                return back()->withInput()->with('error', 'Pathao delivery type must be 48 (Normal) or 12 (On Demand).');
+            }
+
+            if ($key === 'courier.pathao.item_type' && $value !== '' && ! in_array($value, ['1', '2'], true)) {
+                return back()->withInput()->with('error', 'Pathao item type must be 1 (Document) or 2 (Parcel).');
+            }
+
+            if ($key === 'courier.pathao.item_weight' && $value !== '' && (! is_numeric($value) || (float) $value < 0.5 || (float) $value > 10)) {
+                return back()->withInput()->with('error', 'Pathao item weight must be between 0.5 kg and 10 kg.');
+            }
+
             $values[$key] = $value;
         }
 
+        $pathaoCredentialKeys = [
+            'courier.pathao.base_url',
+            'courier.pathao.client_id',
+            'courier.pathao.client_secret',
+            'courier.pathao.username',
+            'courier.pathao.password',
+        ];
+
+        $pathaoCredentialsChanged = false;
+
+        foreach ($pathaoCredentialKeys as $key) {
+            if (($values[$key] ?? '') !== (string) Setting::effective($key, '')) {
+                $pathaoCredentialsChanged = true;
+                break;
+            }
+        }
+
         Setting::setMany($values);
+
+        // A token issued with old credentials must not be reused.
+        if ($pathaoCredentialsChanged) {
+            Setting::set('courier.pathao.access_token', '');
+            Setting::set('courier.pathao.refresh_token', '');
+            Setting::set('courier.pathao.token_expires_at', '0');
+        }
 
         return redirect()->route('settings.index')->with('success', 'Settings updated successfully.');
     }

@@ -38,8 +38,9 @@
                         <i class="fas fa-truck me-1"></i> Send to Courier
                     </button>
                     @else
-                    <span class="btn btn-sm btn-outline-success me-2" style="cursor:default;" title="Consignment: {{ $order->consignment_id }}">
-                        <i class="fas fa-check-circle me-1"></i> Courier Sent
+                    <span class="btn btn-sm btn-outline-success me-2" style="cursor:default;"
+                          title="Consignment: {{ $order->consignment_id }} | Status: {{ $order->courier_status_label ?? '—' }}">
+                        <i class="fas fa-check-circle me-1"></i> {{ $order->courier_name_label ? $order->courier_name_label . ' Sent' : 'Courier Sent' }}
                     </span>
                     @endif
                     <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary">
@@ -365,7 +366,7 @@
             {{-- Courier Information --}}
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <h5 class="card-title mb-0"><i class="fas fa-truck me-1"></i> Steadfast Courier</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-truck me-1"></i> Courier Information</h5>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         {{-- Copy Tracking URL (always shown) --}}
                         <button type="button" class="btn btn-sm btn-outline-primary btn-copy-tracking-show"
@@ -374,27 +375,39 @@
                             <i class="fas fa-copy me-1"></i> Copy Tracking
                         </button>
                         {{-- Show in Courier: once at top of card --}}
-                        @if($order->tracking_code)
-                        <a href="https://steadfast.com.bd/t/{{ $order->tracking_code }}" target="_blank"
+                        @if($order->courierTrackingUrl())
+                        <a href="{{ $order->courierTrackingUrl() }}" target="_blank" rel="noopener"
                            class="btn btn-sm btn-outline-info">
-                            <i class="fas fa-external-link-alt me-1"></i> Show in Courier
+                            <i class="fas fa-external-link-alt me-1"></i> Track on {{ $order->courier_name_label ?? 'Courier' }}
                         </a>
                         @endif
                         @if($order->consignment_id)
-                            <span class="badge bg-success">Sent</span>
+                            <span class="badge bg-success">Sent{{ $order->courier_name_label ? ' · ' . $order->courier_name_label : '' }}</span>
                         @else
                             <span class="badge bg-secondary">Not Sent</span>
                         @endif
                     </div>
                 </div>
                 <div class="card-body">
-                    @if($order->consignment_id)
-                        <div class="row mb-2">
-                            <div class="col-6">
-                                <small class="text-muted d-block">Consignment ID</small>
-                                <strong>{{ $order->consignment_id }}</strong>
+                    @if($order->consignment_id || $order->courier_name || $order->courier_status)
+                        <div class="row mb-2 g-3">
+                            <div class="col-6 col-md-3">
+                                <small class="text-muted d-block">Courier</small>
+                                <strong>{{ $order->courier_name_label ?? '—' }}</strong>
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 col-md-3">
+                                <small class="text-muted d-block">Courier Status</small>
+                                @if($order->courier_status)
+                                    <span class="badge bg-info text-dark">{{ $order->courier_status_label }}</span>
+                                @else
+                                    <strong>—</strong>
+                                @endif
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <small class="text-muted d-block">Consignment ID</small>
+                                <strong>{{ $order->consignment_id ?? '—' }}</strong>
+                            </div>
+                            <div class="col-6 col-md-3">
                                 <small class="text-muted d-block">Tracking Code</small>
                                 <strong>{{ $order->tracking_code ?? '—' }}</strong>
                             </div>
@@ -414,8 +427,13 @@
                         @foreach($apiLogs as $log)
                             <div class="mb-2 p-2" style="background:rgba(255,255,255,0.04);border-radius:5px;font-size:12px;">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-{{ $log->consignment_id ? 'success' : 'danger' }}">
-                                        {{ $log->consignment_id ? 'Success' : 'Failed' }}
+                                    <span>
+                                        <span class="badge bg-{{ $log->consignment_id ? 'success' : 'danger' }}">
+                                            {{ $log->consignment_id ? 'Success' : 'Failed' }}
+                                        </span>
+                                        @if($log->courier_name)
+                                            <span class="badge bg-secondary ms-1">{{ ucfirst($log->courier_name) }}</span>
+                                        @endif
                                     </span>
                                     <div class="d-flex align-items-center gap-2">
                                         <span style="opacity:.6;">{{ $log->created_at->format('M d, h:i A') }}</span>
@@ -447,9 +465,17 @@
                             <div class="mb-2 p-2" style="background:rgba(100,200,255,0.06);border:1px solid rgba(100,200,255,0.15);border-radius:5px;font-size:12px;">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     @if($log->status)
-                                        <span class="badge bg-{{ in_array($log->status, ['delivered']) ? 'success' : (in_array($log->status, ['cancelled']) ? 'danger' : 'info') }}">
-                                            {{ ucfirst(str_replace('_', ' ', $log->status)) }}
+                                        @php
+                                            $isDelivered = str_contains($log->status, 'delivered');
+                                            $isReturned  = str_contains($log->status, 'return') || str_contains($log->status, 'cancel');
+                                            $statusLabel = ucwords(trim(str_replace(['order.', '_', '-', '.'], ['', ' ', ' ', ' '], $log->status)));
+                                        @endphp
+                                        <span class="badge bg-{{ $isDelivered ? 'success' : ($isReturned ? 'danger' : 'info') }}">
+                                            {{ $statusLabel }}
                                         </span>
+                                        @if($log->courier_name)
+                                            <span class="badge bg-secondary">{{ ucfirst($log->courier_name) }}</span>
+                                        @endif
                                     @else
                                         <span class="badge bg-secondary">Tracking Update</span>
                                     @endif
@@ -506,12 +532,22 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background:var(--bg-surface);color:var(--theme-text-color);border:1px solid var(--border-strong);">
             <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.15);">
-                <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Steadfast Courier</h5>
+                <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Courier</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="courierForm" method="POST">
                 @csrf
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="cm-courier" style="font-size:13px;font-weight:600;">Choose Courier</label>
+                        <select id="cm-courier" name="courier" class="form-select">
+                            <option value="pathao" selected>Pathao</option>
+                            <option value="steadfast">Steadfast</option>
+                        </select>
+                        <small class="text-muted d-block mt-1" style="font-size:12px;">
+                            Pathao uses the store, delivery type and item weight configured in Settings.
+                        </small>
+                    </div>
                     <table class="table table-sm mb-3" style="color:inherit;--bs-table-bg:transparent;--bs-table-color:inherit;">
                         <tbody>
                             <tr><td style="opacity:.6;width:40%">Order #</td><td><strong id="cm-order-num"></strong></td></tr>
@@ -558,6 +594,11 @@ function openCourierModal(orderId, orderNum, name, phone, total) {
     const convertCheck  = document.getElementById('cm-convert-check');
     const convertHidden = document.getElementById('cm-convert-hidden');
     const converted     = document.getElementById('cm-converted');
+    const courierSelect = document.getElementById('cm-courier');
+
+    if (courierSelect) {
+        courierSelect.value = 'pathao';
+    }
     if (hasBengali(phone)) {
         warning.classList.remove('d-none');
         converted.textContent  = '→ ' + toBengaliEnglish(phone);

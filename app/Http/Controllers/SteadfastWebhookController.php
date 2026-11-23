@@ -5,15 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\CourierLog;
 use App\Models\Order;
 use App\Models\OrderHistory;
+use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class SteadfastWebhookController extends Controller
 {
-    /** Steadfast API key used to authenticate incoming webhooks */
-    private string $apiKey = 'ys97julfgukthikhhjovu9x92dw6bvbf';
-
     /**
      * Map Steadfast delivery status strings to our internal Order status constants.
      * null = do not change order status (informational only).
@@ -45,7 +43,9 @@ class SteadfastWebhookController extends Controller
             'payload'         => $request->json()->all(),
         ]);
 
-        if ($token !== $this->apiKey) {
+        $apiKey = trim((string) Setting::effective('courier.steadfast.api_key', ''));
+
+        if ($apiKey === '' || ! hash_equals($apiKey, $token)) {
             Log::channel('steadfast')->warning('Steadfast webhook unauthorized', ['ip' => $request->ip()]);
             return response()->json(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
@@ -112,9 +112,16 @@ class SteadfastWebhookController extends Controller
             'current_order_status' => $order->status,
         ]);
 
+        // Keep the current courier identity/status visible on the order.
+        $order->update([
+            'courier_name'   => 'steadfast',
+            'courier_status' => $rawStatus,
+        ]);
+
         // Log the webhook hit to courier_logs
         CourierLog::create([
             'order_id'        => $order->id,
+            'courier_name'    => 'steadfast',
             'consignment_id'  => (string) $payload['consignment_id'],
             'tracking_code'   => $order->tracking_code,
             'status'          => $rawStatus,
@@ -223,9 +230,12 @@ class SteadfastWebhookController extends Controller
             'tracking_message'=> $trackingMessage,
         ]);
 
+        $order->update(['courier_name' => 'steadfast']);
+
         // Log to courier_logs
         CourierLog::create([
             'order_id'         => $order->id,
+            'courier_name'     => 'steadfast',
             'consignment_id'   => (string) $payload['consignment_id'],
             'tracking_code'    => $order->tracking_code,
             'status'           => null,

@@ -1,7 +1,7 @@
 @extends('backend.layouts.app')
 @section('title', 'Create Order')
 @section('content')
-    {{html()->form('POST', route('orders.store'))->open()}}
+    {{html()->form('POST', route('orders.store'))->id('orderForm')->attribute('novalidate', 'novalidate')->open()}}
         @include('backend.modules.order.partials._form')
     {{html()->form()->close()}}
 @endsection
@@ -340,39 +340,7 @@
             }
         });
 
-        // Form submit: variation required for variant products
-        var $form = $('#product-rows').closest('form');
-        $form.on('submit', function (e) {
-            var $productRows = $('#product-rows');
-            const rows = $productRows.find('.product-row');
-            if (rows.length === 0) {
-                e.preventDefault();
-                alert('Please add at least one product to the order.');
-                return false;
-            }
-            let valid = true;
-            let errMsg = '';
-            rows.each(function () {
-                const prod = $(this).find('.product-select').val();
-                const qty = parseInt($(this).find('.quantity-input').val()) || 0;
-                if (!prod || qty <= 0) {
-                    valid = false;
-                    errMsg = 'Please ensure every product row has a selected product and quantity >= 1.';
-                    return false;
-                }
-                // If the variation row is visible, a variation must be chosen
-                if ($(this).find('.variation-row').is(':visible') && !$(this).find('.variation-select').val()) {
-                    valid = false;
-                    errMsg = 'Please select a variation for every variant product.';
-                    return false;
-                }
-            });
-            if (!valid) {
-                e.preventDefault();
-                alert(errMsg);
-                return false;
-            }
-        });
-
     </script>
+
+    @include('backend.modules.order.partials.order-form-validation')
 @endpush

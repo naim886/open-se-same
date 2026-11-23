@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CustomerPanelController;
 use App\Http\Controllers\SteadfastWebhookController;
+use App\Http\Controllers\PathaoWebhookController;
 
 // ============================================================
 // Customer Panel (authenticated registered customers)
@@ -61,6 +62,7 @@ Route::prefix('account')->name('customer.')->middleware('auth')->group(function 
 // Steadfast Webhook (no auth, no CSRF — verified by API key header)
 // ============================================================
 Route::post('/webhooks/steadfast', [SteadfastWebhookController::class, 'handle'])->name('webhooks.steadfast');
+Route::post('/webhooks/pathao', [PathaoWebhookController::class, 'handle'])->name('webhooks.pathao');
 
 // ============================================================
 // SHOP (Public Frontend) Routes

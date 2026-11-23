@@ -146,9 +146,9 @@
                 <div class="card mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center" style="cursor:pointer;" onclick="$(this).find('.adv-filter-arrow').toggleClass('ri-arrow-up-s-line ri-arrow-down-s-line'); $('#adv-filter-body').toggleClass('d-none');">
                         <span><i class="ri-menu-line me-2"></i> Advanced Filter</span>
-                        <i class="adv-filter-arrow {{ request()->anyFilled(['customer_name','customer_phone','order_number','date_from','date_to','delivery_location','paid_status','status','created_by','source','product_id']) ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line' }}"></i>
+                        <i class="adv-filter-arrow {{ request()->anyFilled(['customer_name','customer_phone','order_number','date_from','date_to','delivery_location','paid_status','status','created_by','source','product_id','courier_name','courier_status']) ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line' }}"></i>
                     </div>
-                    <div class="card-body {{ request()->anyFilled(['customer_name','customer_phone','order_number','date_from','date_to','delivery_location','paid_status','status','created_by','source','product_id']) ? '' : 'd-none' }}" id="adv-filter-body">
+                    <div class="card-body {{ request()->anyFilled(['customer_name','customer_phone','order_number','date_from','date_to','delivery_location','paid_status','status','created_by','source','product_id','courier_name','courier_status']) ? '' : 'd-none' }}" id="adv-filter-body">
                         <form method="GET" action="{{ route('orders.index') }}" class="row g-2 align-items-end">
                             <div class="col-md-2">
                                 <label class="form-label mb-1">Order No</label>
@@ -223,6 +223,19 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-2">
+                                <label class="form-label mb-1">Courier</label>
+                                <select name="courier_name" class="form-select form-select-sm">
+                                    <option value="">All Couriers</option>
+                                    <option value="steadfast" {{ request('courier_name') === 'steadfast' ? 'selected' : '' }}>Steadfast</option>
+                                    <option value="pathao" {{ request('courier_name') === 'pathao' ? 'selected' : '' }}>Pathao</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label mb-1">Courier Status</label>
+                                <input type="text" name="courier_status" class="form-control form-control-sm"
+                                       placeholder="e.g. delivered" value="{{ request('courier_status') }}">
+                            </div>
                             <div class="col-md-2 d-flex gap-2">
                                 <button type="submit" class="btn btn-sm btn-primary"><i class="ri-search-line"></i> Filter</button>
                                 <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-secondary"><i class="ri-refresh-line"></i> Reset</a>
@@ -241,6 +254,7 @@
                             <th>Item</th>
                             <th>Amount</th>
                             <th>Status</th>
+                            <th>Courier</th>
                             <th>Order Date</th>
                             <th>Actions</th>
                         </tr>
@@ -352,6 +366,17 @@
                                         @endif
                                 </td>
                                 <td>
+                                    @if($order->courier_name)
+                                        <span class="badge bg-info text-dark">{{ $order->courier_name_label }}</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                    @if($order->courier_status)
+                                        <br>
+                                        <small class="text-muted">{{ $order->courier_status_label }}</small>
+                                    @endif
+                                </td>
+                                <td>
                                     <p><small>Placed on: {{$order->order_date->toDayDateTimeString()}}</small></p>
                                     <p><small>Last
                                             Updated: {{ $order->created_at != $order->updated_at ? $order->updated_at->toDayDateTimeString() : 'Not updated' }}</small>
@@ -372,9 +397,10 @@
                                            title="Print Invoice &amp; Packing Slip">
                                             <i class="fas fa-print me-1"></i> Print
                                         </a>
-                                        @if($order->tracking_code)
-                                        <a href="https://steadfast.com.bd/t/{{ $order->tracking_code }}" target="_blank"
-                                           class="btn btn-outline-info" style="font-size:13px;padding:5px 12px;" title="Track in Steadfast">
+                                        @if($order->courierTrackingUrl())
+                                        <a href="{{ $order->courierTrackingUrl() }}" target="_blank" rel="noopener"
+                                           class="btn btn-outline-info" style="font-size:13px;padding:5px 12px;"
+                                           title="Track in {{ $order->courier_name_label ?? 'courier' }}">
                                             <i class="fas fa-external-link-alt me-1"></i> Courier Track
                                         </a>
                                         @endif
@@ -390,7 +416,7 @@
                                         </button>
                                         @if(!$order->consignment_id)
                                         <button type="button" class="btn btn-warning" style="font-size:13px;padding:5px 12px;"
-                                            title="Send to Steadfast Courier"
+                                            title="Send to Courier"
                                             onclick="openCourierModal(
                                                 {{ $order->id }},
                                                 '{{ addslashes($order->order_number) }}',
@@ -402,8 +428,8 @@
                                         </button>
                                         @else
                                         <span class="btn btn-outline-success" style="font-size:13px;padding:5px 12px;cursor:default;"
-                                              title="Consignment: {{ $order->consignment_id }} | Tracking: {{ $order->tracking_code }}">
-                                            <i class="fas fa-check-circle me-1"></i> Sent
+                                              title="Consignment: {{ $order->consignment_id }} | Status: {{ $order->courier_status_label ?? '—' }}">
+                                            <i class="fas fa-check-circle me-1"></i> Sent{{ $order->courier_name_label ? ' · ' . $order->courier_name_label : '' }}
                                         </span>
                                         @endif
                                     </div>
@@ -422,7 +448,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">No orders found</td>
+                                <td colspan="9" class="text-center">No orders found</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -444,12 +470,22 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background:#1e2130;color:#fff;border:1px solid rgba(255,255,255,0.2);">
                 <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.15);">
-                    <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Steadfast Courier</h5>
+                    <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Courier</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="courierForm" method="POST">
                     @csrf
                     <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="cm-courier" style="font-size:13px;font-weight:600;">Choose Courier</label>
+                            <select id="cm-courier" name="courier" class="form-select">
+                                <option value="pathao" selected>Pathao</option>
+                                <option value="steadfast">Steadfast</option>
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size:12px;">
+                                Pathao uses the store, delivery type and item weight configured in Settings.
+                            </small>
+                        </div>
                         <table class="table table-sm mb-3" style="color:inherit;--bs-table-bg:transparent;--bs-table-color:inherit;">
                             <tbody>
                                 <tr><td style="opacity:.6;width:40%">Order #</td><td><strong id="cm-order-num"></strong></td></tr>
@@ -515,6 +551,11 @@
             const convertCheck  = document.getElementById('cm-convert-check');
             const convertHidden = document.getElementById('cm-convert-hidden');
             const converted     = document.getElementById('cm-converted');
+            const courierSelect = document.getElementById('cm-courier');
+
+            if (courierSelect) {
+                courierSelect.value = 'pathao';
+            }
 
             if (hasBengali(phone)) {
                 warning.classList.remove('d-none');

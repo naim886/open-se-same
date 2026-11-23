@@ -20,8 +20,9 @@
             <i class="fas fa-truck me-1"></i> Send to Courier
         </button>
         @else
-        <span class="btn btn-sm btn-outline-success me-2" style="cursor:default;" title="Consignment: {{ $order->consignment_id }}">
-            <i class="fas fa-check-circle me-1"></i> Courier Sent
+        <span class="btn btn-sm btn-outline-success me-2" style="cursor:default;"
+              title="Consignment: {{ $order->consignment_id }} | Status: {{ $order->courier_status_label ?? '—' }}">
+            <i class="fas fa-check-circle me-1"></i> {{ $order->courier_name_label ? $order->courier_name_label . ' Sent' : 'Courier Sent' }}
         </span>
         @endif
         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-secondary">
@@ -30,7 +31,7 @@
     </div>
 </div>
 
-{{html()->modelForm($order,'PUT', route('orders.update', $order->id))->open()}}
+{{html()->modelForm($order,'PUT', route('orders.update', $order->id))->id('orderForm')->attribute('novalidate', 'novalidate')->open()}}
 @include('backend.modules.order.partials._form')
 {{html()->form()->close()}}
 
@@ -93,12 +94,22 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background:#1e2130;color:#fff;border:1px solid rgba(255,255,255,0.2);">
             <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.15);">
-                <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Steadfast Courier</h5>
+                <h5 class="modal-title" id="courierModalLabel"><i class="fas fa-truck me-2"></i>Send to Courier</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="courierForm" method="POST">
                 @csrf
                 <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="cm-courier" style="font-size:13px;font-weight:600;">Choose Courier</label>
+                        <select id="cm-courier" name="courier" class="form-select">
+                            <option value="pathao" selected>Pathao</option>
+                            <option value="steadfast">Steadfast</option>
+                        </select>
+                        <small class="text-muted d-block mt-1" style="font-size:12px;">
+                            Pathao uses the store, delivery type and item weight configured in Settings.
+                        </small>
+                    </div>
                     <table class="table table-sm mb-3" style="color:inherit;--bs-table-bg:transparent;--bs-table-color:inherit;">
                         <tbody>
                             <tr><td style="opacity:.6;width:40%">Order #</td><td><strong id="cm-order-num"></strong></td></tr>
@@ -145,6 +156,11 @@ function openCourierModal(orderId, orderNum, name, phone, total) {
     const convertCheck  = document.getElementById('cm-convert-check');
     const convertHidden = document.getElementById('cm-convert-hidden');
     const converted     = document.getElementById('cm-converted');
+    const courierSelect = document.getElementById('cm-courier');
+
+    if (courierSelect) {
+        courierSelect.value = 'pathao';
+    }
     if (hasBengali(phone)) {
         warning.classList.remove('d-none');
         converted.textContent  = '→ ' + toBengaliEnglish(phone);
@@ -598,42 +614,9 @@ function openCourierModal(orderId, orderNum, name, phone, total) {
             recalcTotals(true);
         });
 
-        // Form submit: simple client-side checks before sending to server
-        var $form = $('#product-rows').closest('form');
-        $form.on('submit', function (e) {
-            var $productRows = $('#product-rows');
-            const rows = $productRows.find('.product-row');
-            if (rows.length === 0) {
-                e.preventDefault();
-                alert('Please add at least one product to the order.');
-                return false;
-            }
-            let valid = true;
-            let errMsg = '';
-            rows.each(function () {
-                const prod = $(this).find('.product-select').val();
-                const qty = parseInt($(this).find('.quantity-input').val()) || 0;
-                if (!prod || qty <= 0) {
-                    valid = false;
-                    errMsg = 'Please ensure every product row has a selected product and quantity >= 1.';
-                    return false; // break
-                }
-                // If the variation row is visible, a variation must be chosen
-                if ($(this).find('.variation-row').is(':visible') && !$(this).find('.variation-select').val()) {
-                    valid = false;
-                    errMsg = 'Please select a variation for every variant product.';
-                    return false;
-                }
-            });
-            if (!valid) {
-                e.preventDefault();
-                alert(errMsg);
-                return false;
-            }
-            // allow submit
-        });
-
     </script>
+
+    @include('backend.modules.order.partials.order-form-validation')
 @endpush
 
 @push('styles')

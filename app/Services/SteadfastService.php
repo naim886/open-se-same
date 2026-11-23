@@ -2,19 +2,31 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 
 class SteadfastService
 {
-    private string $baseUrl   = 'https://portal.packzy.com/api/v1';
-    private string $apiKey    = 'ys97julfgukthikhhjovu9x92dw6bvbf';
-    private string $secretKey = 'j46ac25jwy0hmm6txluoar3m';
+    private function baseUrl(): string
+    {
+        return rtrim((string) Setting::get('courier.steadfast.base_url', 'https://portal.packzy.com/api/v1'), '/');
+    }
+
+    private function apiKey(): string
+    {
+        return trim((string) Setting::effective('courier.steadfast.api_key', ''));
+    }
+
+    private function secretKey(): string
+    {
+        return trim((string) Setting::effective('courier.steadfast.secret_key', ''));
+    }
 
     private function headers(): array
     {
         return [
-            'Api-Key'      => $this->apiKey,
-            'Secret-Key'   => $this->secretKey,
+            'Api-Key'      => $this->apiKey(),
+            'Secret-Key'   => $this->secretKey(),
             'Content-Type' => 'application/json',
         ];
     }
@@ -27,10 +39,21 @@ class SteadfastService
      */
     public function createOrder(array $data): array
     {
-        $response = Http::withHeaders($this->headers())
-            ->post($this->baseUrl . '/create_order', $data);
+        if ($this->apiKey() === '' || $this->secretKey() === '') {
+            return [
+                'status'  => 0,
+                'message' => 'Steadfast API credentials are not configured in Settings.',
+            ];
+        }
 
-        return $response->json() ?? ['status' => 0, 'message' => 'Empty response from courier API'];
+        $response = Http::withHeaders($this->headers())
+            ->timeout(45)
+            ->post($this->baseUrl() . '/create_order', $data);
+
+        return $response->json() ?? [
+            'status'  => 0,
+            'message' => 'Empty response from Steadfast API (HTTP ' . $response->status() . ').',
+        ];
     }
 
     /**
@@ -39,7 +62,8 @@ class SteadfastService
     public function checkStatus(string $consignmentId): array
     {
         $response = Http::withHeaders($this->headers())
-            ->get($this->baseUrl . "/status_by_cid/{$consignmentId}");
+            ->timeout(45)
+            ->get($this->baseUrl() . "/status_by_cid/{$consignmentId}");
 
         return $response->json() ?? [];
     }
@@ -50,7 +74,8 @@ class SteadfastService
     public function getBalance(): array
     {
         $response = Http::withHeaders($this->headers())
-            ->get($this->baseUrl . '/get_balance');
+            ->timeout(45)
+            ->get($this->baseUrl() . '/get_balance');
 
         return $response->json() ?? [];
     }

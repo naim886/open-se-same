@@ -205,6 +205,12 @@ class Order extends Model
                 $q->where('product_id', $request->get('product_id'));
             });
         }
+        if ($request->filled('courier_name')) {
+            $query->where('courier_name', $request->get('courier_name'));
+        }
+        if ($request->filled('courier_status')) {
+            $query->where('courier_status', 'like', '%' . $request->get('courier_status') . '%');
+        }
 
         return $query->paginate(GlobalConstants::DEFAULT_PAGINATION)->withQueryString();
     }
@@ -671,6 +677,39 @@ class Order extends Model
                 app_error_log('Order Stock Decrement Item', $e);
             }
         }
+    }
+
+    /**
+     * Public tracking URL for the courier that currently owns this order.
+     */
+    final public function courierTrackingUrl(): ?string
+    {
+        if ($this->courier_name === 'pathao' && $this->consignment_id) {
+            return 'https://merchant.pathao.com/tracking?consignment_id=' . urlencode((string) $this->consignment_id);
+        }
+
+        if ($this->tracking_code) {
+            return 'https://steadfast.com.bd/t/' . urlencode((string) $this->tracking_code);
+        }
+
+        return null;
+    }
+
+    final public function getCourierNameLabelAttribute(): ?string
+    {
+        return $this->courier_name ? ucfirst((string) $this->courier_name) : null;
+    }
+
+    final public function getCourierStatusLabelAttribute(): ?string
+    {
+        if (! $this->courier_status) {
+            return null;
+        }
+
+        $status = preg_replace('/^order\./', '', (string) $this->courier_status) ?? (string) $this->courier_status;
+        $status = str_replace(['-', '_', '.'], ' ', $status);
+
+        return ucwords(trim($status));
     }
 
     /**

@@ -83,6 +83,16 @@
 
         @else
 
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h5 class="fw-bold mb-0" style="color:var(--text-dark);font-size:16px;">
+                    Showing result{{ $orders->count() > 1 ? 's' : '' }} for
+                    <span style="color:var(--primary);">{{ $query }}</span>
+                </h5>
+                <a href="{{ route('shop.track-order') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i> Clear Search
+                </a>
+            </div>
+
             @foreach($orders as $order)
             <div class="card border-0 mb-4" style="border-radius:var(--radius);box-shadow:var(--shadow);">
 
@@ -300,12 +310,11 @@
                             @if($order->courierLogs->isEmpty())
                                 <p class="text-muted" style="font-size:13.5px;">Not yet dispatched to courier.</p>
                             @else
-                                @php $firstCourierLog = $order->courierLogs->sortByDesc('created_at')->first(); @endphp
-                                @if($firstCourierLog?->tracking_code)
+                                @if($order->courierTrackingUrl())
                                 <div class="mb-3">
-                                    <a href="https://steadfast.com.bd/t/{{ $firstCourierLog->tracking_code }}" target="_blank"
+                                    <a href="{{ $order->courierTrackingUrl() }}" target="_blank" rel="noopener"
                                        style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff;background:var(--primary-gradient);padding:5px 14px;border-radius:20px;text-decoration:none;">
-                                        <i class="fas fa-external-link-alt" style="font-size:10px;"></i> Show in Courier
+                                        <i class="fas fa-external-link-alt" style="font-size:10px;"></i> Track on {{ $order->courier_name_label ?? 'Courier' }}
                                     </a>
                                 </div>
                                 @endif
@@ -324,10 +333,16 @@
                                             <span class="fw-600 font-monospace" style="font-size:12px;">{{ $log->tracking_code }}</span>
                                         </div>
                                         @endif
+                                        @if($log->courier_name)
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span style="color:var(--text-muted);">Courier</span>
+                                            <span class="fw-600" style="font-size:12px;">{{ ucfirst($log->courier_name) }}</span>
+                                        </div>
+                                        @endif
                                         @if($log->status)
                                         <div class="d-flex justify-content-between mb-1">
                                             <span style="color:var(--text-muted);">Status</span>
-                                            <span class="badge" style="background:var(--primary-gradient);font-size:11px;padding:3px 8px;">{{ ucwords(str_replace('_', ' ', $log->status)) }}</span>
+                                            <span class="badge" style="background:var(--primary-gradient);font-size:11px;padding:3px 8px;">{{ ucwords(trim(str_replace(['order.', '_', '-', '.'], ['', ' ', ' ', ' '], $log->status))) }}</span>
                                         </div>
                                         @endif
                                         @if($log->tracking_message)

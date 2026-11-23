@@ -39,6 +39,29 @@ class Setting extends Model
         'invoice.footer_note'     => 'Thank you for shopping with us.',
         'invoice.terms'           => '',
 
+        // Courier integrations.
+        'courier.steadfast.base_url'   => 'https://portal.packzy.com/api/v1',
+        'courier.steadfast.api_key'    => 'ys97julfgukthikhhjovu9x92dw6bvbf',
+        'courier.steadfast.secret_key' => 'j46ac25jwy0hmm6txluoar3m',
+
+        'courier.pathao.base_url'        => 'https://api-hermes.pathao.com',
+        'courier.pathao.client_id'       => '',
+        'courier.pathao.client_secret'   => '',
+        'courier.pathao.username'        => '',
+        'courier.pathao.password'        => '',
+        'courier.pathao.store_id'        => '',
+        'courier.pathao.delivery_type'   => '48',
+        'courier.pathao.item_type'       => '2',
+        'courier.pathao.item_weight'     => '0.5',
+        'courier.pathao.webhook_secret'  => '',
+
+        // Analytics & conversion tracking.
+        'analytics.meta.pixel_id'        => '26065580893095421',
+        'analytics.meta.capi_token'      => '',
+        'analytics.meta.test_event_code' => '',
+        'analytics.ga4.measurement_id'   => 'G-0C0K5XZEQF',
+        'analytics.ga.measurement_id'    => '',
+
         // Notification switches.
         'notification.order_confirmation' => '1',
         'notification.admin_new_order'    => '1',

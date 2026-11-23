@@ -131,6 +131,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'pathao' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/pathao-webhook.log'),
+            'level'  => 'debug',
+            'days'   => 30,
+            'replace_placeholders' => true,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

@@ -9,6 +9,8 @@ use App\Models\Order;
 use App\Models\OrderHistory;
 use App\Models\OrderNote;
 use App\Models\Product;
+use App\Models\Setting;
+use App\Services\PathaoService;
 use App\Services\SteadfastService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -412,14 +414,17 @@ class OrderController extends Controller
     }
 
     /**
-     * Send order to Steadfast courier.
+     * Send an order to the selected courier (Steadfast or Pathao).
      * Handles Bengali phone detection/conversion with user confirmation.
      */
     public function sendToCourier(Request $request, Order $order): RedirectResponse
     {
         $request->validate([
+            'courier'       => 'nullable|in:steadfast,pathao',
             'convert_phone' => 'nullable|in:0,1',
         ]);
+
+        $courier = (string) $request->input('courier', 'pathao');
 
         try {
             $phone         = $order->customer_phone;
@@ -438,89 +443,237 @@ class OrderController extends Controller
                 $phone = $this->convertBengaliToEnglish($phone);
             }
 
-            // Build item description
             $order->loadMissing('orderItems.product');
+
             $itemDesc = $order->orderItems
-                ->map(fn($i) => ($i->product->name ?? 'Item') . ' x' . $i->quantity)
+                ->map(fn ($i) => ($i->product->name ?? 'Item') . ' x' . $i->quantity)
                 ->implode(', ');
 
-            $payload = [
-                'invoice'           => $order->order_number,
-                'recipient_name'    => $order->customer_name,
-                'recipient_phone'   => $phone,
-                'recipient_address' => $order->customer_address,
-                'cod_amount'        => max(0, (float) $order->total_amount - (float) ($order->paid_amount ?? 0)),
-                'note'              => $order->notes,
-                'item_description'  => $itemDesc,
-            ];
+            if ($courier === 'pathao') {
+                $phone = $this->normalizeBdPhone($phone);
 
-            $steadfast = new SteadfastService();
-            $result    = $steadfast->createOrder($payload);
+                if (! preg_match('/^01\d{9}$/', $phone)) {
+                    return redirect()->back()->with(
+                        'error',
+                        'Pathao requires an 11-digit Bangladeshi phone number (e.g. 017XXXXXXXX).'
+                    );
+                }
 
-            $consignment   = $result['consignment'] ?? null;
-            $consignmentId = $consignment ? ($consignment['consignment_id'] ?? null) : null;
-            $trackingCode  = $consignment ? ($consignment['tracking_code']  ?? null) : null;
-            $apiStatus     = $consignment ? ($consignment['status']         ?? null) : null;
-
-            // Always log the attempt (even on failure) for audit trail
-            CourierLog::create([
-                'order_id'       => $order->id,
-                'consignment_id' => $consignmentId,
-                'tracking_code'  => $trackingCode,
-                'status'         => $apiStatus,
-                'response'       => $result,
-                'sent_phone'     => $phone,
-            ]);
-
-            if ($consignmentId) {
-                $prevStatus = $order->status;
-                $order->update([
-                    'consignment_id' => $consignmentId,
-                    'tracking_code'  => $trackingCode,
-                    'status'         => Order::STATUS_COURIER_ENTRY,
-                ]);
-
-                // Log the courier submission detail
-                OrderHistory::create([
-                    'order_id'       => $order->id,
-                    'user_id'        => auth()->id(),
-                    'action'         => 'sent_to_courier',
-                    'previous'       => ['status' => $prevStatus],
-                    'changes'        => [
-                        'consignment_id' => $consignmentId,
-                        'tracking_code'  => $trackingCode,
-                        'status'         => ['from' => $prevStatus, 'to' => Order::STATUS_COURIER_ENTRY],
-                        'note'           => 'Sent to Steadfast courier'
-                                           . ($originalPhone ? " (phone converted from {$originalPhone})" : ''),
-                    ],
-                    'items_previous' => null,
-                    'items_new'      => null,
-                ]);
-
-                // Log the status change so it appears in Status Change Log
-                OrderHistory::create([
-                    'order_id'       => $order->id,
-                    'user_id'        => auth()->id(),
-                    'action'         => 'status_changed',
-                    'previous'       => ['status' => $prevStatus],
-                    'changes'        => ['status' => ['from' => $prevStatus, 'to' => Order::STATUS_COURIER_ENTRY]],
-                    'items_previous' => null,
-                    'items_new'      => null,
-                ]);
-
-                return redirect()->back()->with(
-                    'success',
-                    "✅ Sent to Steadfast! Consignment ID: {$consignmentId} | Tracking: {$trackingCode}"
-                );
+                return $this->sendToPathao($order, $phone, $itemDesc, $originalPhone);
             }
 
-            $errorMsg = $result['message'] ?? 'Unknown error from Steadfast API';
-            return redirect()->back()->with('error', "Courier API error: {$errorMsg}");
-
+            return $this->sendToSteadfast($order, $phone, $itemDesc, $originalPhone);
         } catch (\Exception $e) {
             app_error_log('Send To Courier', $e);
             return redirect()->back()->with('error', 'Failed to send to courier: ' . $e->getMessage());
         }
+    }
+
+    private function sendToSteadfast(Order $order, string $phone, string $itemDesc, ?string $originalPhone): RedirectResponse
+    {
+        $payload = [
+            'invoice'           => $order->order_number,
+            'recipient_name'    => $order->customer_name,
+            'recipient_phone'   => $phone,
+            'recipient_address' => $order->customer_address,
+            'cod_amount'        => max(0, (float) $order->total_amount - (float) ($order->paid_amount ?? 0)),
+            'note'              => $order->notes,
+            'item_description'  => $itemDesc,
+        ];
+
+        $result = (new SteadfastService())->createOrder($payload);
+
+        $consignment   = $result['consignment'] ?? null;
+        $consignmentId = $consignment ? ($consignment['consignment_id'] ?? null) : null;
+        $trackingCode  = $consignment ? ($consignment['tracking_code']  ?? null) : null;
+        $apiStatus     = $consignment ? ($consignment['status']         ?? null) : null;
+
+        CourierLog::create([
+            'order_id'       => $order->id,
+            'courier_name'   => 'steadfast',
+            'consignment_id' => $consignmentId,
+            'tracking_code'  => $trackingCode,
+            'status'         => $apiStatus,
+            'response'       => $result,
+            'sent_phone'     => $phone,
+        ]);
+
+        if ($consignmentId) {
+            $this->markCourierSuccess(
+                $order,
+                'steadfast',
+                (string) $consignmentId,
+                $trackingCode,
+                $apiStatus,
+                $originalPhone
+            );
+
+            return redirect()->back()->with(
+                'success',
+                "✅ Sent to Steadfast! Consignment ID: {$consignmentId} | Tracking: {$trackingCode}"
+            );
+        }
+
+        $errorMsg = $result['message'] ?? 'Unknown error from Steadfast API';
+
+        return redirect()->back()->with('error', "Steadfast API error: {$errorMsg}");
+    }
+
+    private function sendToPathao(Order $order, string $phone, string $itemDesc, ?string $originalPhone): RedirectResponse
+    {
+        $storeId = (int) Setting::get('courier.pathao.store_id', 0);
+
+        if ($storeId <= 0) {
+            return redirect()->back()->with(
+                'error',
+                'Pathao Store ID is not configured. Please add it in Settings → Courier Integrations.'
+            );
+        }
+
+        $address = trim((string) $order->customer_address);
+
+        if (mb_strlen($address) < 10) {
+            return redirect()->back()->with(
+                'error',
+                'Pathao requires a delivery address of at least 10 characters.'
+            );
+        }
+
+        $name = trim((string) $order->customer_name);
+        if (mb_strlen($name) < 3) {
+            $name = 'Customer';
+        }
+
+        $weight = (float) Setting::get('courier.pathao.item_weight', 0.5);
+        if ($weight < 0.5) {
+            $weight = 0.5;
+        } elseif ($weight > 10) {
+            $weight = 10;
+        }
+
+        $payload = [
+            'store_id'          => $storeId,
+            'merchant_order_id' => (string) $order->order_number,
+            'recipient_name'    => Str::limit($name, 100, ''),
+            'recipient_phone'   => $phone,
+            'recipient_address' => Str::limit($address, 220, ''),
+            'delivery_type'     => (int) Setting::get('courier.pathao.delivery_type', 48),
+            'item_type'         => (int) Setting::get('courier.pathao.item_type', 2),
+            'item_quantity'     => 1,
+            'item_weight'       => $weight,
+            'item_description'  => Str::limit($itemDesc, 255, ''),
+            'amount_to_collect' => (int) round(max(
+                0,
+                (float) $order->total_amount - (float) ($order->paid_amount ?? 0)
+            )),
+        ];
+
+        if (trim((string) $order->notes) !== '') {
+            $payload['special_instruction'] = Str::limit((string) $order->notes, 255, '');
+        }
+
+        $result = (new PathaoService())->createOrder($payload);
+
+        $data          = is_array($result['data'] ?? null) ? $result['data'] : [];
+        $consignmentId = $data['consignment_id'] ?? null;
+        $apiStatus     = $data['order_status'] ?? null;
+
+        CourierLog::create([
+            'order_id'       => $order->id,
+            'courier_name'   => 'pathao',
+            'consignment_id' => $consignmentId,
+            'tracking_code'  => null,
+            'status'         => $apiStatus,
+            'response'       => $result,
+            'sent_phone'     => $phone,
+        ]);
+
+        if ($consignmentId) {
+            $this->markCourierSuccess(
+                $order,
+                'pathao',
+                (string) $consignmentId,
+                null,
+                $apiStatus,
+                $originalPhone
+            );
+
+            return redirect()->back()->with(
+                'success',
+                "✅ Sent to Pathao! Consignment ID: {$consignmentId} | Status: " . ($apiStatus ?: 'Pending')
+            );
+        }
+
+        $errorMsg = $result['message'] ?? 'Unknown error from Pathao API';
+
+        if (! empty($result['errors'])) {
+            $errorMsg .= ' ' . json_encode($result['errors'], JSON_UNESCAPED_UNICODE);
+        }
+
+        return redirect()->back()->with('error', "Pathao API error: {$errorMsg}");
+    }
+
+    private function markCourierSuccess(
+        Order $order,
+        string $courier,
+        string $consignmentId,
+        ?string $trackingCode,
+        ?string $courierStatus,
+        ?string $originalPhone
+    ): void {
+        $prevStatus = (int) $order->status;
+        $courierLabel = ucfirst($courier);
+
+        $order->update([
+            'courier_name'   => $courier,
+            'courier_status' => $courierStatus,
+            'consignment_id' => $consignmentId,
+            'tracking_code'  => $trackingCode,
+            'status'         => Order::STATUS_COURIER_ENTRY,
+        ]);
+
+        OrderHistory::create([
+            'order_id'       => $order->id,
+            'user_id'        => auth()->id(),
+            'action'         => 'sent_to_courier',
+            'previous'       => ['status' => $prevStatus],
+            'changes'        => [
+                'courier'        => $courier,
+                'courier_status' => $courierStatus,
+                'consignment_id' => $consignmentId,
+                'tracking_code'  => $trackingCode,
+                'status'         => ['from' => $prevStatus, 'to' => Order::STATUS_COURIER_ENTRY],
+                'note'           => "Sent to {$courierLabel} courier"
+                                   . ($originalPhone ? " (phone converted from {$originalPhone})" : ''),
+            ],
+            'items_previous' => null,
+            'items_new'      => null,
+        ]);
+
+        OrderHistory::create([
+            'order_id'       => $order->id,
+            'user_id'        => auth()->id(),
+            'action'         => 'status_changed',
+            'previous'       => ['status' => $prevStatus],
+            'changes'        => ['status' => ['from' => $prevStatus, 'to' => Order::STATUS_COURIER_ENTRY]],
+            'items_previous' => null,
+            'items_new'      => null,
+        ]);
+    }
+
+    private function normalizeBdPhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        if (str_starts_with($digits, '88')) {
+            $digits = substr($digits, 2);
+        }
+
+        if (strlen($digits) === 10) {
+            $digits = '0' . $digits;
+        }
+
+        return $digits;
     }
 
     // -----------------------------------------------
