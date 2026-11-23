@@ -218,11 +218,15 @@ class NagadService
 
     private function clientIp(): string
     {
-        $ip = request()->header('CF-Connecting-IP')
-            ?? request()->header('X-Forwarded-For')
-            ?? request()->ip();
+        // Nagad expects the merchant server's whitelisted public IPv4 here,
+        // not the shopper's IP.
+        $configured = trim((string) Setting::effective('payment.nagad.server_ip', ''));
 
-        return trim(explode(',', (string) $ip)[0]) ?: '127.0.0.1';
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        return (string) (request()->server('SERVER_ADDR') ?: request()->ip() ?: '127.0.0.1');
     }
 
     private function encryptData(string $data): string

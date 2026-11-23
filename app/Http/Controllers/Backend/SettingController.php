@@ -102,6 +102,11 @@ class SettingController extends Controller
                 return back()->withInput()->with('error', 'Pathao item weight must be between 0.5 kg and 10 kg.');
             }
 
+            if ($key === 'payment.nagad.server_ip' && $value !== ''
+                && ! filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                return back()->withInput()->with('error', 'Nagad server IP must be a valid public IPv4 address.');
+            }
+
             if (in_array($key, ['payment.sslcommerz.mode', 'payment.nagad.mode'], true)
                 && ! in_array($value, ['sandbox', 'live'], true)) {
                 return back()->withInput()->with('error', 'Payment gateway mode must be either sandbox or live.');

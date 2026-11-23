@@ -20,6 +20,7 @@ class CheckNagadKeys extends Command
             ['Mode', (string) Setting::effective('payment.nagad.mode', 'sandbox')],
             ['Base URL', $nagad->baseUrl()],
             ['Merchant ID', (string) Setting::effective('payment.nagad.merchant_id', '') ?: '(missing)'],
+            ['Server public IPv4', (string) Setting::effective('payment.nagad.server_ip', '') ?: '(not set)'],
             ['Merchant private key', $diagnostics['merchant_key_ok'] ? 'OK' : 'INVALID'],
             ['Merchant key size', $diagnostics['merchant_key_bits'] ? $diagnostics['merchant_key_bits'].' bit' : '—'],
             ['Merchant key SHA-256', $diagnostics['merchant_key_fingerprint'] ?: '—'],
@@ -37,6 +38,11 @@ class CheckNagadKeys extends Command
 
         if ($diagnostics['keys_match']) {
             $this->error('The Nagad PG Public Key is your own merchant public key. Paste the public key issued by Nagad instead.');
+        }
+
+        if (Setting::effective('payment.nagad.mode', 'sandbox') === 'live'
+            && trim((string) Setting::effective('payment.nagad.server_ip', '')) === '') {
+            $this->warn('Live mode: set the Server Public IPv4 in Settings so Nagad can match your whitelisted server.');
         }
 
         $ready = $diagnostics['merchant_key_ok']

@@ -341,9 +341,22 @@
                                       placeholder="-----BEGIN PUBLIC KEY-----">{{ $val('payment.nagad.pg_public_key') }}</textarea>
                             <div class="text-muted mt-1" style="font-size:12px;">
                                 Use the <strong>Nagad PG Public Key</strong> supplied by Nagad, not the public key
-                                generated from your merchant private key. Sandbox and live keys are different.
-                                If Nagad returns “Decryption failed”, this key is wrong for the selected mode.
+                                generated from your merchant private key. In the Nagad Merchant Panel this is the
+                                <code>Payment_Gateway_PublicKey.pem</code> file under
+                                <strong>Merchant Management → Merchant Integration Details</strong>.
+                                Sandbox and live keys are different. If Nagad returns “Decryption failed”,
+                                this key is wrong for the selected mode.
                                 Run <code>php artisan nagad:check-keys</code> on the server to verify it.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px; font-weight:600;">Server Public IPv4 (for Nagad whitelist)</label>
+                            <input type="text" class="form-control" name="settings[payment.nagad.server_ip]"
+                                   value="{{ $val('payment.nagad.server_ip') }}" autocomplete="off"
+                                   placeholder="e.g. 203.0.113.10">
+                            <div class="text-muted mt-1" style="font-size:12px;">
+                                The public IPv4 address whitelisted with Nagad. It is sent as
+                                <code>X-KM-IP-V4</code>. Leave empty only for sandbox testing.
                             </div>
                         </div>
                         <div class="col-md-6">
