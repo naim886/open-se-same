@@ -313,7 +313,7 @@ echo Schema::product()
                                             @if($nagadEnabled ?? false)
                                             <label class="payment-method-card">
                                                 <input type="radio" name="payment_method" value="nagad">
-                                                <div class="payment-method-icon"><i class="fas fa-mobile-alt"></i></div>
+                                                <div class="payment-method-logo"><img src="{{ asset('images/nagad.svg') }}" alt="Nagad" loading="eager" decoding="async"></div>
                                                 <div class="payment-method-text">
                                                     <div class="payment-method-title">Nagad</div>
                                                     <div class="payment-method-sub">Pay securely with your Nagad account</div>

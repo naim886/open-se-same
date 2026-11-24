@@ -150,7 +150,10 @@ class NagadCryptoTest extends TestCase
         $settings['payment.nagad.pg_public_key'] = $this->merchantTestPublicKey();
 
         $this->actingAs($admin)
-            ->put(route('settings.update'), ['settings' => $settings])
+            ->put(route('settings.update'), [
+                'section' => 'payment',
+                'settings' => $settings,
+            ])
             ->assertSessionHas('error');
 
         $this->assertFalse(Setting::bool('payment.nagad.enabled'));

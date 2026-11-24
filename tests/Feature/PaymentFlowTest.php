@@ -51,7 +51,8 @@ class PaymentFlowTest extends TestCase
             ->get(route('shop.checkout'))
             ->assertOk()
             ->assertSee('value="sslcommerz"', false)
-            ->assertSee('value="nagad"', false);
+            ->assertSee('value="nagad"', false)
+            ->assertSee('images/nagad.svg', false);
     }
 
     public function test_admin_can_enable_gateways_and_credentials_are_required_when_enabled(): void
@@ -70,8 +71,11 @@ class PaymentFlowTest extends TestCase
         $settings['payment.sslcommerz.mode'] = 'sandbox';
 
         $this->actingAs($admin)
-            ->put(route('settings.update'), ['settings' => $settings])
-            ->assertRedirect(route('settings.index'));
+            ->put(route('settings.update'), [
+                'section' => 'payment',
+                'settings' => $settings,
+            ])
+            ->assertRedirect(route('settings.index', ['tab' => 'payment']));
 
         $this->assertTrue(Setting::bool('payment.sslcommerz.enabled'));
         $this->assertSame('teststore', Setting::get('payment.sslcommerz.store_id'));
@@ -85,7 +89,10 @@ class PaymentFlowTest extends TestCase
         $invalid['payment.nagad.pg_public_key'] = '';
 
         $this->actingAs($admin)
-            ->put(route('settings.update'), ['settings' => $invalid])
+            ->put(route('settings.update'), [
+                'section' => 'payment',
+                'settings' => $invalid,
+            ])
             ->assertSessionHas('error');
 
         $this->assertFalse(Setting::bool('payment.nagad.enabled'));
@@ -148,6 +155,18 @@ class PaymentFlowTest extends TestCase
 
         Queue::assertPushed(SendFacebookCapiEvent::class, fn (SendFacebookCapiEvent $job) => $job->eventName === 'AddPaymentInfo');
         Queue::assertNotPushed(SendFacebookCapiEvent::class, fn (SendFacebookCapiEvent $job) => $job->eventName === 'Purchase');
+    }
+
+    public function test_quick_order_shows_the_nagad_logo_when_enabled(): void
+    {
+        Queue::fake();
+        $this->enableNagad();
+
+        $product = $this->makeProduct();
+
+        $this->get(route('shop.quick-order', $product->slug))
+            ->assertOk()
+            ->assertSee('images/nagad.svg', false);
     }
 
     public function test_quick_order_can_start_an_online_payment(): void

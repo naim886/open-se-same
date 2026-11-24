@@ -56,7 +56,7 @@ class Setting extends Model
         'courier.pathao.webhook_secret' => '',
 
         // Analytics & conversion tracking.
-        'analytics.meta.pixel_id' => '26065580893095421',
+        'analytics.meta.pixel_id' => '2238997253621126',
         'analytics.meta.capi_token' => '',
         'analytics.meta.test_event_code' => '',
         'analytics.ga4.measurement_id' => 'G-0C0K5XZEQF',

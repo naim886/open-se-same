@@ -5,14 +5,51 @@
     $old = old('settings', []);
     $val = fn (string $key) => $old[$key] ?? ($settings[$key] ?? '');
     $on  = fn (string $key) => filter_var($val($key), FILTER_VALIDATE_BOOLEAN);
+
+    $settingsSections = [
+        'delivery' => ['label' => 'Delivery Charges', 'icon' => 'fas fa-truck'],
+        'invoice' => ['label' => 'Invoice & Branding', 'icon' => 'fas fa-file-invoice'],
+        'courier' => ['label' => 'Courier Integrations', 'icon' => 'fas fa-shipping-fast'],
+        'payment' => ['label' => 'Payment Gateways', 'icon' => 'fas fa-credit-card'],
+        'analytics' => ['label' => 'Analytics & Conversion Tracking', 'icon' => 'fas fa-chart-line'],
+        'social' => ['label' => 'Social Media Links', 'icon' => 'fas fa-share-alt'],
+        'notifications' => ['label' => 'Notifications', 'icon' => 'fas fa-bell'],
+        'inventory' => ['label' => 'Inventory & CRM', 'icon' => 'fas fa-warehouse'],
+    ];
+
+    $activeTab = (string) old('section', request('tab', 'delivery'));
+
+    if (! array_key_exists($activeTab, $settingsSections)) {
+        $activeTab = 'delivery';
+    }
 @endphp
+
+@push('styles')
+<style>
+    .settings-tabs {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    .settings-tabs .nav-link {
+        border-radius: 8px 8px 0 0;
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+    @media (max-width: 767.98px) {
+        .settings-tabs .nav-link {
+            font-size: 12px;
+            padding: 7px 10px;
+        }
+    }
+</style>
+@endpush
 
 <div class="row justify-content-center my-5">
     <div class="col-lg-10">
 
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Settings</h4>
-            <span class="text-muted" style="font-size:13px;">Delivery charges, courier and payment credentials, invoices and notifications</span>
+            <span class="text-muted" style="font-size:13px;">Delivery, invoices, courier, payments, analytics and notifications</span>
         </div>
 
         @if(session('success'))
@@ -22,523 +59,646 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <form action="{{ route('settings.update') }}" method="POST">
-            @csrf
-            @method('PUT')
+        <ul class="nav nav-tabs settings-tabs mb-4" role="tablist">
+                @foreach($settingsSections as $sectionKey => $section)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ $activeTab === $sectionKey ? 'active' : '' }}"
+                                id="settings-tab-{{ $sectionKey }}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#settings-{{ $sectionKey }}"
+                                data-settings-section="{{ $sectionKey }}"
+                                type="button"
+                                role="tab"
+                                aria-controls="settings-{{ $sectionKey }}"
+                                aria-selected="{{ $activeTab === $sectionKey ? 'true' : 'false' }}">
+                            <i class="{{ $section['icon'] }} me-1"></i>{{ $section['label'] }}
+                        </button>
+                    </li>
+                @endforeach
+            </ul>
 
-            {{-- ── Delivery Charges ─────────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-truck me-2"></i>Delivery Charges
+            <div class="tab-content">
+
+                {{-- ── Delivery Charges ─────────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'delivery' ? 'show active' : '' }}"
+                     id="settings-delivery" role="tabpanel" aria-labelledby="settings-tab-delivery">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="delivery">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-truck me-2"></i>Delivery Charges
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                These amounts are what customers are actually charged. Checkout only offers
+                                <strong>Inside Dhaka</strong> and <strong>Outside Dhaka</strong>; the other areas are
+                                available for manual (offline) orders. Set an area to <strong>0</strong> for free delivery.
+                            </p>
+                            <div class="row g-3">
+                                @foreach($deliveryLabels as $location => $label)
+                                    @php $key = \App\Models\Order::DELIVERY_SETTING_KEYS[$location]; @endphp
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="font-size:13px; font-weight:600;">{{ $label }}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">৳</span>
+                                            <input type="number" step="0.01" min="0" class="form-control"
+                                                   name="settings[{{ $key }}]" value="{{ $val($key) }}" required>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Delivery Charges
+                        </button>
+                    </div>
+                    </form>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        These amounts are what customers are actually charged. Checkout only offers
-                        <strong>Inside Dhaka</strong> and <strong>Outside Dhaka</strong>; the other areas are
-                        available for manual (offline) orders. Set an area to <strong>0</strong> for free delivery.
-                    </p>
-                    <div class="row g-3">
-                        @foreach($deliveryLabels as $location => $label)
-                            @php $key = \App\Models\Order::DELIVERY_SETTING_KEYS[$location]; @endphp
-                            <div class="col-md-4">
-                                <label class="form-label" style="font-size:13px; font-weight:600;">{{ $label }}</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">৳</span>
-                                    <input type="number" step="0.01" min="0" class="form-control"
-                                           name="settings[{{ $key }}]" value="{{ $val($key) }}" required>
+
+                {{-- ── Invoice & Branding ──────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'invoice' ? 'show active' : '' }}"
+                     id="settings-invoice" role="tabpanel" aria-labelledby="settings-tab-invoice">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="invoice">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-file-invoice me-2"></i>Invoice &amp; Branding
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                Shown on generated invoices and courier delivery labels.
+                            </p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Company Name</label>
+                                    <input type="text" class="form-control" name="settings[invoice.company_name]"
+                                           value="{{ $val('invoice.company_name') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Company Phone</label>
+                                    <input type="text" class="form-control" name="settings[invoice.company_phone]"
+                                           value="{{ $val('invoice.company_phone') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Company Email</label>
+                                    <input type="email" class="form-control" name="settings[invoice.company_email]"
+                                           value="{{ $val('invoice.company_email') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Footer Note</label>
+                                    <input type="text" class="form-control" name="settings[invoice.footer_note]"
+                                           value="{{ $val('invoice.footer_note') }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">BIN</label>
+                                    <input type="text" class="form-control" name="settings[invoice.company_bin]"
+                                           value="{{ $val('invoice.company_bin') }}" placeholder="004261738-0208">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Mushak</label>
+                                    <input type="text" class="form-control" name="settings[invoice.company_mushak]"
+                                           value="{{ $val('invoice.company_mushak') }}" placeholder="Mushak-6.3">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Website</label>
+                                    <input type="text" class="form-control" name="settings[invoice.company_website]"
+                                           value="{{ $val('invoice.company_website') }}" placeholder="opensesame.com.bd">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">VAT Footer Note</label>
+                                    <input type="text" class="form-control" name="settings[invoice.vat_note]"
+                                           value="{{ $val('invoice.vat_note') }}" placeholder="*** VAT INCLUDED IN THE PRODUCT PRICE ***">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Company Address</label>
+                                    <textarea class="form-control" rows="2" name="settings[invoice.company_address]">{{ $val('invoice.company_address') }}</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Terms &amp; Conditions</label>
+                                    <textarea class="form-control" rows="2" name="settings[invoice.terms]">{{ $val('invoice.terms') }}</textarea>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            {{-- ── Invoice & Branding ──────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-file-invoice me-2"></i>Invoice &amp; Branding
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        Shown on generated invoices and courier delivery labels.
-                    </p>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Company Name</label>
-                            <input type="text" class="form-control" name="settings[invoice.company_name]"
-                                   value="{{ $val('invoice.company_name') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Company Phone</label>
-                            <input type="text" class="form-control" name="settings[invoice.company_phone]"
-                                   value="{{ $val('invoice.company_phone') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Company Email</label>
-                            <input type="email" class="form-control" name="settings[invoice.company_email]"
-                                   value="{{ $val('invoice.company_email') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Footer Note</label>
-                            <input type="text" class="form-control" name="settings[invoice.footer_note]"
-                                   value="{{ $val('invoice.footer_note') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">BIN</label>
-                            <input type="text" class="form-control" name="settings[invoice.company_bin]"
-                                   value="{{ $val('invoice.company_bin') }}" placeholder="004261738-0208">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Mushak</label>
-                            <input type="text" class="form-control" name="settings[invoice.company_mushak]"
-                                   value="{{ $val('invoice.company_mushak') }}" placeholder="Mushak-6.3">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Website</label>
-                            <input type="text" class="form-control" name="settings[invoice.company_website]"
-                                   value="{{ $val('invoice.company_website') }}" placeholder="opensesame.com.bd">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">VAT Footer Note</label>
-                            <input type="text" class="form-control" name="settings[invoice.vat_note]"
-                                   value="{{ $val('invoice.vat_note') }}" placeholder="*** VAT INCLUDED IN THE PRODUCT PRICE ***">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Company Address</label>
-                            <textarea class="form-control" rows="2" name="settings[invoice.company_address]">{{ $val('invoice.company_address') }}</textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Terms &amp; Conditions</label>
-                            <textarea class="form-control" rows="2" name="settings[invoice.terms]">{{ $val('invoice.terms') }}</textarea>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {{-- ── Courier Integrations ────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-truck me-2"></i>Courier Integrations
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Invoice &amp; Branding
+                        </button>
+                    </div>
+                    </form>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        Credentials used when an order is sent to courier and when courier webhooks
-                        update an order. Pathao access tokens are stored automatically.
-                    </p>
 
-                    <h6 class="fw-bold mb-3"><i class="fas fa-box me-1"></i>Steadfast</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
-                            <input type="url" class="form-control" name="settings[courier.steadfast.base_url]"
-                                   value="{{ $val('courier.steadfast.base_url') }}"
-                                   placeholder="https://portal.packzy.com/api/v1">
+                {{-- ── Courier Integrations ────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'courier' ? 'show active' : '' }}"
+                     id="settings-courier" role="tabpanel" aria-labelledby="settings-tab-courier">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="courier">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-shipping-fast me-2"></i>Courier Integrations
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">API Key</label>
-                            <input type="password" class="form-control" name="settings[courier.steadfast.api_key]"
-                                   value="{{ $val('courier.steadfast.api_key') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Secret Key</label>
-                            <input type="password" class="form-control" name="settings[courier.steadfast.secret_key]"
-                                   value="{{ $val('courier.steadfast.secret_key') }}" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook URL</label>
-                            <input type="text" class="form-control" value="{{ route('webhooks.steadfast') }}" readonly>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Use the API key above as the Bearer token for Steadfast webhooks.
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                Credentials used when an order is sent to courier and when courier webhooks
+                                update an order. Pathao access tokens are stored automatically.
+                            </p>
+
+                            <h6 class="fw-bold mb-3"><i class="fas fa-box me-1"></i>Steadfast</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
+                                    <input type="url" class="form-control" name="settings[courier.steadfast.base_url]"
+                                           value="{{ $val('courier.steadfast.base_url') }}"
+                                           placeholder="https://portal.packzy.com/api/v1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">API Key</label>
+                                    <input type="password" class="form-control" name="settings[courier.steadfast.api_key]"
+                                           value="{{ $val('courier.steadfast.api_key') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Secret Key</label>
+                                    <input type="password" class="form-control" name="settings[courier.steadfast.secret_key]"
+                                           value="{{ $val('courier.steadfast.secret_key') }}" autocomplete="off">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Webhook URL</label>
+                                    <input type="text" class="form-control" value="{{ route('webhooks.steadfast') }}" readonly>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Use the API key above as the Bearer token for Steadfast webhooks.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border-color:rgba(255,255,255,.12);">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0"><i class="fas fa-motorcycle me-1"></i>Pathao</h6>
+                                <a href="https://merchant.pathao.com/courier/developer-api" target="_blank" rel="noopener"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-external-link-alt me-1"></i> Developer API
+                                </a>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
+                                    <input type="url" class="form-control" name="settings[courier.pathao.base_url]"
+                                           value="{{ $val('courier.pathao.base_url') }}"
+                                           placeholder="https://api-hermes.pathao.com">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Production: https://api-hermes.pathao.com — Sandbox: https://courier-api-sandbox.pathao.com
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Client ID</label>
+                                    <input type="text" class="form-control" name="settings[courier.pathao.client_id]"
+                                           value="{{ $val('courier.pathao.client_id') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Client Secret</label>
+                                    <input type="password" class="form-control" name="settings[courier.pathao.client_secret]"
+                                           value="{{ $val('courier.pathao.client_secret') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Email / Username</label>
+                                    <input type="text" class="form-control" name="settings[courier.pathao.username]"
+                                           value="{{ $val('courier.pathao.username') }}" autocomplete="off"
+                                           placeholder="merchant@example.com">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Password</label>
+                                    <input type="password" class="form-control" name="settings[courier.pathao.password]"
+                                           value="{{ $val('courier.pathao.password') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
+                                    <input type="text" class="form-control" name="settings[courier.pathao.store_id]"
+                                           value="{{ $val('courier.pathao.store_id') }}" placeholder="e.g. 512138">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Find it in Pathao Merchant → Stores (Id column).
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Delivery Type</label>
+                                    <select class="form-select" name="settings[courier.pathao.delivery_type]">
+                                        <option value="48" @selected($val('courier.pathao.delivery_type') === '48')>Normal Delivery (48)</option>
+                                        <option value="12" @selected($val('courier.pathao.delivery_type') === '12')>On Demand Delivery (12)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Item Type</label>
+                                    <select class="form-select" name="settings[courier.pathao.item_type]">
+                                        <option value="2" @selected($val('courier.pathao.item_type') === '2')>Parcel (2)</option>
+                                        <option value="1" @selected($val('courier.pathao.item_type') === '1')>Document (1)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Item Weight (kg)</label>
+                                    <input type="number" step="0.1" min="0.5" max="10" class="form-control"
+                                           name="settings[courier.pathao.item_weight]"
+                                           value="{{ $val('courier.pathao.item_weight') }}" placeholder="0.5">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Secret</label>
+                                    <input type="password" class="form-control" name="settings[courier.pathao.webhook_secret]"
+                                           value="{{ $val('courier.pathao.webhook_secret') }}" autocomplete="off">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Callback URL</label>
+                                    <input type="text" class="form-control" value="{{ route('webhooks.pathao') }}" readonly>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Add this callback URL in Pathao Merchant → Developer's API → Webhook Integration,
+                                        and use the same secret above.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <hr style="border-color:rgba(255,255,255,.12);">
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Courier Integrations
+                        </button>
+                    </div>
+                    </form>
+                </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0"><i class="fas fa-motorcycle me-1"></i>Pathao</h6>
-                        <a href="https://merchant.pathao.com/courier/developer-api" target="_blank" rel="noopener"
-                           class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-external-link-alt me-1"></i> Developer API
-                        </a>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Base URL</label>
-                            <input type="url" class="form-control" name="settings[courier.pathao.base_url]"
-                                   value="{{ $val('courier.pathao.base_url') }}"
-                                   placeholder="https://api-hermes.pathao.com">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Production: https://api-hermes.pathao.com — Sandbox: https://courier-api-sandbox.pathao.com
-                            </div>
+                {{-- ── Payment Gateways ────────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'payment' ? 'show active' : '' }}"
+                     id="settings-payment" role="tabpanel" aria-labelledby="settings-tab-payment">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="payment">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-credit-card me-2"></i>Payment Gateways
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Client ID</label>
-                            <input type="text" class="form-control" name="settings[courier.pathao.client_id]"
-                                   value="{{ $val('courier.pathao.client_id') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Client Secret</label>
-                            <input type="password" class="form-control" name="settings[courier.pathao.client_secret]"
-                                   value="{{ $val('courier.pathao.client_secret') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Email / Username</label>
-                            <input type="text" class="form-control" name="settings[courier.pathao.username]"
-                                   value="{{ $val('courier.pathao.username') }}" autocomplete="off"
-                                   placeholder="merchant@example.com">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Password</label>
-                            <input type="password" class="form-control" name="settings[courier.pathao.password]"
-                                   value="{{ $val('courier.pathao.password') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
-                            <input type="text" class="form-control" name="settings[courier.pathao.store_id]"
-                                   value="{{ $val('courier.pathao.store_id') }}" placeholder="e.g. 512138">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Find it in Pathao Merchant → Stores (Id column).
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Delivery Type</label>
-                            <select class="form-select" name="settings[courier.pathao.delivery_type]">
-                                <option value="48" @selected($val('courier.pathao.delivery_type') === '48')>Normal Delivery (48)</option>
-                                <option value="12" @selected($val('courier.pathao.delivery_type') === '12')>On Demand Delivery (12)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Item Type</label>
-                            <select class="form-select" name="settings[courier.pathao.item_type]">
-                                <option value="2" @selected($val('courier.pathao.item_type') === '2')>Parcel (2)</option>
-                                <option value="1" @selected($val('courier.pathao.item_type') === '1')>Document (1)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Item Weight (kg)</label>
-                            <input type="number" step="0.1" min="0.5" max="10" class="form-control"
-                                   name="settings[courier.pathao.item_weight]"
-                                   value="{{ $val('courier.pathao.item_weight') }}" placeholder="0.5">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Secret</label>
-                            <input type="password" class="form-control" name="settings[courier.pathao.webhook_secret]"
-                                   value="{{ $val('courier.pathao.webhook_secret') }}" autocomplete="off">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Webhook Callback URL</label>
-                            <input type="text" class="form-control" value="{{ route('webhooks.pathao') }}" readonly>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Add this callback URL in Pathao Merchant → Developer's API → Webhook Integration,
-                                and use the same secret above.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                Enable the online payment methods shown at checkout and quick order.
+                                Cash on Delivery always stays available. Credentials are only used
+                                when the matching gateway is enabled.
+                            </p>
 
-            {{-- ── Payment Gateways ────────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-credit-card me-2"></i>Payment Gateways
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        Enable the online payment methods shown at checkout and quick order.
-                        Cash on Delivery always stays available. Credentials are only used
-                        when the matching gateway is enabled.
-                    </p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0"><i class="fas fa-lock me-1"></i>SSLCommerz</h6>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="pay-ssl-enabled"
+                                           name="settings[payment.sslcommerz.enabled]" value="1" @checked($on('payment.sslcommerz.enabled'))>
+                                    <label class="form-check-label" for="pay-ssl-enabled" style="font-size:13px;">Enabled</label>
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
+                                    <select class="form-select" name="settings[payment.sslcommerz.mode]">
+                                        <option value="sandbox" @selected($val('payment.sslcommerz.mode') === 'sandbox')>Sandbox (testing)</option>
+                                        <option value="live" @selected($val('payment.sslcommerz.mode') === 'live')>Live</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
+                                    <input type="text" class="form-control" name="settings[payment.sslcommerz.store_id]"
+                                           value="{{ $val('payment.sslcommerz.store_id') }}" autocomplete="off"
+                                           placeholder="e.g. opensesamelive">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Store Password</label>
+                                    <input type="password" class="form-control" name="settings[payment.sslcommerz.store_password]"
+                                           value="{{ $val('payment.sslcommerz.store_password') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
+                                    <input type="url" class="form-control" name="settings[payment.sslcommerz.base_url]"
+                                           value="{{ $val('payment.sslcommerz.base_url') }}"
+                                           placeholder="Leave empty for the mode default">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Sandbox: https://sandbox.sslcommerz.com — Live: https://securepay.sslcommerz.com
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">IPN URL</label>
+                                    <input type="text" class="form-control" value="{{ route('payment.sslcommerz.ipn') }}" readonly>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Set this as the IPN URL in your SSLCommerz merchant panel. Success, fail and
+                                        cancel URLs are sent automatically with every order.
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0"><i class="fas fa-lock me-1"></i>SSLCommerz</h6>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" role="switch" id="pay-ssl-enabled"
-                                   name="settings[payment.sslcommerz.enabled]" value="1" @checked($on('payment.sslcommerz.enabled'))>
-                            <label class="form-check-label" for="pay-ssl-enabled" style="font-size:13px;">Enabled</label>
-                        </div>
-                    </div>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
-                            <select class="form-select" name="settings[payment.sslcommerz.mode]">
-                                <option value="sandbox" @selected($val('payment.sslcommerz.mode') === 'sandbox')>Sandbox (testing)</option>
-                                <option value="live" @selected($val('payment.sslcommerz.mode') === 'live')>Live</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Store ID</label>
-                            <input type="text" class="form-control" name="settings[payment.sslcommerz.store_id]"
-                                   value="{{ $val('payment.sslcommerz.store_id') }}" autocomplete="off"
-                                   placeholder="e.g. opensesamelive">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Store Password</label>
-                            <input type="password" class="form-control" name="settings[payment.sslcommerz.store_password]"
-                                   value="{{ $val('payment.sslcommerz.store_password') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
-                            <input type="url" class="form-control" name="settings[payment.sslcommerz.base_url]"
-                                   value="{{ $val('payment.sslcommerz.base_url') }}"
-                                   placeholder="Leave empty for the mode default">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Sandbox: https://sandbox.sslcommerz.com — Live: https://securepay.sslcommerz.com
+                            <hr style="border-color:rgba(255,255,255,.12);">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0"><i class="fas fa-mobile-alt me-1"></i>Nagad</h6>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="pay-nagad-enabled"
+                                           name="settings[payment.nagad.enabled]" value="1" @checked($on('payment.nagad.enabled'))>
+                                    <label class="form-check-label" for="pay-nagad-enabled" style="font-size:13px;">Enabled</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">IPN URL</label>
-                            <input type="text" class="form-control" value="{{ route('payment.sslcommerz.ipn') }}" readonly>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Set this as the IPN URL in your SSLCommerz merchant panel. Success, fail and
-                                cancel URLs are sent automatically with every order.
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
+                                    <select class="form-select" name="settings[payment.nagad.mode]">
+                                        <option value="sandbox" @selected($val('payment.nagad.mode') === 'sandbox')>Sandbox (testing)</option>
+                                        <option value="live" @selected($val('payment.nagad.mode') === 'live')>Live</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Merchant ID</label>
+                                    <input type="text" class="form-control" name="settings[payment.nagad.merchant_id]"
+                                           value="{{ $val('payment.nagad.merchant_id') }}" autocomplete="off">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Number</label>
+                                    <input type="text" class="form-control" name="settings[payment.nagad.merchant_number]"
+                                           value="{{ $val('payment.nagad.merchant_number') }}" autocomplete="off"
+                                           placeholder="e.g. 017XXXXXXXX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Private Key</label>
+                                    <textarea class="form-control" rows="5" name="settings[payment.nagad.merchant_private_key]"
+                                              style="font-family:monospace; font-size:11px;"
+                                              placeholder="-----BEGIN RSA PRIVATE KEY-----">{{ $val('payment.nagad.merchant_private_key') }}</textarea>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Supplied by Nagad. Pasted without the BEGIN/END lines is also accepted.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Nagad PG Public Key</label>
+                                    <textarea class="form-control" rows="5" name="settings[payment.nagad.pg_public_key]"
+                                              style="font-family:monospace; font-size:11px;"
+                                              placeholder="-----BEGIN PUBLIC KEY-----">{{ $val('payment.nagad.pg_public_key') }}</textarea>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Use the <strong>Nagad PG Public Key</strong> supplied by Nagad, not the public key
+                                        generated from your merchant private key. In the Nagad Merchant Panel this is the
+                                        <code>Payment_Gateway_PublicKey.pem</code> file under
+                                        <strong>Merchant Management → Merchant Integration Details</strong>.
+                                        Sandbox and live keys are different. If Nagad returns “Decryption failed”,
+                                        this key is wrong for the selected mode.
+                                        Run <code>php artisan nagad:check-keys</code> on the server to verify it.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Server Public IPv4 (for Nagad whitelist)</label>
+                                    <input type="text" class="form-control" name="settings[payment.nagad.server_ip]"
+                                           value="{{ $val('payment.nagad.server_ip') }}" autocomplete="off"
+                                           placeholder="e.g. 203.0.113.10">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        The public IPv4 address whitelisted with Nagad. It is sent as
+                                        <code>X-KM-IP-V4</code>. Leave empty only for sandbox testing.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
+                                    <input type="url" class="form-control" name="settings[payment.nagad.base_url]"
+                                           value="{{ $val('payment.nagad.base_url') }}"
+                                           placeholder="Leave empty for the mode default">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Callback URL</label>
+                                    <input type="text" class="form-control" value="{{ route('payment.nagad.callback') }}" readonly>
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Sent to Nagad with every checkout and used to verify the payment.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <hr style="border-color:rgba(255,255,255,.12);">
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Payment Gateways
+                        </button>
+                    </div>
+                    </form>
+                </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0"><i class="fas fa-mobile-alt me-1"></i>Nagad</h6>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" role="switch" id="pay-nagad-enabled"
-                                   name="settings[payment.nagad.enabled]" value="1" @checked($on('payment.nagad.enabled'))>
-                            <label class="form-check-label" for="pay-nagad-enabled" style="font-size:13px;">Enabled</label>
+                {{-- ── Analytics & Conversion Tracking ─────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'analytics' ? 'show active' : '' }}"
+                     id="settings-analytics" role="tabpanel" aria-labelledby="settings-tab-analytics">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="analytics">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-chart-line me-2"></i>Analytics &amp; Conversion Tracking
                         </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Mode</label>
-                            <select class="form-select" name="settings[payment.nagad.mode]">
-                                <option value="sandbox" @selected($val('payment.nagad.mode') === 'sandbox')>Sandbox (testing)</option>
-                                <option value="live" @selected($val('payment.nagad.mode') === 'live')>Live</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant ID</label>
-                            <input type="text" class="form-control" name="settings[payment.nagad.merchant_id]"
-                                   value="{{ $val('payment.nagad.merchant_id') }}" autocomplete="off">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Number</label>
-                            <input type="text" class="form-control" name="settings[payment.nagad.merchant_number]"
-                                   value="{{ $val('payment.nagad.merchant_number') }}" autocomplete="off"
-                                   placeholder="e.g. 017XXXXXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Merchant Private Key</label>
-                            <textarea class="form-control" rows="5" name="settings[payment.nagad.merchant_private_key]"
-                                      style="font-family:monospace; font-size:11px;"
-                                      placeholder="-----BEGIN RSA PRIVATE KEY-----">{{ $val('payment.nagad.merchant_private_key') }}</textarea>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Supplied by Nagad. Pasted without the BEGIN/END lines is also accepted.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Nagad PG Public Key</label>
-                            <textarea class="form-control" rows="5" name="settings[payment.nagad.pg_public_key]"
-                                      style="font-family:monospace; font-size:11px;"
-                                      placeholder="-----BEGIN PUBLIC KEY-----">{{ $val('payment.nagad.pg_public_key') }}</textarea>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Use the <strong>Nagad PG Public Key</strong> supplied by Nagad, not the public key
-                                generated from your merchant private key. In the Nagad Merchant Panel this is the
-                                <code>Payment_Gateway_PublicKey.pem</code> file under
-                                <strong>Merchant Management → Merchant Integration Details</strong>.
-                                Sandbox and live keys are different. If Nagad returns “Decryption failed”,
-                                this key is wrong for the selected mode.
-                                Run <code>php artisan nagad:check-keys</code> on the server to verify it.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Server Public IPv4 (for Nagad whitelist)</label>
-                            <input type="text" class="form-control" name="settings[payment.nagad.server_ip]"
-                                   value="{{ $val('payment.nagad.server_ip') }}" autocomplete="off"
-                                   placeholder="e.g. 203.0.113.10">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                The public IPv4 address whitelisted with Nagad. It is sent as
-                                <code>X-KM-IP-V4</code>. Leave empty only for sandbox testing.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">API Base URL (optional)</label>
-                            <input type="url" class="form-control" name="settings[payment.nagad.base_url]"
-                                   value="{{ $val('payment.nagad.base_url') }}"
-                                   placeholder="Leave empty for the mode default">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Callback URL</label>
-                            <input type="text" class="form-control" value="{{ route('payment.nagad.callback') }}" readonly>
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Sent to Nagad with every checkout and used to verify the payment.
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                Meta Pixel, Meta Conversions API and Google Analytics. Leave a field empty to
+                                disable that tracker. Events are deduplicated with shared event IDs and use BDT values.
+                            </p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Meta Pixel ID</label>
+                                    <input type="text" class="form-control" name="settings[analytics.meta.pixel_id]"
+                                           value="{{ $val('analytics.meta.pixel_id') }}" placeholder="e.g. 2238997253621126">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Meta Conversions API Token</label>
+                                    <input type="password" class="form-control" name="settings[analytics.meta.capi_token]"
+                                           value="{{ $val('analytics.meta.capi_token') }}" autocomplete="off"
+                                           placeholder="Events Manager → Conversions API access token">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Meta Test Event Code</label>
+                                    <input type="text" class="form-control" name="settings[analytics.meta.test_event_code]"
+                                           value="{{ $val('analytics.meta.test_event_code') }}" placeholder="Optional, e.g. TEST12345">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Use this only while testing in Events Manager → Test Events.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">GA4 Measurement ID</label>
+                                    <input type="text" class="form-control" name="settings[analytics.ga4.measurement_id]"
+                                           value="{{ $val('analytics.ga4.measurement_id') }}" placeholder="G-XXXXXXXXXX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Universal Analytics ID</label>
+                                    <input type="text" class="form-control" name="settings[analytics.ga.measurement_id]"
+                                           value="{{ $val('analytics.ga.measurement_id') }}" placeholder="UA-XXXXXXXXX-X (optional)">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Optional legacy Google Analytics property.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {{-- ── Analytics & Conversion Tracking ─────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-chart-line me-2"></i>Analytics &amp; Conversion Tracking
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        Meta Pixel, Meta Conversions API and Google Analytics. Leave a field empty to
-                        disable that tracker. Events are deduplicated with shared event IDs and use BDT values.
-                    </p>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Pixel ID</label>
-                            <input type="text" class="form-control" name="settings[analytics.meta.pixel_id]"
-                                   value="{{ $val('analytics.meta.pixel_id') }}" placeholder="e.g. 26065580893095421">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Conversions API Token</label>
-                            <input type="password" class="form-control" name="settings[analytics.meta.capi_token]"
-                                   value="{{ $val('analytics.meta.capi_token') }}" autocomplete="off"
-                                   placeholder="Events Manager → Conversions API access token">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Meta Test Event Code</label>
-                            <input type="text" class="form-control" name="settings[analytics.meta.test_event_code]"
-                                   value="{{ $val('analytics.meta.test_event_code') }}" placeholder="Optional, e.g. TEST12345">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Use this only while testing in Events Manager → Test Events.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">GA4 Measurement ID</label>
-                            <input type="text" class="form-control" name="settings[analytics.ga4.measurement_id]"
-                                   value="{{ $val('analytics.ga4.measurement_id') }}" placeholder="G-XXXXXXXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Universal Analytics ID</label>
-                            <input type="text" class="form-control" name="settings[analytics.ga.measurement_id]"
-                                   value="{{ $val('analytics.ga.measurement_id') }}" placeholder="UA-XXXXXXXXX-X (optional)">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Optional legacy Google Analytics property.
-                            </div>
-                        </div>
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Analytics
+                        </button>
                     </div>
+                    </form>
                 </div>
-            </div>
 
-            {{-- ── Social Media Links ──────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-share-alt me-2"></i>Social Media Links
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3" style="font-size:13px;">
-                        These links power the social icons in the storefront header and footer.
-                        Leave a field empty to hide that icon.
-                    </p>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Facebook URL</label>
-                            <input type="url" class="form-control" name="settings[social.facebook_url]"
-                                   value="{{ $val('social.facebook_url') }}" placeholder="https://www.facebook.com/your-page">
+                {{-- ── Social Media Links ──────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'social' ? 'show active' : '' }}"
+                     id="settings-social" role="tabpanel" aria-labelledby="settings-tab-social">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="social">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-share-alt me-2"></i>Social Media Links
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Messenger URL</label>
-                            <input type="url" class="form-control" name="settings[social.messenger_url]"
-                                   value="{{ $val('social.messenger_url') }}" placeholder="https://m.me/your-page">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">WhatsApp URL</label>
-                            <input type="url" class="form-control" name="settings[social.whatsapp_url]"
-                                   value="{{ $val('social.whatsapp_url') }}" placeholder="https://wa.me/8801XXXXXXXXX">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Instagram URL</label>
-                            <input type="url" class="form-control" name="settings[social.instagram_url]"
-                                   value="{{ $val('social.instagram_url') }}" placeholder="https://instagram.com/your-page">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">YouTube URL</label>
-                            <input type="url" class="form-control" name="settings[social.youtube_url]"
-                                   value="{{ $val('social.youtube_url') }}" placeholder="https://youtube.com/@your-channel">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">TikTok URL</label>
-                            <input type="url" class="form-control" name="settings[social.tiktok_url]"
-                                   value="{{ $val('social.tiktok_url') }}" placeholder="https://tiktok.com/@your-handle">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ── Notifications ───────────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-bell me-2"></i>Notifications
-                </div>
-                <div class="card-body">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" role="switch" id="notif-oc"
-                               name="settings[notification.order_confirmation]" value="1" @checked($on('notification.order_confirmation'))>
-                        <label class="form-check-label" for="notif-oc">
-                            Email the customer an order confirmation
-                            <div class="text-muted" style="font-size:12px;">Sent when an order is placed and the customer supplied an email address.</div>
-                        </label>
-                    </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" role="switch" id="notif-no"
-                               name="settings[notification.admin_new_order]" value="1" @checked($on('notification.admin_new_order'))>
-                        <label class="form-check-label" for="notif-no">
-                            Alert admin on every new order
-                            <div class="text-muted" style="font-size:12px;">Requires an admin notification email below.</div>
-                        </label>
-                    </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" role="switch" id="notif-ls"
-                               name="settings[notification.admin_low_stock]" value="1" @checked($on('notification.admin_low_stock'))>
-                        <label class="form-check-label" for="notif-ls">
-                            Alert admin when a product runs low on stock
-                            <div class="text-muted" style="font-size:12px;">Sent once per product when it first crosses the threshold.</div>
-                        </label>
-                    </div>
-                    <div class="col-md-6 px-0">
-                        <label class="form-label" style="font-size:13px; font-weight:600;">Admin Notification Email</label>
-                        <input type="email" class="form-control" name="settings[notification.admin_email]"
-                               value="{{ $val('notification.admin_email') }}" placeholder="admin@example.com">
-                    </div>
-                </div>
-            </div>
-
-            {{-- ── Inventory & CRM ─────────────────────────────────── --}}
-            <div class="card mb-4">
-                <div class="card-header fw-bold">
-                    <i class="fas fa-warehouse me-2"></i>Inventory &amp; CRM
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Low Stock Threshold</label>
-                            <input type="number" min="0" class="form-control"
-                                   name="settings[inventory.low_stock_threshold]" value="{{ $val('inventory.low_stock_threshold') }}">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Products with stock below this are flagged on the dashboard.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px; font-weight:600;">Repeat Customer After</label>
-                            <input type="number" min="1" class="form-control"
-                                   name="settings[crm.repeat_min_orders]" value="{{ $val('crm.repeat_min_orders') }}">
-                            <div class="text-muted mt-1" style="font-size:12px;">
-                                Number of orders at which a customer is counted as a repeat buyer.
+                        <div class="card-body">
+                            <p class="text-muted mb-3" style="font-size:13px;">
+                                These links power the social icons in the storefront header and footer.
+                                Leave a field empty to hide that icon.
+                            </p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Facebook URL</label>
+                                    <input type="url" class="form-control" name="settings[social.facebook_url]"
+                                           value="{{ $val('social.facebook_url') }}" placeholder="https://www.facebook.com/your-page">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Messenger URL</label>
+                                    <input type="url" class="form-control" name="settings[social.messenger_url]"
+                                           value="{{ $val('social.messenger_url') }}" placeholder="https://m.me/your-page">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">WhatsApp URL</label>
+                                    <input type="url" class="form-control" name="settings[social.whatsapp_url]"
+                                           value="{{ $val('social.whatsapp_url') }}" placeholder="https://wa.me/8801XXXXXXXXX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Instagram URL</label>
+                                    <input type="url" class="form-control" name="settings[social.instagram_url]"
+                                           value="{{ $val('social.instagram_url') }}" placeholder="https://instagram.com/your-page">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">YouTube URL</label>
+                                    <input type="url" class="form-control" name="settings[social.youtube_url]"
+                                           value="{{ $val('social.youtube_url') }}" placeholder="https://youtube.com/@your-channel">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">TikTok URL</label>
+                                    <input type="url" class="form-control" name="settings[social.tiktok_url]"
+                                           value="{{ $val('social.tiktok_url') }}" placeholder="https://tiktok.com/@your-handle">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="d-flex justify-content-end mb-5">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-1"></i>Save Settings
-                </button>
-            </div>
-        </form>
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Social Links
+                        </button>
+                    </div>
+                    </form>
+                </div>
+
+                {{-- ── Notifications ───────────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'notifications' ? 'show active' : '' }}"
+                     id="settings-notifications" role="tabpanel" aria-labelledby="settings-tab-notifications">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="notifications">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-bell me-2"></i>Notifications
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="notif-oc"
+                                       name="settings[notification.order_confirmation]" value="1" @checked($on('notification.order_confirmation'))>
+                                <label class="form-check-label" for="notif-oc">
+                                    Email the customer an order confirmation
+                                    <div class="text-muted" style="font-size:12px;">Sent when an order is placed and the customer supplied an email address.</div>
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="notif-no"
+                                       name="settings[notification.admin_new_order]" value="1" @checked($on('notification.admin_new_order'))>
+                                <label class="form-check-label" for="notif-no">
+                                    Alert admin on every new order
+                                    <div class="text-muted" style="font-size:12px;">Requires an admin notification email below.</div>
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="notif-ls"
+                                       name="settings[notification.admin_low_stock]" value="1" @checked($on('notification.admin_low_stock'))>
+                                <label class="form-check-label" for="notif-ls">
+                                    Alert admin when a product runs low on stock
+                                    <div class="text-muted" style="font-size:12px;">Sent once per product when it first crosses the threshold.</div>
+                                </label>
+                            </div>
+                            <div class="col-md-6 px-0">
+                                <label class="form-label" style="font-size:13px; font-weight:600;">Admin Notification Email</label>
+                                <input type="email" class="form-control" name="settings[notification.admin_email]"
+                                       value="{{ $val('notification.admin_email') }}" placeholder="admin@example.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Notifications
+                        </button>
+                    </div>
+                    </form>
+                </div>
+
+                {{-- ── Inventory & CRM ─────────────────────────────────── --}}
+                <div class="tab-pane fade {{ $activeTab === 'inventory' ? 'show active' : '' }}"
+                     id="settings-inventory" role="tabpanel" aria-labelledby="settings-tab-inventory">
+                    <form action="{{ route('settings.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="section" value="inventory">
+                    <div class="card mb-4">
+                        <div class="card-header fw-bold">
+                            <i class="fas fa-warehouse me-2"></i>Inventory &amp; CRM
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Low Stock Threshold</label>
+                                    <input type="number" min="0" class="form-control"
+                                           name="settings[inventory.low_stock_threshold]" value="{{ $val('inventory.low_stock_threshold') }}">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Products with stock below this are flagged on the dashboard.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" style="font-size:13px; font-weight:600;">Repeat Customer After</label>
+                                    <input type="number" min="1" class="form-control"
+                                           name="settings[crm.repeat_min_orders]" value="{{ $val('crm.repeat_min_orders') }}">
+                                    <div class="text-muted mt-1" style="font-size:12px;">
+                                        Number of orders at which a customer is counted as a repeat buyer.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-5">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Inventory &amp; CRM
+                        </button>
+                    </div>
+                    </form>
+                </div>
+
+        </div>
 
     </div>
 </div>

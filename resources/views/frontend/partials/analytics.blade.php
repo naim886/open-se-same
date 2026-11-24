@@ -1,5 +1,5 @@
 @php
-    $metaPixelId = \App\Models\Setting::effective('analytics.meta.pixel_id', '26065580893095421');
+    $metaPixelId = \App\Models\Setting::effective('analytics.meta.pixel_id', '2238997253621126');
     $ga4Id       = \App\Models\Setting::effective('analytics.ga4.measurement_id', 'G-0C0K5XZEQF');
     $gaId        = \App\Models\Setting::effective('analytics.ga.measurement_id', '');
 
@@ -40,15 +40,11 @@
         client_user_agent: {!! json_encode($pixelUa) !!},
         external_id: {!! json_encode($pixelExternalId) !!}
     });
-    @if(!request()->routeIs('quick-order'))
     fbq('track', 'PageView');
-    @endif
     </script>
-    @if(!request()->routeIs('quick-order'))
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id={{ $metaPixelId }}&ev=PageView&noscript=1"
     /></noscript>
-    @endif
     <!-- End Meta Pixel Code -->
 @endif
 

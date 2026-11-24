@@ -46,6 +46,29 @@ class SettingController extends Controller
         'crm.repeat_min_orders',
     ];
 
+    /** Settings tabs and the key prefixes each one owns. */
+    private const SECTION_PREFIXES = [
+        'delivery' => ['delivery.'],
+        'invoice' => ['invoice.'],
+        'courier' => ['courier.'],
+        'payment' => ['payment.'],
+        'analytics' => ['analytics.'],
+        'social' => ['social.'],
+        'notifications' => ['notification.'],
+        'inventory' => ['inventory.', 'crm.'],
+    ];
+
+    private const SECTION_LABELS = [
+        'delivery' => 'Delivery Charges',
+        'invoice' => 'Invoice & Branding',
+        'courier' => 'Courier Integrations',
+        'payment' => 'Payment Gateways',
+        'analytics' => 'Analytics & Conversion Tracking',
+        'social' => 'Social Media Links',
+        'notifications' => 'Notifications',
+        'inventory' => 'Inventory & CRM',
+    ];
+
     public function index(): View
     {
         return view('backend.modules.setting.index', [
@@ -57,13 +80,21 @@ class SettingController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $section = (string) $request->input('section', '');
+
+        if (! array_key_exists($section, self::SECTION_PREFIXES)) {
+            return redirect()->route('settings.index')
+                ->with('error', 'Please choose a settings section to save.');
+        }
+
         // Field names use array notation (`settings[delivery.inside_dhaka]`)
         // because PHP rewrites literal dots in form field names to underscores.
         $input = (array) $request->input('settings', []);
+        $keys = $this->keysForSection($section);
 
         $values = [];
 
-        foreach (array_keys(Setting::DEFAULTS) as $key) {
+        foreach ($keys as $key) {
             if (in_array($key, self::BOOLEAN_KEYS, true)) {
                 $values[$key] = empty($input[$key]) ? '0' : '1';
 
@@ -74,75 +105,77 @@ class SettingController extends Controller
 
             if (in_array($key, self::NUMERIC_KEYS, true)) {
                 if ($value === '' || ! is_numeric($value) || (float) $value < 0) {
-                    return back()->withInput()->with('error', "Please enter a valid non-negative amount for '{$key}'.");
+                    return $this->settingsError($section, "Please enter a valid non-negative amount for '{$key}'.");
                 }
             }
 
             if ($key === 'notification.admin_email' && $value !== '' && ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                return back()->withInput()->with('error', 'Please enter a valid admin notification email address.');
+                return $this->settingsError($section, 'Please enter a valid admin notification email address.');
             }
 
             if (in_array($key, self::URL_KEYS, true) && $value !== '' && ! filter_var($value, FILTER_VALIDATE_URL)) {
-                return back()->withInput()->with('error', "Please enter a valid URL for '{$key}'.");
+                return $this->settingsError($section, "Please enter a valid URL for '{$key}'.");
             }
 
             if ($key === 'courier.pathao.store_id' && $value !== '' && (! ctype_digit($value) || (int) $value < 1)) {
-                return back()->withInput()->with('error', 'Pathao store ID must be a positive number.');
+                return $this->settingsError($section, 'Pathao store ID must be a positive number.');
             }
 
             if ($key === 'courier.pathao.delivery_type' && $value !== '' && ! in_array($value, ['12', '48'], true)) {
-                return back()->withInput()->with('error', 'Pathao delivery type must be 48 (Normal) or 12 (On Demand).');
+                return $this->settingsError($section, 'Pathao delivery type must be 48 (Normal) or 12 (On Demand).');
             }
 
             if ($key === 'courier.pathao.item_type' && $value !== '' && ! in_array($value, ['1', '2'], true)) {
-                return back()->withInput()->with('error', 'Pathao item type must be 1 (Document) or 2 (Parcel).');
+                return $this->settingsError($section, 'Pathao item type must be 1 (Document) or 2 (Parcel).');
             }
 
             if ($key === 'courier.pathao.item_weight' && $value !== '' && (! is_numeric($value) || (float) $value < 0.5 || (float) $value > 10)) {
-                return back()->withInput()->with('error', 'Pathao item weight must be between 0.5 kg and 10 kg.');
+                return $this->settingsError($section, 'Pathao item weight must be between 0.5 kg and 10 kg.');
             }
 
             if ($key === 'payment.nagad.server_ip' && $value !== ''
                 && ! filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-                return back()->withInput()->with('error', 'Nagad server IP must be a valid public IPv4 address.');
+                return $this->settingsError($section, 'Nagad server IP must be a valid public IPv4 address.');
             }
 
             if (in_array($key, ['payment.sslcommerz.mode', 'payment.nagad.mode'], true)
                 && ! in_array($value, ['sandbox', 'live'], true)) {
-                return back()->withInput()->with('error', 'Payment gateway mode must be either sandbox or live.');
+                return $this->settingsError($section, 'Payment gateway mode must be either sandbox or live.');
             }
 
             $values[$key] = $value;
         }
 
-        if ($values['payment.sslcommerz.enabled'] === '1'
-            && (trim($values['payment.sslcommerz.store_id']) === '' || trim($values['payment.sslcommerz.store_password']) === '')) {
-            return back()->withInput()->with('error', 'SSLCommerz is enabled but its Store ID or Store Password is empty.');
-        }
-
-        if ($values['payment.nagad.enabled'] === '1'
-            && (trim($values['payment.nagad.merchant_id']) === ''
-                || trim($values['payment.nagad.merchant_private_key']) === ''
-                || trim($values['payment.nagad.pg_public_key']) === '')) {
-            return back()->withInput()->with('error', 'Nagad is enabled but its Merchant ID or keys are empty.');
-        }
-
-        if ($values['payment.nagad.enabled'] === '1') {
-            $nagadKeys = (new NagadService(
-                $values['payment.nagad.merchant_private_key'],
-                $values['payment.nagad.pg_public_key']
-            ))->keyDiagnostics();
-
-            if (! $nagadKeys['merchant_key_ok']) {
-                return back()->withInput()->with('error', 'The Nagad merchant private key could not be parsed. Paste the complete private key issued by Nagad.');
+        if ($section === 'payment') {
+            if ($values['payment.sslcommerz.enabled'] === '1'
+                && (trim($values['payment.sslcommerz.store_id']) === '' || trim($values['payment.sslcommerz.store_password']) === '')) {
+                return $this->settingsError($section, 'SSLCommerz is enabled but its Store ID or Store Password is empty.');
             }
 
-            if (! $nagadKeys['pg_key_ok']) {
-                return back()->withInput()->with('error', 'The Nagad PG public key could not be parsed. Paste the public key issued by Nagad.');
+            if ($values['payment.nagad.enabled'] === '1'
+                && (trim($values['payment.nagad.merchant_id']) === ''
+                    || trim($values['payment.nagad.merchant_private_key']) === ''
+                    || trim($values['payment.nagad.pg_public_key']) === '')) {
+                return $this->settingsError($section, 'Nagad is enabled but its Merchant ID or keys are empty.');
             }
 
-            if ($nagadKeys['keys_match']) {
-                return back()->withInput()->with('error', 'The Nagad PG Public Key is your own merchant public key. Paste the public key issued by Nagad, not the public key generated from your private key.');
+            if ($values['payment.nagad.enabled'] === '1') {
+                $nagadKeys = (new NagadService(
+                    $values['payment.nagad.merchant_private_key'],
+                    $values['payment.nagad.pg_public_key']
+                ))->keyDiagnostics();
+
+                if (! $nagadKeys['merchant_key_ok']) {
+                    return $this->settingsError($section, 'The Nagad merchant private key could not be parsed. Paste the complete private key issued by Nagad.');
+                }
+
+                if (! $nagadKeys['pg_key_ok']) {
+                    return $this->settingsError($section, 'The Nagad PG public key could not be parsed. Paste the public key issued by Nagad.');
+                }
+
+                if ($nagadKeys['keys_match']) {
+                    return $this->settingsError($section, 'The Nagad PG Public Key is your own merchant public key. Paste the public key issued by Nagad, not the public key generated from your private key.');
+                }
             }
         }
 
@@ -156,10 +189,12 @@ class SettingController extends Controller
 
         $pathaoCredentialsChanged = false;
 
-        foreach ($pathaoCredentialKeys as $key) {
-            if (($values[$key] ?? '') !== (string) Setting::effective($key, '')) {
-                $pathaoCredentialsChanged = true;
-                break;
+        if ($section === 'courier') {
+            foreach ($pathaoCredentialKeys as $key) {
+                if (($values[$key] ?? '') !== (string) Setting::effective($key, '')) {
+                    $pathaoCredentialsChanged = true;
+                    break;
+                }
             }
         }
 
@@ -172,6 +207,36 @@ class SettingController extends Controller
             Setting::set('courier.pathao.token_expires_at', '0');
         }
 
-        return redirect()->route('settings.index')->with('success', 'Settings updated successfully.');
+        return redirect()->route('settings.index', ['tab' => $section])
+            ->with('success', self::SECTION_LABELS[$section].' saved successfully.');
+    }
+
+    /**
+     * Settings owned by one tab, based on the key prefix map.
+     *
+     * @return array<int, string>
+     */
+    private function keysForSection(string $section): array
+    {
+        $prefixes = self::SECTION_PREFIXES[$section] ?? [];
+        $keys = [];
+
+        foreach (array_keys(Setting::DEFAULTS) as $key) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($key, $prefix)) {
+                    $keys[] = $key;
+                    break;
+                }
+            }
+        }
+
+        return $keys;
+    }
+
+    private function settingsError(string $section, string $message): RedirectResponse
+    {
+        return redirect()->route('settings.index', ['tab' => $section])
+            ->withInput()
+            ->with('error', $message);
     }
 }
