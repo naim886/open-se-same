@@ -56,11 +56,11 @@ if ($schemaProducts->isNotEmpty()) {
 @php $firstBanner = collect($blocks)->firstWhere('type', 'banner')['banners'][0] ?? null; @endphp
 @if($firstBanner && $firstBanner->image)
 <link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->image) }}"
-      @if($firstBanner->mobile_image)
-      imagesrcset="{{ asset('storage/'.$firstBanner->mobile_image) }} 770w, {{ asset('storage/'.$firstBanner->image) }} 1920w"
-      imagesizes="100vw"
-      @endif
-      fetchpriority="high">
+      media="(min-width: 768px)" fetchpriority="high">
+@endif
+@if($firstBanner && $firstBanner->mobile_image)
+<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->mobile_image) }}"
+      media="(max-width: 767.98px)" fetchpriority="high">
 @endif
 @endsection
 
@@ -80,17 +80,19 @@ if ($schemaProducts->isNotEmpty()) {
                         @foreach($block['banners'] as $banner)
                             <div class="swiper-slide {{ $loop->first ? 'is-active' : '' }}" aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
                                 @if($banner->button_url)<a href="{{ $banner->button_url }}">@endif
-                                <div class="hero-slide-media">
+                                <picture class="hero-slide-media">
+                                    @if($banner->mobile_image)
+                                        {{-- Mobile gets its own crop regardless of DPR. A width-descriptor
+                                             srcset would pick the 1920w desktop file on DPR>=2 phones. --}}
+                                        <source media="(max-width: 767.98px)"
+                                                srcset="{{ asset('storage/'.$banner->mobile_image) }}">
+                                    @endif
                                     <img src="{{ asset('storage/'.$banner->image) }}"
-                                         @if($banner->mobile_image)
-                                         srcset="{{ asset('storage/'.$banner->mobile_image) }} 770w, {{ asset('storage/'.$banner->image) }} 1920w"
-                                         sizes="100vw"
-                                         @endif
                                          width="1920" height="520"
                                          alt="{{ $banner->title }}"
                                          @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif
                                          decoding="async">
-                                </div>
+                                </picture>
                                 @if($banner->button_url)</a>@endif
                             </div>
                         @endforeach

@@ -41,13 +41,15 @@ class TopbarNavigationTest extends TestCase
             ->assertSee('Logout');
     }
 
-    public function test_the_admin_topbar_has_a_visible_logout_button(): void
+    public function test_the_admin_topbar_has_quick_actions_and_logout(): void
     {
         $user = $this->userWithRole('Super Admin');
 
         $this->actingAs($user)
             ->get(route('category.index'))
             ->assertOk()
+            ->assertSee('Clear Cache')
+            ->assertSee('Visit Website')
             ->assertSee('Logout');
     }
 

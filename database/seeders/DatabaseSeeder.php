@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // Access control first — the admin account is assigned a role below.
             RoleSeeder::class,
+            PermissionSeeder::class,
             AdminUserSeeder::class,
 
             // Catalogue

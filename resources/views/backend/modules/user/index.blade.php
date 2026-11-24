@@ -214,8 +214,8 @@
                             {{-- Actions --}}
                             <td>
                                 <div class="d-flex gap-1">
+                                    @if(!$user->hasRole('Super Admin') && auth()->user()?->can('users.update'))
                                     {{-- Toggle status --}}
-                                    @if(!$user->hasRole('Super Admin'))
                                     <form method="POST"
                                           action="{{ route('admin.users.toggleStatus', $user->id) }}"
                                           onsubmit="return confirm('Toggle status for {{ addslashes($user->name) }}?')">
@@ -244,7 +244,7 @@
                         </tr>
 
                         {{-- Role change modal --}}
-                        @if(!$user->hasRole('Super Admin'))
+                        @if(!$user->hasRole('Super Admin') && auth()->user()?->can('users.update'))
                         <div class="modal fade" id="roleModal{{ $user->id }}" tabindex="-1">
                             <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
@@ -256,13 +256,11 @@
                                         @csrf @method('PATCH')
                                         <div class="modal-body py-2">
                                             <select name="role" class="form-select form-select-sm">
-                                                @foreach($allRoles as $r)
-                                                    @if($r !== 'Super Admin')
+                                                @foreach($assignableRoles as $r)
                                                     <option value="{{ $r }}"
                                                             {{ $user->roles->first()?->name === $r ? 'selected' : '' }}>
                                                         {{ $r }}
                                                     </option>
-                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>

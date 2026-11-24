@@ -130,7 +130,7 @@ Route::prefix('/')->name('shop.')->group(function () {
     Route::get('/track-order',        [\App\Http\Controllers\TrackingController::class, 'index'])->name('track-order');
 });
 
-Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'admin'], static function () {
+Route::group(['middleware' => ['auth', 'admin.permission'], 'prefix' => 'admin'], static function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('banner', BannerController::class);
     Route::resource('category', CategoryController::class);
@@ -233,6 +233,18 @@ Route::group(['middleware' => ['auth', 'role:Super Admin|Admin'], 'prefix' => 'a
     Route::get('users', [\App\Http\Controllers\Backend\UserController::class, 'index'])->name('admin.users.index');
     Route::patch('users/{user}/toggle-status', [\App\Http\Controllers\Backend\UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
     Route::patch('users/{user}/role', [\App\Http\Controllers\Backend\UserController::class, 'updateRole'])->name('admin.users.updateRole');
+
+    // Roles & permissions matrix
+    Route::get('roles', [\App\Http\Controllers\Backend\RoleController::class, 'index'])->name('roles.index');
+    Route::post('roles', [\App\Http\Controllers\Backend\RoleController::class, 'store'])->name('roles.store');
+    Route::put('roles/{role}', [\App\Http\Controllers\Backend\RoleController::class, 'update'])->name('roles.update');
+    Route::delete('roles/{role}', [\App\Http\Controllers\Backend\RoleController::class, 'destroy'])->name('roles.destroy');
+
+    Route::get('permissions', [\App\Http\Controllers\Backend\PermissionController::class, 'index'])->name('permissions.index');
+    Route::post('permissions/sync', [\App\Http\Controllers\Backend\PermissionController::class, 'sync'])->name('permissions.sync');
+
+    // Topbar utility: flush every application cache.
+    Route::post('clear-cache', [\App\Http\Controllers\Backend\SystemController::class, 'clearCache'])->name('cache.clear');
 });
 
 

@@ -226,14 +226,16 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
 
             <!-- Images -->
             <div class="col-lg-5 col-md-6">
-                <div class="position-relative">
+                <div class="position-relative product-zoom" id="productZoomWrap">
                     @php
                         $mainImg = $product->primary_photo
                             ? asset('storage/'.$product->primary_photo)
                             : ($product->photos->first() ? asset('storage/'.$product->photos->first()->photo_path) : null);
                     @endphp
                     @if($mainImg)
-                        <img src="{{ $mainImg }}" alt="{{ $product->name }}" class="product-detail-main-img" id="mainProductImg" loading="eager" fetchpriority="high" decoding="async">
+                        <img src="{{ $mainImg }}" alt="{{ $product->name }}" class="product-detail-main-img" id="mainProductImg"
+                             loading="eager" fetchpriority="high" decoding="async"
+                             role="button" tabindex="0" aria-label="Zoom image: {{ $product->name }}">
                     @else
                         <div class="product-detail-main-img d-flex align-items-center justify-content-center" style="background:#f5f5f5;">
                             <i class="fas fa-image" style="font-size:80px; color:#ddd;"></i>
@@ -664,6 +666,12 @@ echo Schema::breadcrumbList()->itemListElement($schemaBreadItems)->toScript();
     </div>
 </section>
 
+{{-- Full-size image lightbox --}}
+<div class="product-lightbox" id="productLightbox" hidden>
+    <button type="button" class="product-lightbox-close" id="productLightboxClose" aria-label="Close image">&times;</button>
+    <img src="" alt="" id="productLightboxImg">
+</div>
+
 @endsection
 
 @section('extra_js')
@@ -677,6 +685,77 @@ function changeMainImg(el, src) {
     }
     if (el) el.classList.add('gallery-thumb-active');
 }
+
+/* ── Product image zoom: hover magnifier on desktop, tap-to-enlarge everywhere ── */
+(function () {
+    var img = document.getElementById('mainProductImg');
+    var wrap = document.getElementById('productZoomWrap');
+    var lb = document.getElementById('productLightbox');
+    var lbImg = document.getElementById('productLightboxImg');
+    var lbClose = document.getElementById('productLightboxClose');
+
+    if (!img || !wrap || img.tagName !== 'IMG') return;
+
+    var canHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var ZOOM = 2.2;
+
+    if (canHover) {
+        wrap.addEventListener('mouseenter', function () {
+            wrap.classList.add('is-zooming');
+        });
+
+        wrap.addEventListener('mousemove', function (event) {
+            var rect = img.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+
+            var x = ((event.clientX - rect.left) / rect.width) * 100;
+            var y = ((event.clientY - rect.top) / rect.height) * 100;
+
+            x = Math.min(100, Math.max(0, x));
+            y = Math.min(100, Math.max(0, y));
+
+            img.style.transformOrigin = x + '% ' + y + '%';
+            img.style.transform = 'scale(' + ZOOM + ')';
+        });
+
+        wrap.addEventListener('mouseleave', function () {
+            wrap.classList.remove('is-zooming');
+            img.style.transform = '';
+            img.style.transformOrigin = '';
+        });
+    }
+
+    function openLightbox() {
+        lbImg.src = img.currentSrc || img.src;
+        lbImg.alt = img.alt || '';
+        lb.hidden = false;
+        document.body.classList.add('product-lightbox-open');
+        lbClose.focus();
+    }
+
+    function closeLightbox() {
+        lb.hidden = true;
+        lbImg.src = '';
+        document.body.classList.remove('product-lightbox-open');
+        img.focus({ preventScroll: true });
+    }
+
+    img.addEventListener('click', openLightbox);
+    img.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openLightbox();
+        }
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', function (event) {
+        if (event.target === lb || event.target === lbImg) closeLightbox();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !lb.hidden) closeLightbox();
+    });
+})();
 
 function changeQty(delta) {
     var input = document.getElementById('productQty');

@@ -660,6 +660,73 @@ img { max-width: 100%; }
     background: #f7faf8;
     cursor: zoom-in;
 }
+
+/* ── Product image zoom (hover magnifier) + click-to-enlarge lightbox ── */
+.product-zoom {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+.product-zoom .product-detail-main-img {
+    transform-origin: center center;
+    transition: transform .25s ease;
+    will-change: transform;
+}
+.product-zoom.is-zooming .product-detail-main-img {
+    transition: none;
+}
+.product-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, .88);
+    animation: productLightboxFade .18s ease;
+}
+.product-lightbox[hidden] {
+    display: none;
+}
+.product-lightbox img {
+    width: auto;
+    height: auto;
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+    cursor: zoom-out;
+}
+.product-lightbox-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .16);
+    color: #fff;
+    font-size: 26px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.product-lightbox-close:hover {
+    background: rgba(255, 255, 255, .3);
+}
+body.product-lightbox-open {
+    overflow: hidden;
+}
+@keyframes productLightboxFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 .product-thumbnails {
     display: flex;
     gap: 10px;

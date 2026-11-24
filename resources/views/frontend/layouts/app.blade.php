@@ -580,6 +580,7 @@
         }
 
         .hero-swiper .hero-slide-media {
+            display: block;
             width: 100%;
             aspect-ratio: 770 / 430
         }
@@ -1106,7 +1107,7 @@
             @auth
                 @php
                     $topbarUser = auth()->user();
-                    $topbarAccountUrl = $topbarUser->hasAnyRole(['Super Admin', 'Admin'])
+                    $topbarAccountUrl = $topbarUser->can('dashboard.view')
                         ? route('dashboard.index')
                         : route('customer.dashboard');
                 @endphp
@@ -1308,13 +1309,13 @@
         @auth
             @php
                 $mobileUser = auth()->user();
-                $mobileAccountUrl = $mobileUser->hasAnyRole(['Super Admin', 'Admin'])
+                $mobileAccountUrl = $mobileUser->can('dashboard.view')
                     ? route('dashboard.index')
                     : route('customer.dashboard');
             @endphp
             <a href="{{ $mobileAccountUrl }}" class="mobile-nav-link">
                 <i class="fas fa-user-circle"></i>
-                {{ $mobileUser->hasAnyRole(['Super Admin', 'Admin']) ? 'Admin Panel' : 'My Account' }}
+                {{ $mobileUser->can('dashboard.view') ? 'Admin Panel' : 'My Account' }}
             </a>
             <form action="{{ route('logout') }}" method="POST" class="m-0">
                 @csrf
@@ -1414,11 +1415,11 @@
                     @auth
                         @php
                             $footerUser = auth()->user();
-                            $footerAccountUrl = $footerUser->hasAnyRole(['Super Admin', 'Admin'])
+                            $footerAccountUrl = $footerUser->can('dashboard.view')
                                 ? route('dashboard.index')
                                 : route('customer.dashboard');
                         @endphp
-                        <li><a href="{{ $footerAccountUrl }}">{{ $footerUser->hasAnyRole(['Super Admin', 'Admin']) ? 'Admin Panel' : 'My Account' }}</a></li>
+                        <li><a href="{{ $footerAccountUrl }}">{{ $footerUser->can('dashboard.view') ? 'Admin Panel' : 'My Account' }}</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
