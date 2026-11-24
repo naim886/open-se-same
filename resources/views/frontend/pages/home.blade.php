@@ -52,13 +52,15 @@ if ($schemaProducts->isNotEmpty()) {
 @endphp
 @endsection
 
-@section('extra_css')
+@section('preload')
 @php $firstBanner = collect($blocks)->firstWhere('type', 'banner')['banners'][0] ?? null; @endphp
 @if($firstBanner && $firstBanner->image)
-<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->image) }}" media="(min-width: 768px)" fetchpriority="high">
-@endif
-@if($firstBanner && $firstBanner->mobile_image)
-<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->mobile_image) }}" media="(max-width: 767.98px)" fetchpriority="high">
+<link rel="preload" as="image" href="{{ asset('storage/'.$firstBanner->image) }}"
+      @if($firstBanner->mobile_image)
+      imagesrcset="{{ asset('storage/'.$firstBanner->mobile_image) }} 770w, {{ asset('storage/'.$firstBanner->image) }} 1920w"
+      imagesizes="100vw"
+      @endif
+      fetchpriority="high">
 @endif
 @endsection
 
@@ -76,14 +78,19 @@ if ($schemaProducts->isNotEmpty()) {
                 <div class="swiper hero-swiper">
                     <div class="swiper-wrapper">
                         @foreach($block['banners'] as $banner)
-                            <div class="swiper-slide">
+                            <div class="swiper-slide {{ $loop->first ? 'is-active' : '' }}" aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
                                 @if($banner->button_url)<a href="{{ $banner->button_url }}">@endif
-                                <picture>
-                                    @if($banner->mobile_image)
-                                        <source media="(max-width: 767.98px)" srcset="{{ asset('storage/'.$banner->mobile_image) }}">
-                                    @endif
-                                    <img src="{{ asset('storage/'.$banner->image) }}" alt="{{ $banner->title }}" @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif>
-                                </picture>
+                                <div class="hero-slide-media">
+                                    <img src="{{ asset('storage/'.$banner->image) }}"
+                                         @if($banner->mobile_image)
+                                         srcset="{{ asset('storage/'.$banner->mobile_image) }} 770w, {{ asset('storage/'.$banner->image) }} 1920w"
+                                         sizes="100vw"
+                                         @endif
+                                         width="1920" height="520"
+                                         alt="{{ $banner->title }}"
+                                         @if($loop->first) loading="eager" fetchpriority="high" @else loading="lazy" @endif
+                                         decoding="async">
+                                </div>
                                 @if($banner->button_url)</a>@endif
                             </div>
                         @endforeach
@@ -237,6 +244,7 @@ if ($schemaProducts->isNotEmpty()) {
                                 <source media="(max-width: 767.98px)" srcset="{{ $block['category']->mobile_banner_url }}">
                             @endif
                             <img src="{{ $block['category']->banner_url }}" alt="{{ $block['category']->name }}" loading="lazy"
+                                 width="1200" height="300"
                                  onerror="this.closest('.home-category-banner').style.display='none';">
                         </picture>
                     </a>
@@ -324,19 +332,73 @@ if ($schemaProducts->isNotEmpty()) {
 
 @section('extra_js')
 <script>
-// Only init Swiper when real swiper slides exist
-var heroEl = document.querySelector('.hero-swiper .swiper-wrapper');
-if (heroEl) {
-    var isMobile = window.innerWidth < 768;
-    new Swiper('.hero-swiper', {
-        loop: true,
-        autoplay: { delay: 4500, disableOnInteraction: false },
-        pagination: { el: '.swiper-pagination', clickable: true },
-        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-        autoHeight: isMobile,
-        effect: 'fade',
-        fadeEffect: { crossFade: true },
+(function () {
+    var hero = document.querySelector('.hero-swiper');
+    if (!hero) return;
+
+    var slides = Array.prototype.slice.call(hero.querySelectorAll('.swiper-slide'));
+    if (!slides.length) return;
+
+    slides.forEach(function (slide, index) {
+        slide.classList.toggle('is-active', index === 0);
+        slide.setAttribute('aria-hidden', index === 0 ? 'false' : 'true');
     });
-}
+
+    if (slides.length < 2) return;
+
+    var current = 0;
+    var timer = null;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var pagination = hero.querySelector('.swiper-pagination');
+    var dots = [];
+
+    if (pagination) {
+        slides.forEach(function (_, index) {
+            var dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'swiper-pagination-bullet' + (index === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Slide ' + (index + 1));
+            dot.addEventListener('click', function () {
+                show(index);
+                restart();
+            });
+            pagination.appendChild(dot);
+            dots.push(dot);
+        });
+    }
+
+    function show(index) {
+        if (index === current) return;
+
+        slides[current].classList.remove('is-active');
+        slides[current].setAttribute('aria-hidden', 'true');
+        if (dots[current]) dots[current].classList.remove('active');
+
+        current = (index + slides.length) % slides.length;
+
+        slides[current].classList.add('is-active');
+        slides[current].setAttribute('aria-hidden', 'false');
+        if (dots[current]) dots[current].classList.add('active');
+    }
+
+    function restart() {
+        if (reduceMotion) return;
+        clearInterval(timer);
+        timer = setInterval(function () { show(current + 1); }, 4500);
+    }
+
+    var next = hero.querySelector('.swiper-button-next');
+    var prev = hero.querySelector('.swiper-button-prev');
+
+    if (next) next.addEventListener('click', function () { show(current + 1); restart(); });
+    if (prev) prev.addEventListener('click', function () { show(current - 1); restart(); });
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) clearInterval(timer);
+        else restart();
+    });
+
+    restart();
+})();
 </script>
 @endsection

@@ -14,6 +14,8 @@
     <meta name="robots" content="@yield('robots', 'index, follow')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
+    @yield('preload')
+
     {{-- Open Graph --}}
     <meta property="og:site_name" content="OpenSesame BD">
     <meta property="og:type" content="@yield('og_type', 'website')">
@@ -37,46 +39,94 @@
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
-    <!-- Preload shop CSS so browser fetches it early even though it's non-blocking -->
-    <link rel="preload" href="{{ minified_asset('frontend/css/shop.css') }}" as="style">
+    <!-- Poppins: self-hosted latin subsets (no third-party round-trip) -->
+    <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/poppins/poppins-400.woff2') }}" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/poppins/poppins-600.woff2') }}" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/poppins/poppins-700.woff2') }}" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/poppins/poppins-800.woff2') }}" crossorigin>
 
-    <!-- Google Fonts: fully deferred + display=optional (zero CLS, zero FCP block) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=optional" rel="stylesheet" media="print"
-          onload="this.media='all'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=optional" rel="stylesheet">
-    </noscript>
-
-    <!-- Bootstrap 5 (critical — grid/utilities needed for layout, self-hosted) -->
+    <!-- Bootstrap 5 (critical: grid/utilities for the header; self-hosted) -->
     <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Font Awesome (deferred — icons not needed for initial paint) -->
+    <!-- Font Awesome (deferred â€” icons not needed for initial paint) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print"
           onload="this.media='all'">
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     </noscript>
 
-    <!-- Swiper (deferred, self-hosted) -->
-    <link rel="stylesheet" href="{{ asset('vendor/swiper/swiper-bundle.min.css') }}" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('vendor/swiper/swiper-bundle.min.css') }}">
-    </noscript>
+    <!-- Shop CSS: inlined (~48 KB raw / ~10 KB gzipped). Removes a render-blocking
+         round-trip and prevents late style recalcs from shifting the layout. -->
+    @php
+        $shopCssFile = file_exists(public_path('frontend/css/shop.min.css'))
+            ? public_path('frontend/css/shop.min.css')
+            : public_path('frontend/css/shop.css');
+    @endphp
+    <style>{!! @file_get_contents($shopCssFile) !!}</style>
 
-    <!-- Shop CSS: deferred (critical above-fold styles inlined below) -->
-    <link rel="stylesheet" href="{{ minified_asset('frontend/css/shop.css') }}" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="{{ minified_asset('frontend/css/shop.css') }}">
-    </noscript>
-
-    {{-- ═══ CRITICAL CSS (above-the-fold) ═════════════════════════════════
+    {{-- â•â•â• CRITICAL CSS (above-the-fold) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          Covers header + category nav + hero so the page renders correctly
          before shop.css arrives. Keep in sync with shop.css if those
          selectors ever change.
-    ══════════════════════════════════════════════════════════════════════ --}}
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     <style>
+        /* Metric-matched local fallback: identical vertical metrics to Poppins so
+           text laid out before the web font arrives does not reflow afterwards. */
+        @font-face {
+            font-family: 'Poppins Fallback';
+            src: local('Segoe UI'), local('Arial'), local('Helvetica Neue');
+            size-adjust: 105%;
+            ascent-override: 100%;
+            descent-override: 33.33%;
+            line-gap-override: 0%
+        }
+
+        /* Self-hosted Poppins (latin subset) */
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 400;
+            font-display: block;
+            src: url('{{ asset('fonts/poppins/poppins-400.woff2') }}') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 500;
+            font-display: block;
+            src: url('data:font/woff2;base64,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') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 600;
+            font-display: block;
+            src: url('{{ asset('fonts/poppins/poppins-600.woff2') }}') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 700;
+            font-display: block;
+            src: url('{{ asset('fonts/poppins/poppins-700.woff2') }}') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
+        @font-face {
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 800;
+            font-display: block;
+            src: url('{{ asset('fonts/poppins/poppins-800.woff2') }}') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+        }
+
         :root {
             --primary: #007d50;
             --primary-dark: #005138;
@@ -97,6 +147,15 @@
             --transition: all .25s ease
         }
 
+        /* Reserve the glyph box for icon-font placeholders so layout does not
+           reflow when the deferred Font Awesome stylesheet applies. */
+        i.fas, i.far, i.fab, i.fal, i.fad {
+            display: inline-block;
+            width: 1em;
+            font-style: normal;
+            text-align: center
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -104,7 +163,7 @@
         }
 
         body {
-            font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+            font-family: 'Poppins', 'Poppins Fallback', system-ui, -apple-system, sans-serif;
             font-size: 15px;
             color: #33413C;
             background: #F3FAF6;
@@ -345,10 +404,13 @@
 
         .category-nav-link {
             color: #fff;
-            padding: 12px 18px;
+            padding: 12px 13px;
             font-size: 13.5px;
             font-weight: 500;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
             border-bottom: 3px solid transparent;
             transition: all .25s ease
         }
@@ -427,12 +489,18 @@
             color: #10211B
         }
 
-        /* An absolutely positioned dropdown is clipped by a scrolling parent,
-           so on the desktop strip the categories wrap instead of scrolling. */
+        /* Desktop strip: keep every category on one line so the header height
+           never changes (no wrap-triggered layout shift). Links shrink and
+           ellipsis instead of wrapping, and dropdowns stay unclipped. */
         @media (min-width: 768px) {
             .category-nav-inner {
                 overflow: visible;
-                flex-wrap: wrap
+                flex-wrap: nowrap
+            }
+
+            .category-nav-item {
+                flex: 0 1 auto;
+                min-width: 0
             }
         }
 
@@ -476,11 +544,33 @@
 
         .hero-swiper {
             width: 100%;
+            position: relative;
+            overflow: hidden;
             background: linear-gradient(135deg, #005138 0%, #005138 40%, #007d50 75%, #007d50 100%)
         }
 
+        .hero-swiper .swiper-wrapper {
+            position: relative
+        }
+
         .hero-swiper .swiper-slide {
-            height: auto
+            position: absolute;
+            inset: 0;
+            height: auto;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .6s ease;
+            z-index: 0
+        }
+
+        .hero-swiper .swiper-slide:first-child {
+            position: relative
+        }
+
+        .hero-swiper .swiper-slide.is-active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 1
         }
 
         .hero-swiper .swiper-slide img {
@@ -489,7 +579,25 @@
             display: block
         }
 
-        /* ── Mobile navigation drawer ─────────────────────────────── */
+        .hero-swiper .hero-slide-media {
+            width: 100%;
+            aspect-ratio: 770 / 430
+        }
+
+        .hero-swiper .hero-slide-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        @media (min-width: 768px) {
+            .hero-swiper .hero-slide-media {
+                aspect-ratio: 1920 / 520
+            }
+        }
+
+        /* â”€â”€ Mobile navigation drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .mobile-nav-offcanvas {
             max-width: 320px
         }
@@ -601,7 +709,7 @@
             transform: rotate(180deg)
         }
 
-        /* ── Filter accordion + variation filters ─────────────────── */
+        /* â”€â”€ Filter accordion + variation filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .filter-accordion {
             margin-bottom: 6px
         }
@@ -737,7 +845,7 @@
             accent-color: var(--primary-dark, #005138)
         }
 
-        /* ── Category / brand page header ─────────────────────────── */
+        /* â”€â”€ Category / brand page header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .shop-page-header {
             background: #fff;
             padding-bottom: 18px
@@ -784,7 +892,7 @@
             color: #6B7C76
         }
 
-        /* ── Homepage category block banner ───────────────────────── */
+        /* â”€â”€ Homepage category block banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .home-category-banner {
             display: block;
             margin-bottom: 20px;
@@ -798,7 +906,7 @@
             display: block
         }
 
-        /* ── Product detail brand chip ────────────────────────────── */
+        /* â”€â”€ Product detail brand chip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .product-brand-chip {
             display: inline-flex;
             align-items: center;
@@ -822,11 +930,115 @@
             font-weight: 600;
             color: var(--primary-dark, #005138)
         }
+
+        /* Bootstrap's own grid now loads before first paint, so no duplicated
+           column rules here - they would override .row-cols-* and stretch the last row. */
+
+        /* Section headings: pin the line box to Poppins' natural metrics so the
+           grid below cannot slide when the web font is applied. */
+        .section-title {
+            line-height: 1.5
+        }
+
+        /* Reserve the 2-line title box in every product card so a name that wraps
+           to one line cannot resize the grid row. */
+        .product-card-name {
+            min-height: 2.8em
+        }
+
+        /* Unlock-hidden-treasures strip (above the fold on mobile) */
+        .treasure-section {
+            padding: 18px 0 28px
+        }
+
+        .treasure-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #10211B;
+            margin: 0 0 14px
+        }
+
+        .treasure-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px
+        }
+
+        .treasure-item {
+            width: 128px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 8px 12px;
+            background: #fff;
+            border: 1px solid #D8EDE3;
+            border-radius: 14px;
+            box-shadow: 0 2px 14px rgba(0, 81, 56, .08);
+            text-decoration: none
+        }
+
+        .treasure-icon {
+            width: 72px;
+            height: 72px;
+            padding: 11px;
+            border-radius: 50%;
+            background: #F3FAF6;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .treasure-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain
+        }
+
+        .treasure-label {
+            text-align: center;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #10211B;
+            line-height: 1.3
+        }
+
+        @media (max-width: 767.98px) {
+            .treasure-section {
+                padding: 14px 0 24px
+            }
+
+            .treasure-strip {
+                gap: 6px;
+                flex-wrap: nowrap;
+                justify-content: space-between
+            }
+
+            .treasure-item {
+                flex: 1 1 0;
+                width: auto;
+                min-width: 0;
+                padding: 8px 4px;
+                border-radius: 12px
+            }
+
+            .treasure-icon {
+                width: clamp(40px, 13vw, 56px);
+                height: clamp(40px, 13vw, 56px);
+                padding: 6px
+            }
+
+            .treasure-label {
+                display: none
+            }
+        }
     </style>
 
     @yield('extra_css')
 
-    {{-- ── Schema.org JSON-LD (sitewide: Organization + WebSite) ───────── --}}
+    {{-- â”€â”€ Schema.org JSON-LD (sitewide: Organization + WebSite) â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     @php
         use Spatie\SchemaOrg\Schema;
         echo Schema::organization()
@@ -855,13 +1067,6 @@
     @yield('schema')
 
 @include('frontend.partials.analytics')
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "vqji8l47ab");
-</script>
 </head>
 @php
     $socialFacebook  = \App\Models\Setting::effective('social.facebook_url');
@@ -1253,8 +1458,8 @@
                 <picture>
                     <source media="(max-width: 767.98px)" srcset="{{ asset('images/ssl-mobile.jpg') }}">
                     <img src="{{ asset('images/ssl.jpg') }}"
-                         alt="Accepted payment methods — verified by SSLCommerz"
-                         loading="lazy" decoding="async">
+                         alt="Accepted payment methods - verified by SSLCommerz"
+                         width="1200" height="60" loading="lazy" decoding="async">
                 </picture>
             </div>
         </div>
@@ -1262,7 +1467,7 @@
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright">© {{ date('Y') }} <strong>OPEN SESAME.COM LIMITED</strong>. All rights reserved.</p>
+            <p class="footer-copyright">Â© {{ date('Y') }} <strong>OPEN SESAME.COM LIMITED</strong>. All rights reserved.</p>
         </div>
     </div>
 </footer>
@@ -1316,16 +1521,14 @@
     </div>
 </div>
 
-<!-- Scripts (self-hosted — no CDN round-trip) -->
+<!-- Scripts (self-hosted â€” no CDN round-trip) -->
 <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('vendor/jquery.min.js') }}"></script>
-<script src="{{ asset('vendor/swiper/swiper-bundle.min.js') }}"></script>
 
 <script>
-    // ─── Cart count badge ───────────────────────────────────────────
+    // â”€â”€â”€ Cart count badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     var cartCountEl = document.getElementById('cart-count');
 
-    // ─── Flash message auto-hide ────────────────────────────────────
+    // â”€â”€â”€ Flash message auto-hide â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     setTimeout(function () {
         ['flash-success', 'flash-error'].forEach(function (id) {
             var el = document.getElementById(id);
@@ -1338,38 +1541,58 @@
         });
     }, 4000);
 
-    // ─── Mobile navigation drawer ───────────────────────────────────
+    // â”€â”€â”€ Mobile navigation drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // The drawer itself is a Bootstrap offcanvas; these handlers only expand
     // its collapsible category / brand groups.
-    $(document).on('click', '.mobile-nav-group-title', function () {
-        var sub = $(this).next('.mobile-nav-sub');
-        sub.slideToggle(150);
-        $(this).toggleClass('open', sub.is(':visible'));
-    });
+    document.addEventListener('click', function (event) {
+        var title = event.target.closest('.mobile-nav-group-title');
 
-    // ─── Shop filter accordions (sidebar + mobile drawer) ───────────
-    $(document).on('click', '.filter-category-toggle', function () {
-        var list = $(this).closest('.filter-category').find('.filter-subcategory-list');
-        list.slideToggle(150);
-        $(this).toggleClass('open', list.is(':visible'))
-            .attr('aria-expanded', list.is(':visible') ? 'true' : 'false');
-    });
+        if (title) {
+            var sub = title.nextElementSibling;
 
-    $(document).on('click', '.filter-variation-toggle', function () {
-        var values = $(this).siblings('.filter-variation-values');
-        values.slideToggle(150);
-        $(this).toggleClass('open', values.is(':visible'))
-            .attr('aria-expanded', values.is(':visible') ? 'true' : 'false');
-    });
+            if (sub && sub.classList.contains('mobile-nav-sub')) {
+                var isOpen = sub.style.display !== 'none';
+                sub.style.display = isOpen ? 'none' : 'block';
+                title.classList.toggle('open', !isOpen);
+            }
+        }
 
-    // Ticking a variation checkbox re-runs the filter immediately.
-    $(document).on('change', '.filter-variation-input', function () {
-        if (this.form) {
-            this.form.submit();
+        // â”€â”€â”€ Shop filter accordions (sidebar + mobile drawer) â”€â”€â”€â”€â”€â”€â”€
+        var categoryToggle = event.target.closest('.filter-category-toggle');
+
+        if (categoryToggle) {
+            var list = categoryToggle.closest('.filter-category').querySelector('.filter-subcategory-list');
+
+            if (list) {
+                var isListOpen = list.style.display !== 'none';
+                list.style.display = isListOpen ? 'none' : 'block';
+                categoryToggle.classList.toggle('open', !isListOpen);
+                categoryToggle.setAttribute('aria-expanded', !isListOpen ? 'true' : 'false');
+            }
+        }
+
+        var variationToggle = event.target.closest('.filter-variation-toggle');
+
+        if (variationToggle) {
+            var values = variationToggle.parentElement.querySelector('.filter-variation-values');
+
+            if (values) {
+                var areValuesOpen = values.style.display !== 'none';
+                values.style.display = areValuesOpen ? 'none' : 'flex';
+                variationToggle.classList.toggle('open', !areValuesOpen);
+                variationToggle.setAttribute('aria-expanded', !areValuesOpen ? 'true' : 'false');
+            }
         }
     });
 
-    // ─── Scroll to top ──────────────────────────────────────────────
+    // Ticking a variation checkbox re-runs the filter immediately.
+    document.addEventListener('change', function (event) {
+        if (event.target.classList.contains('filter-variation-input') && event.target.form) {
+            event.target.form.submit();
+        }
+    });
+
+    // â”€â”€â”€ Scroll to top â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     var scrollTopBtn = document.getElementById('scrollTop');
     if (scrollTopBtn) {
         window.addEventListener('scroll', function () {
@@ -1380,7 +1603,7 @@
         });
     }
 
-    // ─── Show toast notification ────────────────────────────────────
+    // â”€â”€â”€ Show toast notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showToast(msg, type) {
         type = type || 'success';
         var toast = document.createElement('div');
@@ -1396,7 +1619,7 @@
         }, 3000);
     }
 
-    // ─── Add-to-cart success popup ──────────────────────────────────
+    // â”€â”€â”€ Add-to-cart success popup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function showCartAddedPopup(data) {
         data = data || {};
 
@@ -1425,7 +1648,7 @@
         }
     }
 
-    // ─── Add to cart via AJAX ────────────────────────────────────────
+    // â”€â”€â”€ Add to cart via AJAX â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function addToCart(productId, qty) {
         qty = qty || 1;
         var csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -1448,7 +1671,7 @@
                 if (data.success) {
                     if (cartCountEl) cartCountEl.textContent = data.cart_count;
                     showCartAddedPopup(data);
-                    // ── Meta Pixel + GA4: AddToCart ──────────────────────
+                    // â”€â”€ Meta Pixel + GA4: AddToCart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                     if (typeof ocTrack === 'function') {
                         ocTrack('AddToCart', {
                             content_ids:  [data.atc_content_id || productId],

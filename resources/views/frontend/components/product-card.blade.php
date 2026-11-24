@@ -3,9 +3,9 @@
         <!-- Image -->
         <a href="{{ route('shop.product', $product->slug) }}" class="product-card-img-wrap d-block">
             @if($product->primary_photo_thumb)
-                <img src="{{ asset('storage/'.$product->primary_photo_thumb) }}" alt="{{ $product->name }}" class="product-card-img" loading="lazy">
+                <img src="{{ asset('storage/'.$product->primary_photo_thumb) }}" alt="{{ $product->name }}" class="product-card-img" width="400" height="400" loading="lazy" decoding="async">
             @elseif($product->photos && $product->photos->count() > 0)
-                <img src="{{ asset('storage/'.$product->photos->first()->photo_thumb) }}" alt="{{ $product->name }}" class="product-card-img" loading="lazy">
+                <img src="{{ asset('storage/'.$product->photos->first()->photo_thumb) }}" alt="{{ $product->name }}" class="product-card-img" width="400" height="400" loading="lazy" decoding="async">
             @else
                 <div class="product-card-img d-flex align-items-center justify-content-center" style="background:#f5f5f5; height:100%;">
                     <i class="fas fa-image" style="font-size:40px; color:#ddd;"></i>

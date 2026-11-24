@@ -35,7 +35,8 @@
                        class="treasure-item"
                        aria-label="{{ $item['label'] }}">
                         <span class="treasure-icon">
-                            <img src="{{ asset($item['icon']) }}" alt="{{ $item['label'] }}" loading="lazy">
+                            <img src="{{ asset($item['icon']) }}" alt="{{ $item['label'] }}"
+                                 width="48" height="48" loading="lazy" decoding="async">
                         </span>
                         <span class="treasure-label">{{ $item['label'] }}</span>
                     </a>
